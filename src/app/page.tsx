@@ -1,65 +1,147 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import Header from "@/components/Header";
+import ScrollNavigation from "@/components/ScrollNavigation";
+import IntroLoader from "@/components/IntroLoader";
+import HeroSection from "@/components/HeroSection";
+import StudioSection from "@/components/StudioSection";
+import ServicesSection from "@/components/ServicesSection";
+import WorksSection from "@/components/WorksSection";
+import ProcessSection from "@/components/ProcessSection";
+import EngineStackSection from "@/components/EngineStackSection";
+import FeedbackSection from "@/components/FeedbackSection";
+import FAQSection from "@/components/FAQSection";
+import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
 
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
+  const [activeSection, setActiveSection] = useState("home");
+
+  // Track scroll position to update active dot navigation
+  useEffect(() => {
+    if (showIntro) return;
+
+    const sections = [
+      "home",
+      "studio",
+      "services",
+      "works",
+      "process",
+      "engine-stack",
+      "feedback",
+      "faq",
+      "contact",
+    ];
+
+    const container = document.querySelector(".snap-container");
+    if (!container) return;
+
+    const observerOptions = {
+      root: container,
+      rootMargin: "-25% 0px -25% 0px", // Trigger when section is in center of viewport
+      threshold: 0.1,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [showIntro]);
+
+  const scrollToSection = (sectionId: string) => {
+    const container = document.querySelector(".snap-container");
+    const target = document.getElementById(sectionId);
+    
+    if (container && target) {
+      // Direct scroll container mapping
+      container.scrollTo({
+        top: target.offsetTop,
+        behavior: "smooth",
+      });
+      setActiveSection(sectionId);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* Intro Loader screen overlay */}
+      <IntroLoader onComplete={() => setShowIntro(false)} />
+
+      {/* Main layout (rendered after loader starts dismiss transition) */}
+      {!showIntro && (
+        <div className="relative w-full h-screen bg-[#050507]">
+          {/* Header Stick Navigation */}
+          <Header activeSection={activeSection} onNavClick={scrollToSection} />
+
+          {/* Right vertical dot indicators */}
+          <ScrollNavigation activeSection={activeSection} onDotClick={scrollToSection} />
+
+          {/* Core Scroll Snapped Page Sections Container */}
+          <main className="snap-container">
+            {/* 1. Home Section */}
+            <div id="home" className="snap-section">
+              <HeroSection onCtaClick={scrollToSection} />
+            </div>
+
+            {/* 2. Studio Section */}
+            <div id="studio" className="snap-section">
+              <StudioSection />
+            </div>
+
+            {/* 3. Services Section */}
+            <div id="services" className="snap-section">
+              <ServicesSection onInquiryClick={() => scrollToSection("contact")} />
+            </div>
+
+            {/* 4. Works Section */}
+            <div id="works" className="snap-section">
+              <WorksSection />
+            </div>
+
+            {/* 5. Process: Timeline Section */}
+            <div id="process" className="snap-section">
+              <ProcessSection />
+            </div>
+
+            {/* 6. Process: Engine Stack Section */}
+            <div id="engine-stack" className="snap-section">
+              <EngineStackSection />
+            </div>
+
+            {/* 7. Process: Client Feedback Section */}
+            <div id="feedback" className="snap-section">
+              <FeedbackSection />
+            </div>
+
+            {/* 8. FAQ & Booking Calendar Section */}
+            <div id="faq" className="snap-section">
+              <FAQSection />
+            </div>
+
+            {/* 9. Contact Dossier & Footer Section */}
+            <div id="contact" className="snap-section flex flex-col justify-between overflow-y-auto no-scrollbar">
+              <ContactSection />
+              <Footer onLinkClick={scrollToSection} />
+            </div>
+          </main>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 }
