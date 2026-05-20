@@ -81,67 +81,71 @@ export default function Home() {
   return (
     <>
       {/* Intro Loader screen overlay */}
-      <IntroLoader onComplete={() => setShowIntro(false)} />
-
-      {/* Main layout (rendered after loader starts dismiss transition) */}
-      {!showIntro && (
-        <div className="relative w-full h-screen bg-[#050507]">
-          {/* Header Stick Navigation */}
-          <Header activeSection={activeSection} onNavClick={scrollToSection} />
-
-          {/* Right vertical dot indicators */}
-          <ScrollNavigation activeSection={activeSection} onDotClick={scrollToSection} />
-
-          {/* Core Scroll Snapped Page Sections Container */}
-          <main className="snap-container">
-            {/* 1. Home Section */}
-            <div id="home" className="snap-section">
-              <HeroSection onCtaClick={scrollToSection} />
-            </div>
-
-            {/* 2. Studio Section */}
-            <div id="studio" className="snap-section">
-              <StudioSection />
-            </div>
-
-            {/* 3. Services Section */}
-            <div id="services" className="snap-section">
-              <ServicesSection onInquiryClick={() => scrollToSection("contact")} />
-            </div>
-
-            {/* 4. Works Section */}
-            <div id="works" className="snap-section">
-              <WorksSection />
-            </div>
-
-            {/* 5. Process: Timeline Section */}
-            <div id="process" className="snap-section">
-              <ProcessSection />
-            </div>
-
-            {/* 6. Process: Engine Stack Section */}
-            <div id="engine-stack" className="snap-section">
-              <EngineStackSection />
-            </div>
-
-            {/* 7. Process: Client Feedback Section */}
-            <div id="feedback" className="snap-section">
-              <FeedbackSection />
-            </div>
-
-            {/* 8. FAQ & Booking Calendar Section */}
-            <div id="faq" className="snap-section">
-              <FAQSection />
-            </div>
-
-            {/* 9. Contact Dossier & Footer Section */}
-            <div id="contact" className="snap-section flex flex-col justify-between overflow-y-auto no-scrollbar">
-              <ContactSection />
-              <Footer onLinkClick={scrollToSection} />
-            </div>
-          </main>
-        </div>
+      {showIntro && (
+        <IntroLoader onComplete={() => setShowIntro(false)} />
       )}
+
+      {/* Main layout (pre-mounted for seamless asset loading and animations) */}
+      <div className="relative w-full h-screen bg-[#050507]">
+        {/* Header Sticky Navigation */}
+        {!showIntro && (
+          <Header activeSection={activeSection} onNavClick={scrollToSection} />
+        )}
+
+        {/* Right vertical dot indicators */}
+        {!showIntro && (
+          <ScrollNavigation activeSection={activeSection} onDotClick={scrollToSection} />
+        )}
+
+        {/* Core Scroll Snapped Page Sections Container */}
+        <main className={`snap-container ${showIntro ? "pointer-events-none overflow-hidden" : ""}`}>
+          {/* 1. Home Section */}
+          <div id="home" className="snap-section">
+            <HeroSection onCtaClick={scrollToSection} />
+          </div>
+
+          {/* 2. Studio Section */}
+          <div id="studio" className="snap-section">
+            <StudioSection />
+          </div>
+
+          {/* 3. Services Section */}
+          <div id="services" className="snap-section">
+            <ServicesSection onInquiryClick={() => scrollToSection("contact")} />
+          </div>
+
+          {/* 4. Works Section */}
+          <div id="works" className="snap-section">
+            <WorksSection />
+          </div>
+
+          {/* 5. Process: Timeline Section */}
+          <div id="process" className="snap-section">
+            <ProcessSection />
+          </div>
+
+          {/* 6. Process: Engine Stack Section */}
+          <div id="engine-stack" className="snap-section">
+            <EngineStackSection />
+          </div>
+
+          {/* 7. Process: Client Feedback Section */}
+          <div id="feedback" className="snap-section">
+            <FeedbackSection />
+          </div>
+
+          {/* 8. FAQ & Booking Calendar Section */}
+          <div id="faq" className="snap-section">
+            <FAQSection />
+          </div>
+
+          {/* 9. Contact Dossier & Footer Section */}
+          <div id="contact" className="snap-section flex flex-col justify-between overflow-y-auto no-scrollbar">
+            <ContactSection />
+            <Footer onLinkClick={scrollToSection} />
+          </div>
+        </main>
+      </div>
     </>
   );
 }
