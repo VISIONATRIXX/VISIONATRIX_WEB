@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface HeaderProps {
   activeSection: string;
@@ -37,7 +38,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     { label: "HOME", id: "home" },
     { label: "STUDIO", id: "studio" },
     { label: "SERVICES", id: "services" },
-    { label: "SHOWCASE", id: "works" }, // Map showcase to works as well
+    { label: "SHOWCASE", id: "works" },
     { label: "WORKS", id: "works" },
     { label: "PROCESS", id: "process" },
     { label: "FAQ", id: "faq" },
@@ -56,85 +57,46 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-[#050507]/90 backdrop-blur-md border-b border-gold/10 py-4" 
-          : "bg-transparent py-6"
+          ? "bg-[#050507]/90 backdrop-blur-md border-b border-gold/10 py-3" 
+          : "bg-transparent py-5"
       }`}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" as const }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        {/* Logo and Name */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
+        {/* Logo and Brand Name */}
         <div 
           className="flex items-center gap-3 cursor-pointer group"
           onClick={() => onNavClick("home")}
         >
-          {/* Logo SVG matching 1.png / 2.png */}
-          <svg
-            className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Outermost upper curve */}
-            <path
-              d="M10 50C10 50 30 20 50 20C70 20 90 50 90 50"
-              stroke="currentColor"
-              strokeWidth="5"
-              strokeLinecap="round"
+          {/* Actual LOGO.png */}
+          <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
+            <Image
+              src="/LOGO.png"
+              alt="Visionatrix Logo"
+              fill
+              priority
+              className="object-contain"
             />
-            {/* Outermost lower curve */}
-            <path
-              d="M10 50C10 50 30 80 50 80C70 80 90 50 90 50"
-              stroke="currentColor"
-              strokeWidth="5"
-              strokeLinecap="round"
-            />
-            {/* Inner upper curve */}
-            <path
-              d="M25 50C25 50 37 32 50 32C63 32 75 50 75 50"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            {/* Inner lower curve */}
-            <path
-              d="M25 50C25 50 37 68 50 68C63 68 75 50 75 50"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            {/* Core center loop */}
-            <path
-              d="M38 50C38 43.3726 43.3726 38 50 38C56.6274 38 62 43.3726 62 50"
-              stroke="#c5a880"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            <path
-              d="M38 50C38 56.6274 43.3726 62 50 62C56.6274 62 62 56.6274 62 50"
-              stroke="#c5a880"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-          </svg>
-          <span className="font-display font-bold tracking-[0.25em] text-white text-base md:text-lg group-hover:text-gold transition-colors duration-300">
+          </div>
+          <span className="font-[var(--font-michroma)] tracking-[0.2em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300">
             VISIONATRIX
           </span>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
           {navItems.map((item, idx) => {
             const active = isItemActive(item);
             return (
               <button
                 key={idx}
                 onClick={() => onNavClick(item.id)}
-                className={`font-sans text-xs tracking-[0.2em] transition-colors duration-300 ${
+                className={`font-[var(--font-michroma)] text-[11px] tracking-[0.15em] transition-colors duration-300 cursor-pointer ${
                   active 
-                    ? "text-gold font-semibold" 
-                    : "text-[#9999aa] hover:text-white"
+                    ? "text-white font-semibold" 
+                    : "text-[#7a7a8a] hover:text-white"
                 } nav-link-underline ${active ? "active" : ""}`}
               >
                 {item.label}
@@ -147,10 +109,10 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavClick("contact")}
-            className="border border-[#c5a880]/30 hover:border-gold bg-[#c5a880]/5 hover:bg-[#c5a880]/15 text-white font-sans text-xs tracking-[0.18em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2 group cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(197,168,128,0.15)]"
+            className="border border-[#c5a880]/40 hover:border-[#c5a880] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] font-[var(--font-michroma)] text-[10px] tracking-[0.18em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
           >
             <span>GET STARTED</span>
-            <span className="text-gold transition-transform duration-300 group-hover:translate-x-1">→</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </button>
         </div>
       </div>

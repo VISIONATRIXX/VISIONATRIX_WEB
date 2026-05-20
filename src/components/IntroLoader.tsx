@@ -117,7 +117,7 @@ export default function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Letter by Letter Brand Reveal */}
           <motion.h1
-            className="font-display text-xl md:text-2xl font-bold tracking-[0.45em] text-white text-center flex items-center justify-center pl-[0.45em] mb-2"
+            className="font-[var(--font-michroma)] text-lg md:text-xl tracking-[0.4em] text-white text-center flex items-center justify-center pl-[0.4em] mb-3"
             variants={textContainerVariants}
             initial="hidden"
             animate="visible"
@@ -131,7 +131,7 @@ export default function IntroLoader({ onComplete }: IntroLoaderProps) {
 
           {/* Tagline Reveal */}
           <motion.p
-            className="font-sans text-[9px] md:text-[10px] tracking-[0.3em] text-[#6b7280] text-center pl-[0.3em]"
+            className="font-[var(--font-michroma)] text-[8px] md:text-[9px] tracking-[0.25em] text-[#555566] text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.4, duration: 1 }}
@@ -150,7 +150,7 @@ export default function IntroLoader({ onComplete }: IntroLoaderProps) {
               onClick={handleDismiss}
               className="flex flex-col items-center gap-2.5 group focus:outline-none cursor-pointer"
             >
-              <span className="font-sans text-[10px] tracking-[0.25em] text-[#555566] group-hover:text-[#c5a880] transition-colors duration-300 uppercase">
+              <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#555566] group-hover:text-[#c5a880] transition-colors duration-300 uppercase">
                 Skip Intro
               </span>
               <motion.div

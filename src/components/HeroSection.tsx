@@ -13,7 +13,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       opacity: 1,
       transition: {
         staggerChildren: 0.2,
-        delayChildren: 0.5
+        delayChildren: 0.3
       }
     }
   };
@@ -30,16 +30,15 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
   return (
     <section 
       id="home" 
-      className="snap-section flex flex-col justify-between items-center py-20 px-6 md:px-12 bg-[#050507]"
+      className="snap-section flex flex-col justify-between items-center pt-24 pb-8 px-6 md:px-12 bg-[#050507]"
     >
-      {/* Background texture/glow */}
+      {/* Background ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[70vw] h-[30vw] bg-[#c5a880]/3 opacity-[0.04] blur-[150px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_60%,#000000_100%)]" />
+        {/* Warm center glow behind title */}
+        <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[60vw] h-[25vw] bg-[#c5a880]/4 blur-[140px] rounded-full" />
+        {/* Vignette edge darken */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,#000000_100%)]" />
       </div>
-
-      {/* Top spacer for navigation */}
-      <div className="h-16" />
 
       {/* Main Content Area */}
       <motion.div 
@@ -49,77 +48,93 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        {/* Upper Tag */}
+        {/* Upper Tag — matches 2.png exactly */}
         <motion.div 
-          className="border border-[#c5a880]/30 px-4 py-1.5 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
+          className="border border-[#c5a880]/25 px-6 py-2 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
           variants={itemVariants}
         >
-          <span className="font-sans text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
-            [ CREATIVE TECHNOLOGY STUDIO – MMXXVI ]
+          <span className="font-[var(--font-michroma)] text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
+            [ CREATIVE TECHNOLOGY STUDIO — MMXXVI ]
           </span>
         </motion.div>
 
-        {/* Large Title */}
+        {/* Large Title — Michroma, bold, wide tracked */}
         <motion.h1 
-          className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-[0.18em] text-white pl-[0.18em] leading-none mb-6 text-gold-glow drop-shadow-[0_0_30px_rgba(197,168,128,0.1)]"
+          className="font-[var(--font-michroma)] text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)]"
           variants={itemVariants}
         >
           VISIONATRIX
         </motion.h1>
 
-        {/* Subtext */}
+        {/* Subtext — Michroma, lighter weight, spaced */}
         <motion.p 
-          className="font-sans text-xs sm:text-sm md:text-base tracking-[0.4em] text-white/70 mb-10 pl-[0.4em]"
+          className="font-[var(--font-michroma)] text-[11px] sm:text-xs md:text-sm tracking-[0.35em] text-white/50 mb-12"
           variants={itemVariants}
         >
           DESIGN. VISUALIZE. EXPERIENCE.
         </motion.p>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — matching 2.png: gold filled + white bordered */}
         <motion.div 
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full"
+          className="flex flex-col sm:flex-row gap-5 justify-center items-center"
           variants={itemVariants}
         >
           <button
             onClick={() => onCtaClick("works")}
-            className="w-full sm:w-auto px-8 py-4 bg-[#c5a880] text-black font-sans text-xs font-semibold tracking-[0.2em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_25px_rgba(197,168,128,0.4)] transition-all duration-300"
+            className="px-10 py-4 bg-[#c5a880] text-[#0a0a0a] font-[var(--font-michroma)] text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d4bb95] hover:shadow-[0_0_30px_rgba(197,168,128,0.35)] transition-all duration-300 cursor-pointer"
           >
             VIEW PORTFOLIO
           </button>
           <button
             onClick={() => onCtaClick("contact")}
-            className="w-full sm:w-auto px-8 py-4 border border-white/20 hover:border-gold hover:bg-white/5 text-white font-sans text-xs font-semibold tracking-[0.2em] rounded-sm transition-all duration-300"
+            className="px-10 py-4 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-[var(--font-michroma)] text-[11px] tracking-[0.18em] rounded-sm transition-all duration-300 cursor-pointer"
           >
             START PROJECT
           </button>
         </motion.div>
       </motion.div>
 
-      {/* Bottom Information Panel */}
+      {/* Bottom Information Panel — matches 2.png layout: two columns + scroll center */}
       <motion.div 
-        className="w-full max-w-7xl px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 items-end justify-between text-center md:text-left z-10 border-t border-white/5 pt-6"
+        className="w-full max-w-6xl px-4 md:px-8 z-10"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ delay: 1, duration: 0.6 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
       >
-        {/* Locations */}
-        <div className="flex flex-col gap-1">
-          <span className="font-sans text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-            LOCATIONS
-          </span>
-          <span className="font-sans text-xs tracking-[0.1em] text-white font-medium">
-            BENGALURU / MUMBAI / DELHI
-          </span>
+        {/* Two column: Locations left, Focus right */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 text-center md:text-left border-t border-white/5 pt-6 mb-6">
+          {/* Locations */}
+          <div className="flex flex-col gap-1">
+            <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+              LOCATIONS
+            </span>
+            <span className="font-[var(--font-michroma)] text-[11px] tracking-[0.12em] text-white">
+              BENGALURU / MUMBAI / DELHI
+            </span>
+          </div>
+
+          {/* Focus */}
+          <div className="flex flex-col gap-1 md:items-end">
+            <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+              FOCUS
+            </span>
+            <span className="font-[var(--font-michroma)] text-[11px] tracking-[0.12em] text-[#c5a880]">
+              SENSORY ARCHITECTURE
+            </span>
+          </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="flex flex-col items-center gap-2 cursor-pointer" onClick={() => onCtaClick("studio")}>
-          <span className="font-sans text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+        {/* Scroll Indicator — centered below, matching 2.png */}
+        <div 
+          className="flex flex-col items-center gap-2 cursor-pointer" 
+          onClick={() => onCtaClick("studio")}
+        >
+          <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
             SCROLL TO OBSERVE
           </span>
           <motion.div
-            className="text-gold"
+            className="text-[#c5a880]"
             animate={{ y: [0, 5, 0] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
           >
@@ -134,20 +149,10 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M19 13l-7 7-7-7m14-6l-7 7-7-7"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
               />
             </svg>
           </motion.div>
-        </div>
-
-        {/* Focus */}
-        <div className="flex flex-col gap-1 md:items-end">
-          <span className="font-sans text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-            FOCUS
-          </span>
-          <span className="font-sans text-xs tracking-[0.1em] text-[#c5a880] font-medium uppercase">
-            SENSORY ARCHITECTURE
-          </span>
         </div>
       </motion.div>
     </section>
