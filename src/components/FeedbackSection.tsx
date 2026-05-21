@@ -64,7 +64,7 @@ export default function FeedbackSection() {
   return (
     <section 
       id="feedback" 
-      className="snap-section flex flex-col justify-between bg-[#050507] py-20 px-6 md:px-12 lg:px-24"
+      className="snap-section flex flex-col justify-between bg-[#0b0b0f] py-20 px-6 md:px-12 lg:px-24"
     >
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute right-[10%] bottom-[10%] w-[50vw] h-[50vw] bg-[#c5a880]/2 opacity-[0.02] blur-[150px] rounded-full" />

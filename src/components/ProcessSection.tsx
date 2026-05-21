@@ -150,7 +150,7 @@ export default function ProcessSection() {
     <section 
       ref={sectionRef}
       id="process" 
-      className="relative w-full bg-[#050507] py-24 md:py-40 px-6 md:px-12 lg:px-24 overflow-hidden"
+      className="relative w-full bg-[#0b0b0f] py-24 md:py-40 px-6 md:px-12 lg:px-24 overflow-hidden"
     >
       {/* Background radial glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -197,7 +197,7 @@ export default function ProcessSection() {
                   {isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#0b0b0e]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left md:text-right items-start md:items-end group relative"
+                      className="w-full max-w-lg bg-[#121217]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left md:text-right items-start md:items-end group relative"
                     >
                       {/* Category */}
                       <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
@@ -222,7 +222,7 @@ export default function ProcessSection() {
                   {!isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#0b0b0e]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left items-start group relative"
+                      className="w-full max-w-lg bg-[#121217]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left items-start group relative"
                     >
                       {/* Category */}
                       <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
@@ -245,7 +245,7 @@ export default function ProcessSection() {
                 {/* Centered Circular Node */}
                 <div 
                   ref={el => { if (el) nodeRefs.current[idx] = el; }}
-                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-[#c5a880]/35 bg-[#050507] z-20 flex items-center justify-center transition-all duration-500 cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden"
+                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-[#c5a880]/35 bg-[#0b0b0f] z-20 flex items-center justify-center transition-all duration-500 cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden"
                 >
                   {/* Number Tag (hidden by default) */}
                   <span className="node-number opacity-0 font-display text-[10px] md:text-[11px] font-bold text-[#c5a880] transition-opacity duration-300 select-none">

@@ -779,7 +779,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
     <section 
       ref={sectionRef}
       id="services" 
-      className="relative w-full lg:min-h-screen bg-[#050507] py-20 lg:py-0 px-6 md:px-12 lg:px-24 flex flex-col justify-center overflow-hidden border-b border-white/5"
+      className="relative w-full lg:min-h-screen bg-[#0b0b0f] py-20 lg:py-0 px-6 md:px-12 lg:px-24 flex flex-col justify-center overflow-hidden border-b border-white/5"
     >
       {/* Absolute Ambient Grid backdrop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
@@ -894,7 +894,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
               }}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="w-full min-h-[440px] flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/80 backdrop-blur-xl border border-white/5 hover:border-[#c5a880]/15 rounded-sm transition-all duration-300 relative shadow-[0_0_40px_rgba(0,0,0,0.65)] overflow-hidden cursor-crosshair select-none"
+              className="w-full min-h-[440px] flex flex-col p-6 md:p-10 lg:p-12 bg-[#121217]/80 backdrop-blur-xl border border-white/5 hover:border-[#c5a880]/15 rounded-sm transition-all duration-300 relative shadow-[0_0_40px_rgba(0,0,0,0.65)] overflow-hidden cursor-crosshair select-none"
             >
               {/* Glass subtle glaze reflection */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/[0.015] via-transparent to-transparent pointer-events-none z-10" />

@@ -57,7 +57,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
           
           {/* Parallax Curtain Sheet 3: Translucent technical slate overlay */}
           <motion.div
-            className="absolute inset-0 bg-[#0b0b0e] z-10 pointer-events-none"
+            className="absolute inset-0 bg-[#121217] z-10 pointer-events-none"
             exit={{
               y: "-100%",
               transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.16 }
@@ -75,7 +75,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
 
           {/* Parallax Curtain Sheet 1: Main deep black background container holding the loader */}
           <motion.div
-            className="absolute inset-0 bg-[#050507] z-30 flex flex-col items-center justify-center overflow-hidden"
+            className="absolute inset-0 bg-[#0b0b0f] z-30 flex flex-col items-center justify-center overflow-hidden"
             exit={{
               y: "-100%",
               transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.0 }

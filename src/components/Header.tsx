@@ -74,8 +74,8 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-[#050507]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10" 
-          : "bg-[#050507]/35 border-b border-transparent py-[26px]"
+          ? "bg-[#0b0b0f]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10" 
+          : "bg-[#0b0b0f]/35 border-b border-transparent py-[26px]"
       }`}
       style={{
         backdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
@@ -156,7 +156,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             data-cursor={isMobileMenuOpen ? "close menu" : "open menu"}
-            className="flex lg:hidden flex-col items-center justify-center w-10 h-10 border border-[#c5a880]/35 rounded-sm bg-[#0b0b0e]/80 text-[#c5a880] cursor-pointer z-[10005] relative focus:outline-none"
+            className="flex lg:hidden flex-col items-center justify-center w-10 h-10 border border-[#c5a880]/35 rounded-sm bg-[#121217]/80 text-[#c5a880] cursor-pointer z-[10005] relative focus:outline-none"
             aria-label="Toggle mobile menu"
           >
             <div className="relative w-5 h-4 flex flex-col justify-between items-center">

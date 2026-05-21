@@ -173,7 +173,7 @@ function SceneContent() {
 
 export default function Scene3D() {
   return (
-    <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#050507]">
+    <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#0b0b0f]">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
         gl={{ antialias: true, alpha: true }}

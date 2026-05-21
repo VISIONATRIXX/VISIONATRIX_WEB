@@ -80,7 +80,7 @@ export default function FAQSection() {
   return (
     <section 
       id="faq" 
-      className="snap-section relative flex items-center bg-[#050507] py-24 px-6 md:px-12 lg:px-24 overflow-hidden"
+      className="snap-section relative flex items-center bg-[#0b0b0f] py-24 px-6 md:px-12 lg:px-24 overflow-hidden"
     >
       {/* 1. Immersive Tech-Grid Background Pattern */}
       <div 
@@ -152,8 +152,8 @@ export default function FAQSection() {
                     data-cursor={isOpen ? "close" : "expand query"}
                     className={`relative overflow-hidden rounded-sm border transition-all duration-500 group cursor-pointer p-5 sm:p-6 ${
                       isOpen
-                        ? "border-[#c5a880]/25 bg-[#09090c]/80 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-                        : "border-white/5 bg-[#09090c]/40 hover:border-white/10 hover:bg-[#09090c]/60"
+                        ? "border-[#c5a880]/25 bg-[#121217]/80 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+                        : "border-white/5 bg-[#121217]/40 hover:border-white/10 hover:bg-[#121217]/60"
                     }`}
                   >
                     {/* Glowing active neon gold indicator bar */}
@@ -234,7 +234,7 @@ export default function FAQSection() {
             </div>
 
             {/* Calendar Box */}
-            <div className="bg-[#09090c]/70 backdrop-blur-xl rounded-sm p-5 sm:p-6 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[350px] w-full">
+            <div className="bg-[#121217]/70 backdrop-blur-xl rounded-sm p-5 sm:p-6 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[350px] w-full">
               {/* Scanline Glow Top Highlight */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#c5a880]/20 to-transparent pointer-events-none" />
 
@@ -361,7 +361,7 @@ export default function FAQSection() {
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
                         data-cursor="type callsign"
-                        className="w-full bg-[#050507]/60 border border-white/10 focus:border-[#c5a880]/40 text-white font-mono text-[10px] tracking-[0.15em] px-3 py-2.5 rounded-sm outline-none transition-all duration-300 placeholder-white/20 uppercase"
+                        className="w-full bg-[#0b0b0f]/60 border border-white/10 focus:border-[#c5a880]/40 text-white font-mono text-[10px] tracking-[0.15em] px-3 py-2.5 rounded-sm outline-none transition-all duration-300 placeholder-white/20 uppercase"
                       />
                     </div>
 

@@ -201,7 +201,7 @@ export default function ContactSection() {
   return (
     <section 
       id="contact" 
-      className="snap-section flex flex-col justify-between bg-[#050507] py-20 px-6 md:px-12 lg:px-24"
+      className="snap-section flex flex-col justify-between bg-[#0b0b0f] py-20 px-6 md:px-12 lg:px-24"
     >
       {/* Background Glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -303,7 +303,7 @@ export default function ContactSection() {
                       <select 
                         {...register("service", { required: true })}
                         defaultValue=""
-                        className="font-sans bg-black/90 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full appearance-none cursor-pointer"
+                        className="font-sans bg-[#0b0b0f]/95 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full appearance-none cursor-pointer"
                       >
                         <option value="" disabled className="text-white/20">Select Service...</option>
                         <option value="video">Video Editing</option>

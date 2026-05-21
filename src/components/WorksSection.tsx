@@ -157,7 +157,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
         />
 
         {/* Category Pill Tag (top-left) */}
-        <div className="absolute top-4 left-4 z-20 bg-[#050507]/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+        <div className="absolute top-4 left-4 z-20 bg-[#0b0b0f]/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] animate-pulse" />
           <span className="font-mono text-[9px] text-[#c5a880] font-bold tracking-wider uppercase">
             {project.category}
@@ -413,7 +413,7 @@ export default function WorksSection() {
     <section 
       ref={sectionRef}
       id="works" 
-      className="relative w-full min-h-screen md:h-screen bg-[#050507] overflow-hidden flex flex-col justify-center py-16 md:py-24 px-6 md:px-12 lg:px-24"
+      className="relative w-full min-h-screen md:h-screen bg-[#0b0b0f] overflow-hidden flex flex-col justify-center py-16 md:py-24 px-6 md:px-12 lg:px-24"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -506,7 +506,7 @@ export default function WorksSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.96, y: 15 }}
               transition={{ type: "spring", damping: 25, stiffness: 280 }}
-              className="w-full max-w-2xl bg-[#0b0b0e] border border-[#c5a880]/20 rounded-xl p-6 md:p-8 relative shadow-[0_0_60px_rgba(197,168,128,0.12)] flex flex-col gap-6 max-h-[90vh] overflow-y-auto modal-scrollbar"
+              className="w-full max-w-2xl bg-[#121217] border border-[#c5a880]/20 rounded-xl p-6 md:p-8 relative shadow-[0_0_60px_rgba(197,168,128,0.12)] flex flex-col gap-6 max-h-[90vh] overflow-y-auto modal-scrollbar"
             >
               {/* Close Button */}
               <button
@@ -582,7 +582,7 @@ export default function WorksSection() {
                     setSelectedProject(null);
                     (window as any).lenis?.start();
                   }}
-                  className="px-6 py-2.5 border border-[#c5a880] hover:bg-[#c5a880] hover:text-[#050507] bg-transparent text-white font-outfit text-xs tracking-[0.15em] rounded-sm transition-all duration-300 cursor-pointer"
+                  className="px-6 py-2.5 border border-[#c5a880] hover:bg-[#c5a880] hover:text-[#0b0b0f] bg-transparent text-white font-outfit text-xs tracking-[0.15em] rounded-sm transition-all duration-300 cursor-pointer"
                 >
                   CLOSE METRICS
                 </button>

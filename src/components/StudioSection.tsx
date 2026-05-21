@@ -35,7 +35,7 @@ export default function StudioSection() {
   return (
     <section 
       id="studio" 
-      className="snap-section flex items-center bg-[#050507] py-24 px-6 md:px-12 lg:px-24"
+      className="snap-section flex items-center bg-[#0b0b0f] py-24 px-6 md:px-12 lg:px-24"
     >
       {/* Background radial glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

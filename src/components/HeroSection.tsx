@@ -31,7 +31,7 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
   return (
     <section 
       id="home" 
-      className="snap-section flex flex-col justify-between items-center pt-24 pb-8 px-6 md:px-12 bg-[#050507]"
+      className="snap-section flex flex-col justify-between items-center pt-24 pb-8 px-6 md:px-12 bg-[#0b0b0f]"
     >
       {/* Background ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
