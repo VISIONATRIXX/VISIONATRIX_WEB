@@ -148,7 +148,7 @@ export default function CustomCursor() {
       {/* Outer Ring */}
       <div
         ref={cursorOuterRef}
-        className="absolute rounded-full border border-[#c5a880]/60 w-7 h-7 transition-all duration-150 ease-out cursor-outer flex items-center justify-center"
+        className="absolute rounded-full border border-[#c5a880]/60 w-7 h-7 transition-[width,height,border-color,background,box-shadow,opacity] duration-150 ease-out cursor-outer flex items-center justify-center"
         style={{
           transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
           willChange: "transform",
@@ -165,7 +165,7 @@ export default function CustomCursor() {
       {/* Inner Dot */}
       <div
         ref={cursorInnerRef}
-        className="absolute rounded-full bg-[#c5a880] w-1.5 h-1.5 transition-all duration-100 ease-out cursor-inner"
+        className="absolute rounded-full bg-[#c5a880] w-1.5 h-1.5 transition-[width,height,background-color,box-shadow,opacity] duration-100 ease-out cursor-inner"
         style={{
           transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
           willChange: "transform",

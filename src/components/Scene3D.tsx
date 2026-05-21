@@ -176,7 +176,8 @@ export default function Scene3D() {
     <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#0b0b0f]">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
-        gl={{ antialias: true, alpha: true }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         style={{ width: "100%", height: "100%" }}
       >
         <SceneContent />
