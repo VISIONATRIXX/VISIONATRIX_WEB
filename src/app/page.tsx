@@ -73,8 +73,12 @@ export default function Home() {
 
     // Dynamically load Lenis to avoid Server-Side Rendering issues
     let lenisInstance: any;
+    let rafId: number;
+    let isDestroyed = false;
     
     import("lenis").then(({ default: Lenis }) => {
+      if (isDestroyed) return; // Guard against race condition if component unmounts during import
+      
       lenisInstance = new Lenis({
         duration: 1.4,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -86,21 +90,31 @@ export default function Home() {
 
       // Synchronize ScrollTrigger with Lenis scroll events
       import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-        lenisInstance.on("scroll", ScrollTrigger.update);
+        if (!isDestroyed && lenisInstance) {
+          lenisInstance.on("scroll", ScrollTrigger.update);
+        }
       });
 
       const raf = (time: number) => {
+        if (isDestroyed) return;
         lenisInstance.raf(time);
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
       };
 
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
       (window as any).lenis = lenisInstance;
     });
 
     return () => {
+      isDestroyed = true;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
       if (lenisInstance) {
         lenisInstance.destroy();
+      }
+      if ((window as any).lenis === lenisInstance) {
+        delete (window as any).lenis;
       }
     };
   }, [showIntro]);

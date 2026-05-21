@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -11,6 +11,23 @@ interface IntroLoaderProps {
 
 export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderProps) {
   const [isDismissed, setIsDismissed] = useState(false);
+  const dismissedRef = useRef(false);
+
+  const handleDismiss = () => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    setIsDismissed(true);
+    
+    // Begin loading background assets in parallel with slide transition
+    if (onStartDismiss) {
+      onStartDismiss();
+    }
+    
+    // Complete completely after the staggered curtains finish exiting (1.2s transition)
+    setTimeout(() => {
+      onComplete();
+    }, 1200);
+  };
 
   useEffect(() => {
     // 1. Cinematic auto-dismiss after 4.0 seconds (allows full appreciation of logo-first sequence)
@@ -32,21 +49,6 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const handleDismiss = () => {
-    if (isDismissed) return;
-    setIsDismissed(true);
-    
-    // Begin loading background assets in parallel with slide transition
-    if (onStartDismiss) {
-      onStartDismiss();
-    }
-    
-    // Complete completely after the staggered curtains finish exiting (1.2s transition)
-    setTimeout(() => {
-      onComplete();
-    }, 1200);
-  };
 
   const textLetters = Array.from("VISIONATRIX");
 

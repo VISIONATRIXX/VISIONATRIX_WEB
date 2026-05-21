@@ -55,12 +55,15 @@ export default function FeedbackSection() {
     "NEURAL NET"
   ];
 
+  const TESTIMONIAL_COUNT = testimonials.length;
+
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+      setActiveIndex((prev) => (prev === TESTIMONIAL_COUNT - 1 ? 0 : prev + 1));
     }, 6000);
     return () => clearInterval(timer);
-  }, [testimonials.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section 
