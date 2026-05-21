@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,6 +24,7 @@ interface ServicesSectionProps {
 export default function ServicesSection({ onInquiryClick }: ServicesSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const bgCarRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const services: ServiceItem[] = [
@@ -192,15 +194,15 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
 
     const timer = setTimeout(() => {
       mm.add("(min-width: 1024px)", () => {
-        // Initial setup for cards positioning (center stack)
+        // Initial setup for cards positioning (vertical stack setup)
         services.forEach((_, idx) => {
           const card = cardRefs.current[idx];
           if (!card) return;
           
           if (idx === 0) {
             gsap.set(card, {
-              xPercent: 0,
-              rotateY: 0,
+              yPercent: 0,
+              rotateX: 0,
               scale: 1,
               opacity: 1,
               pointerEvents: "auto",
@@ -208,9 +210,9 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
             });
           } else {
             gsap.set(card, {
-              xPercent: 150,
-              rotateY: -45,
-              scale: 0.8,
+              yPercent: 150,
+              rotateX: -20,
+              scale: 0.85,
               opacity: 0,
               pointerEvents: "none",
               transformOrigin: "center center",
@@ -218,8 +220,11 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           }
         });
 
-        // 3D Turntable timeline
-        // 7 transitions, each having 0.5 hold + 1.0 animation time. Total duration = 11.0 units.
+        // Initialize background car image scale
+        if (bgCarRef.current) {
+          gsap.set(bgCarRef.current, { scale: 1.0, yPercent: 0 });
+        }
+
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
@@ -242,31 +247,41 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           }
         });
 
+        // Background car image parallax subtle shift
+        if (bgCarRef.current) {
+          tl.to(bgCarRef.current, {
+            scale: 1.12,
+            yPercent: -8,
+            ease: "none",
+            duration: (services.length - 1) * 1.5 + 0.5
+          }, 0);
+        }
+
         for (let i = 0; i < services.length - 1; i++) {
           // Hold active card static for reading
           tl.to({}, { duration: 0.5 });
 
-          // Transition out current card (slide left & rotate out)
+          // Transition out current card (slide up and fade)
           tl.to(cardRefs.current[i], {
-            xPercent: -150,
-            rotateY: 45,
-            scale: 0.8,
+            yPercent: -150,
+            rotateX: 20,
+            scale: 0.85,
             opacity: 0,
             pointerEvents: "none",
             ease: "power2.inOut",
             duration: 1
           }, `transition-${i}`);
 
-          // Transition in next card (slide in from right & rotate flat)
+          // Transition in next card (slide in from bottom)
           tl.fromTo(cardRefs.current[i + 1], {
-            xPercent: 150,
-            rotateY: -45,
-            scale: 0.8,
+            yPercent: 150,
+            rotateX: -20,
+            scale: 0.85,
             opacity: 0,
             pointerEvents: "none"
           }, {
-            xPercent: 0,
-            rotateY: 0,
+            yPercent: 0,
+            rotateX: 0,
             scale: 1,
             opacity: 1,
             pointerEvents: "auto",
@@ -278,7 +293,6 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
         // Final hold for the last card
         tl.to({}, { duration: 0.5 });
 
-        // Keep reference to trigger cleanup
         scrollTween = tl as any;
       });
     }, 150);
@@ -318,9 +332,23 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
       id="services" 
       className="relative w-full lg:h-screen bg-[#050507] py-16 lg:py-0 px-6 md:px-12 lg:px-24 flex flex-col justify-center overflow-hidden"
     >
-      {/* Background Soft Glow */}
+      {/* Background soft lighting backdrop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute left-[5%] top-[10%] w-[45vw] h-[45vw] bg-[#c5a880]/[0.015] blur-[140px] rounded-full" />
+        <div className="absolute left-[5%] top-[10%] w-[45vw] h-[45vw] bg-[#c5a880]/[0.012] blur-[140px] rounded-full" />
+      </div>
+
+      {/* 3D Parallax Car Background Showcase */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div 
+          ref={bgCarRef}
+          className="relative w-full max-w-5xl aspect-[16/9] opacity-[0.06] mix-blend-screen scale-110 filter blur-[0.5px] transition-all duration-300"
+          style={{
+            backgroundImage: "url('/services_bg_car.png')",
+            backgroundSize: "contain",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+          }}
+        />
       </div>
 
       <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full lg:justify-between justify-center lg:py-16">
@@ -338,13 +366,13 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           </h2>
         </div>
 
-        {/* Cards Turntable Deck */}
+        {/* Cards Elevator Deck */}
         <div className="lg:relative lg:flex-1 lg:w-full lg:max-w-5xl lg:mx-auto lg:flex lg:items-center lg:justify-center lg:perspective-[2000px] lg:transform-style-3d flex flex-col gap-8 w-full">
           {services.map((service, index) => (
             <div
               key={service.id}
               ref={(el) => { cardRefs.current[index] = el; }}
-              className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-5xl lg:h-[450px] lg:opacity-0 lg:pointer-events-none w-full h-auto flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/90 backdrop-blur-md border border-white/10 hover:border-[#c5a880]/20 rounded-md transition-colors duration-300 relative shadow-2xl overflow-hidden"
+              className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-5xl lg:h-[460px] lg:opacity-0 lg:pointer-events-none w-full h-auto flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/90 backdrop-blur-md border border-white/10 hover:border-[#c5a880]/20 rounded-md transition-colors duration-300 relative shadow-2xl overflow-hidden"
               style={{ transformStyle: "preserve-3d" }}
             >
               {/* Glass Glare Highlight */}
@@ -445,37 +473,42 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           ))}
         </div>
 
-        {/* Desktop Interactive Pagination Tracker */}
-        <div className="hidden lg:flex flex-col items-center gap-4 mt-8 shrink-0">
-          <div className="flex items-center gap-6 font-mono text-xs tracking-widest">
-            {services.map((s, idx) => {
-              const isActive = activeIndex === idx;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => handlePaginationClick(idx)}
-                  className={`transition-all duration-300 font-bold px-1.5 cursor-pointer relative ${
-                    isActive ? "text-[#c5a880] scale-110" : "text-[#6b7280] hover:text-white"
+        {/* Vertical Pagination Tracker (Desktop - Right Edge) */}
+        <div className="hidden lg:flex flex-col items-center gap-5 absolute right-10 top-1/2 -translate-y-1/2 z-30">
+          {services.map((s, idx) => {
+            const isActive = activeIndex === idx;
+            return (
+              <button
+                key={s.id}
+                onClick={() => handlePaginationClick(idx)}
+                className="group relative flex items-center justify-center w-6 h-6 focus:outline-none cursor-pointer"
+                aria-label={`Go to service ${s.title}`}
+              >
+                {/* Hover Tooltip Label */}
+                <span className="absolute right-8 py-1 px-2.5 bg-black/90 border border-[#c5a880]/20 text-[#c5a880] text-[10px] font-mono tracking-[0.15em] rounded opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-md">
+                  {s.title}
+                </span>
+
+                {/* Glowing active outer ring */}
+                {isActive && (
+                  <motion.div
+                    className="absolute w-4 h-4 rounded-full border border-[#c5a880] bg-transparent"
+                    layoutId="activeServiceDot"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+
+                {/* Dot itself */}
+                <div
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "bg-[#c5a880] scale-125"
+                      : "bg-white/20 group-hover:bg-[#c5a880]/60 group-hover:scale-110"
                   }`}
-                >
-                  {s.id}
-                  {isActive && (
-                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#c5a880] rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          
-          {/* Progress Tracker Slider bar */}
-          <div className="relative w-80 h-[1px] bg-white/10 rounded-full overflow-hidden">
-            <div 
-              className="absolute top-0 left-0 h-full bg-[#c5a880] transition-all duration-500 ease-out"
-              style={{
-                width: `${((activeIndex) / (services.length - 1)) * 100}%`
-              }}
-            />
-          </div>
+                />
+              </button>
+            );
+          })}
         </div>
 
       </div>
