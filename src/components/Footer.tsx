@@ -66,7 +66,7 @@ export default function Footer({ onLinkClick }: FooterProps) {
 
           {/* Research notes form */}
           <form onSubmit={handleSubscribe} className="flex flex-col gap-2 mt-4 max-w-sm">
-            <label className="font-sans text-[9px] tracking-wider text-[#555566] uppercase">
+            <label className="font-mono text-[9px] tracking-wider text-[#555566] uppercase">
               SECURE RESEARCH NOTES
             </label>
             
@@ -77,7 +77,7 @@ export default function Footer({ onLinkClick }: FooterProps) {
                 disabled={subscribed}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`bg-white/2 border ${
+                className={`font-sans bg-white/2 border ${
                   subscribed ? "border-[#c5a880] text-[#c5a880]" : "border-white/10 focus:border-[#c5a880]"
                 } rounded px-4 py-3 pr-12 text-white placeholder-white/25 focus:outline-none transition-all duration-300 w-full`}
               />
@@ -100,10 +100,10 @@ export default function Footer({ onLinkClick }: FooterProps) {
 
         {/* Middle Column 1: Capabilities Menu */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <span className="font-display text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
+          <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             CAPABILITIES MENU
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-medium text-white/60">
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
             <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Video Editing</button>
             <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">VFX Simulations</button>
             <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">CGI Advertising</button>
@@ -117,10 +117,10 @@ export default function Footer({ onLinkClick }: FooterProps) {
 
         {/* Middle Column 2: Studio System */}
         <div className="lg:col-span-3 flex flex-col gap-4">
-          <span className="font-display text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
+          <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             STUDIO SYSTEM
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-medium text-white/60">
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
             <button onClick={() => onLinkClick("studio")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Studio Profile</button>
             <button onClick={() => onLinkClick("process")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Roadmap Steps</button>
             <button onClick={() => onLinkClick("works")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Metrics Audits</button>
@@ -131,10 +131,10 @@ export default function Footer({ onLinkClick }: FooterProps) {
 
         {/* Middle Column 3: Registries */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <span className="font-display text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
+          <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             REGISTRIES
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-medium text-white/60">
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
             <a href="#contact" className="hover:text-[#c5a880] transition-colors duration-300">Direct Scoping Inbox</a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#c5a880] transition-colors duration-300">Studio LinkedIn</a>
             <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#c5a880] transition-colors duration-300">Studio X / Twitter</a>

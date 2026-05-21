@@ -133,7 +133,7 @@ export default function EngineStackSection() {
         {/* Left Side: Title and Tabs List */}
         <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
           <div className="flex flex-col gap-2">
-            <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
               [ ENGINE STACK ]
             </span>
             <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
@@ -149,7 +149,7 @@ export default function EngineStackSection() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveTab(cat.id)}
-                  className={`flex items-center gap-3 font-sans text-[11px] tracking-[0.18em] font-semibold py-3 px-4 rounded-sm border cursor-pointer transition-all duration-300 w-full sm:w-auto lg:w-full ${
+                  className={`flex items-center gap-3 font-outfit text-[11px] tracking-[0.18em] font-semibold py-3 px-4 rounded-sm border cursor-pointer transition-all duration-300 w-full sm:w-auto lg:w-full ${
                     active
                       ? "bg-[#c5a880]/10 border-[#c5a880] text-[#c5a880] shadow-[0_0_15px_rgba(197,168,128,0.1)]"
                       : "bg-[#0b0b0e] border-white/5 text-[#555566] hover:text-white hover:border-white/15"
@@ -183,7 +183,7 @@ export default function EngineStackSection() {
                     <div>
                       {/* Tool Name and Version */}
                       <div className="flex justify-between items-center mb-3">
-                        <h3 className="font-display text-sm font-bold tracking-[0.15em] text-white group-hover:text-[#c5a880] transition-colors duration-300">
+                        <h3 className="font-outfit text-sm font-bold tracking-[0.15em] text-white group-hover:text-[#c5a880] transition-colors duration-300">
                           {tool.name}
                         </h3>
                         <span className="font-mono text-[9px] text-[#555566] tracking-wider">

@@ -3,10 +3,6 @@
 :root {
   --background: #050507;
   --foreground: #ffffff;
-  
-  --font-inter: var(--font-inter), sans-serif;
-  --font-outfit: var(--font-outfit), sans-serif;
-  --font-michroma: var(--font-michroma), sans-serif;
 }
 
 @theme inline {
@@ -14,6 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-display: var(--font-michroma);
+  --font-outfit: var(--font-outfit-custom);
+  --font-mono: var(--font-mono-custom);
   
   /* Brand Color Tokens */
   --color-gold: #c5a880;
@@ -31,24 +29,40 @@ html, body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter);
-  scroll-behavior: smooth;
   overflow-x: hidden;
-  height: 100%;
   margin: 0;
   padding: 0;
-}
-
-/* Scroll Snap Container */
-.snap-container {
-  scroll-snap-type: y mandatory;
-  overflow-y: scroll;
-  height: 100vh;
   width: 100%;
 }
 
+/* Lenis scroll styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Scroll Snap Container - converted to standard flex stack for ScrollTrigger */
+.snap-container {
+  width: 100%;
+  position: relative;
+}
+
 .snap-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   height: 100vh;
   width: 100%;
   position: relative;
@@ -78,10 +92,58 @@ html, body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Cinematic film grain noise */
+.noise-overlay {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background: transparent url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E') repeat;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 9999;
+  animation: noise-move 0.3s steps(4) infinite;
+}
+
+@keyframes noise-move {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  20% { transform: translate(-2%, 1%); }
+  30% { transform: translate(1%, -2%); }
+  40% { transform: translate(-1%, 3%); }
+  50% { transform: translate(-1%, 1%); }
+  60% { transform: translate(2%, 1%); }
+  70% { transform: translate(-2%, -1%); }
+  80% { transform: translate(2%, 1%); }
+  90% { transform: translate(1%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Text reveal masking */
+.text-mask {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  display: block;
+  overflow: hidden;
+}
+.text-mask-word {
+  display: inline-block;
+  transform: translateY(105%);
+}
+
+/* Cinematic intro: Logo Text */
+.intro-title {
+  font-family: "Michroma", sans-serif;
+}
+
 
 /* Glassmorphism Card style */
 .glass-card {
@@ -106,18 +168,66 @@ html, body {
   box-shadow: 0 0 15px rgba(197, 168, 128, 0.2);
 }
 
-/* Custom Pointer Utilities */
-.custom-cursor {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #c5a880;
-  border-radius: 50%;
-  position: fixed;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 9999;
-  transition: width 0.2s, height 0.2s;
-  mix-blend-mode: difference;
+/* Custom Pointer Utilities & Custom Cursor Styling */
+.custom-cursor-active,
+.custom-cursor-active * {
+  cursor: none !important;
+}
+
+.cursor-outer {
+  box-shadow: 0 0 12px rgba(197, 168, 128, 0.25);
+  background: radial-gradient(circle, rgba(5, 5, 7, 0.85) 0%, rgba(5, 5, 7, 0.4) 60%, transparent 100%);
+}
+
+.cursor-inner {
+  box-shadow: 0 0 8px rgba(197, 168, 128, 0.85);
+}
+
+/* Hovered State */
+.cursor-hovered .cursor-outer {
+  width: 2.5rem; /* w-10 */
+  height: 2.5rem; /* h-10 */
+  border-color: #c5a880;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.15) 0%, rgba(5, 5, 7, 0.5) 70%, transparent 100%);
+  box-shadow: 0 0 20px rgba(197, 168, 128, 0.5);
+}
+
+.cursor-hovered .cursor-inner {
+  width: 0.25rem; /* w-1 */
+  height: 0.25rem; /* h-1 */
+  background-color: #ffffff;
+  box-shadow: 0 0 8px #ffffff;
+}
+
+/* Clicked State */
+.cursor-clicked .cursor-outer {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+  border-color: rgba(197, 168, 128, 0.9);
+  background: radial-gradient(circle, rgba(5, 5, 7, 0.9) 0%, rgba(5, 5, 7, 0.6) 80%, transparent 100%);
+  box-shadow: 0 0 6px rgba(197, 168, 128, 0.35);
+}
+
+.cursor-clicked .cursor-inner {
+  width: 0.25rem;
+  height: 0.25rem;
+  box-shadow: 0 0 4px rgba(197, 168, 128, 0.6);
+}
+
+/* Hovered & Clicked combined */
+.cursor-hovered.cursor-clicked .cursor-outer {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  border-color: #c5a880;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.35) 0%, rgba(5, 5, 7, 0.5) 75%, transparent 100%);
+  box-shadow: 0 0 15px rgba(197, 168, 128, 0.6);
+}
+
+.cursor-hovered.cursor-clicked .cursor-inner {
+  width: 0.25rem;
+  height: 0.25rem;
+  background-color: #ffffff;
+  box-shadow: 0 0 6px #ffffff;
 }
 
 /* Timeline Custom styles */

@@ -83,7 +83,7 @@ export default function FAQSection() {
         {/* Left Column: Accordions (Common Queries) */}
         <div className="lg:col-span-6 flex flex-col gap-6 w-full">
           <div className="flex flex-col gap-2">
-            <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
               [ GENERAL RESOLUTIONS ]
             </span>
             <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
@@ -102,7 +102,7 @@ export default function FAQSection() {
                 >
                   <button
                     onClick={() => setOpenId(isOpen ? null : faq.id)}
-                    className="flex justify-between items-center w-full text-left font-display text-xs sm:text-sm font-bold tracking-wider py-3 text-white hover:text-[#c5a880] transition-colors duration-300 focus:outline-none cursor-pointer"
+                    className="flex justify-between items-center w-full text-left font-outfit text-xs sm:text-sm font-bold tracking-wider py-3 text-white hover:text-[#c5a880] transition-colors duration-300 focus:outline-none cursor-pointer"
                   >
                     <span className="pr-4">{faq.id}. {faq.question}</span>
                     {isOpen ? (
@@ -136,7 +136,7 @@ export default function FAQSection() {
           <div className="mt-4">
             <a 
               href="#contact"
-              className="inline-block px-6 py-3 border border-white/10 hover:border-[#c5a880] text-white hover:text-[#c5a880] font-sans text-[10px] tracking-[0.2em] font-semibold rounded-sm transition-all duration-300"
+              className="inline-block px-6 py-3 border border-white/10 hover:border-[#c5a880] text-white hover:text-[#c5a880] font-outfit text-[10px] tracking-[0.2em] font-semibold rounded-sm transition-all duration-300"
             >
               SUBMIT INQUIRY TICKET
             </a>
@@ -146,7 +146,7 @@ export default function FAQSection() {
         {/* Right Column: Dynamic Scheduler */}
         <div className="lg:col-span-6 flex flex-col gap-6 w-full">
           <div className="flex flex-col gap-2">
-            <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
               [ SYNC RESERVATION ]
             </span>
             <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
@@ -165,7 +165,7 @@ export default function FAQSection() {
                   exit={{ opacity: 0, scale: 0.9 }}
                 >
                   <CheckCircle2 className="w-12 h-12 text-[#c5a880] mb-4 drop-shadow-[0_0_10px_rgba(197,168,128,0.2)]" />
-                  <h3 className="font-display text-base font-bold tracking-[0.1em] text-white mb-2 uppercase">
+                  <h3 className="font-outfit text-base font-bold tracking-[0.1em] text-white mb-2 uppercase">
                     SLOT RESERVED
                   </h3>
                   <p className="font-sans text-xs text-[#9999aa] max-w-xs leading-relaxed">
@@ -180,17 +180,17 @@ export default function FAQSection() {
                 >
                   {/* Month header */}
                   <div className="flex justify-between items-center mb-6">
-                    <span className="font-display text-sm font-bold tracking-[0.2em] text-[#c5a880] uppercase">
+                    <span className="font-mono text-sm font-bold tracking-[0.2em] text-[#c5a880] uppercase">
                       JUNE MMXXVI
                     </span>
-                    <span className="font-sans text-[9px] text-[#555566] tracking-wider uppercase flex items-center gap-1.5">
+                    <span className="font-mono text-[9px] text-[#555566] tracking-wider uppercase flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-[#c5a880]" />
                       <span>TIMEZONE: IST (GMT+5:30)</span>
                     </span>
                   </div>
 
                   {/* Day headers */}
-                  <div className="grid grid-cols-7 gap-2 mb-3 text-center text-[10px] font-sans font-semibold text-[#555566] tracking-widest">
+                  <div className="grid grid-cols-7 gap-2 mb-3 text-center text-[9px] font-mono font-semibold text-[#555566] tracking-widest">
                     {daysOfWeek.map((day) => (
                       <div key={day}>{day}</div>
                     ))}
@@ -228,10 +228,10 @@ export default function FAQSection() {
                   {/* Calendar CTA */}
                   <div className="border-t border-white/5 pt-5 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="text-left w-full sm:w-auto">
-                      <span className="font-sans text-[9px] tracking-wider text-[#555566] uppercase block">
+                      <span className="font-mono text-[9px] tracking-wider text-[#555566] uppercase block">
                         SELECTED DATE:
                       </span>
-                      <span className="font-display text-xs text-white font-bold tracking-widest">
+                      <span className="font-mono text-xs text-white font-bold tracking-widest">
                         JUNE {selectedDate ? selectedDate.toString().padStart(2, "0") : "—"}, 2026
                       </span>
                     </div>
@@ -239,7 +239,7 @@ export default function FAQSection() {
                     <button
                       disabled={!selectedDate}
                       onClick={handleBookCall}
-                      className="w-full sm:w-auto px-6 py-3 bg-[#c5a880] disabled:bg-[#c5a880]/20 disabled:text-white/40 disabled:cursor-not-allowed text-black font-semibold font-sans text-xs tracking-[0.18em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.25)] transition-all duration-300 cursor-pointer"
+                      className="w-full sm:w-auto px-6 py-3 bg-[#c5a880] disabled:bg-[#c5a880]/20 disabled:text-white/40 disabled:cursor-not-allowed text-black font-semibold font-outfit text-xs tracking-[0.18em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.25)] transition-all duration-300 cursor-pointer"
                     >
                       INITIALIZE SYNC CALL
                     </button>

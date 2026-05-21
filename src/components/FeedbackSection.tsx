@@ -78,7 +78,7 @@ export default function FeedbackSection() {
         
         {/* Left Side: Labels */}
         <div className="lg:col-span-4 flex flex-col gap-2">
-          <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+          <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
             [ AUDITED SATISFACTION ]
           </span>
           <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
@@ -106,16 +106,16 @@ export default function FeedbackSection() {
                 </div>
 
                 {/* Big Quote */}
-                <p className="font-display text-xl sm:text-2xl md:text-3xl italic font-medium leading-relaxed text-white tracking-wide max-w-4xl">
+                <p className="font-sans text-xl sm:text-2xl md:text-3xl italic font-medium leading-relaxed text-white tracking-wide max-w-4xl">
                   "{testimonials[activeIndex].quote}"
                 </p>
 
                 {/* Author Info */}
                 <div className="flex flex-col gap-1 border-l-2 border-[#c5a880] pl-4 mt-2">
-                  <span className="font-sans text-xs font-bold tracking-[0.2em] text-white uppercase">
+                  <span className="font-outfit text-xs font-bold tracking-[0.2em] text-white uppercase">
                     {testimonials[activeIndex].author}
                   </span>
-                  <span className="font-sans text-[10px] tracking-[0.15em] text-[#6b7280]">
+                  <span className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280]">
                     {testimonials[activeIndex].role} // {testimonials[activeIndex].company}
                   </span>
                 </div>

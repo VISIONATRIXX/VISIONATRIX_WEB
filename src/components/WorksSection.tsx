@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink, BarChart3, Clock, Cpu, Award } from "lucide-react";
+import { X, BarChart3 } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface Project {
   id: string;
   title: string;
   category: string;
-  categories: string[]; // For filtering
+  categories: string[];
   tagline: string;
   description: string;
   bgGradient: string;
@@ -27,6 +29,9 @@ interface Project {
 export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     "ALL",
@@ -88,7 +93,7 @@ export default function WorksSection() {
       title: "SAINT LAURENT // SPATIAL SHOWROOM",
       category: "SPATIAL XR / VR / COMMERCE",
       categories: ["SPATIAL XR", "ENVIRONMENT CREATION"],
-      tagline: "Volumetric spatial commerce portal featuring high-fidelity clothing simulation and 3D Gaussian Splatting.",
+      tagline: "Volumetric spatial commerce portal featuring clothing simulation and 3D Gaussian Splatting.",
       description: "An immersive virtual showroom designed for spatial headsets. Using 3D Gaussian Splatting and high-density volumetric captures, users can observe the microscopic weave patterns of Saint Laurent luxury fabrics, walking through a digital twin of their flagship atelier.",
       bgGradient: "from-stone-900 via-neutral-950 to-[#050507]",
       details: {
@@ -173,97 +178,160 @@ export default function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const track = trackRef.current;
+    const section = sectionRef.current;
+    if (!track || !section) return;
+
+    // Recalculate dimensions on category filter update
+    const getScrollWidth = () => {
+      return track.scrollWidth - track.clientWidth;
+    };
+
+    let scrollTween: gsap.core.Tween;
+
+    // Delay initialization slightly to let DOM sizes settle
+    const timer = setTimeout(() => {
+      const scrollWidth = getScrollWidth();
+      if (scrollWidth <= 0) return;
+
+      scrollTween = gsap.to(track, {
+        x: -scrollWidth,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          start: "top top",
+          end: () => `+=${scrollWidth * 1.1}`,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        }
+      });
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      if (scrollTween) {
+        scrollTween.scrollTrigger?.kill();
+        scrollTween.kill();
+      }
+    };
+  }, [activeCategory, filteredProjects.length]);
+
   return (
     <section 
+      ref={sectionRef}
       id="works" 
-      className="snap-section flex flex-col justify-center bg-[#050507] py-20 px-6 md:px-12 lg:px-24"
+      className="relative w-full h-screen bg-[#050507] overflow-hidden flex items-center"
     >
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start z-10">
-        
-        {/* Left column: Categories Sidebar */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-              [ CASE STUDIES ]
-            </span>
-            <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
-              WORKS
-            </h2>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute right-[5%] top-[10%] w-[35vw] h-[35vw] bg-[#c5a880]/2 opacity-[0.01] blur-[120px] rounded-full" />
+      </div>
+
+      <div className="w-full px-6 md:px-12 lg:px-24">
+        <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 items-center justify-between">
+          
+          {/* Left column: Categories Sidebar */}
+          <div className="w-full lg:w-[25%] flex flex-col gap-6 shrink-0 z-20 py-4">
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+                [ CASE STUDIES ]
+              </span>
+              <h2 className="font-display text-2xl md:text-3xl font-bold tracking-[0.1em] text-white uppercase">
+                WORKS
+              </h2>
+            </div>
+
+            {/* Categories list */}
+            <div className="flex flex-wrap lg:flex-col items-start gap-2.5 mt-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    if (trackRef.current) {
+                      gsap.set(trackRef.current, { x: 0 });
+                    }
+                  }}
+                  className={`font-mono text-[10px] tracking-[0.2em] font-medium transition-all duration-300 py-1 cursor-pointer text-left ${
+                    activeCategory === cat
+                      ? "text-[#c5a880] border-l-2 border-[#c5a880] pl-3"
+                      : "text-[#555566] hover:text-white pl-0"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Categories list */}
-          <div className="flex flex-wrap lg:flex-col items-start gap-2.5 mt-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`font-sans text-[10px] tracking-[0.2em] font-medium transition-all duration-300 py-1 cursor-pointer text-left ${
-                  activeCategory === cat
-                    ? "text-[#c5a880] border-l-2 border-[#c5a880] pl-3"
-                    : "text-[#555566] hover:text-white pl-0"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Right column: Projects Grid Showcase */}
-        <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[65vh] overflow-y-auto pr-2 no-scrollbar">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, idx) => (
-              <motion.div
-                key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                className="glass-card rounded-md p-6 flex flex-col justify-between min-h-[250px] relative overflow-hidden group border border-white/5"
-              >
-                {/* Accent Background Gradient Glow on Hover */}
-                <div className={`absolute inset-0 bg-gradient-to-tr ${project.bgGradient} opacity-0 group-hover:opacity-[0.12] transition-opacity duration-500 pointer-events-none`} />
-
-                {/* Top header details */}
-                <div className="flex justify-between items-start z-10 mb-4">
-                  <span className="font-sans text-[9px] tracking-[0.2em] text-[#c5a880] uppercase">
-                    {project.category}
-                  </span>
-                  <span className="font-display text-sm font-bold text-white/20">
-                    {project.id}
-                  </span>
-                </div>
-
-                {/* Title & Tagline */}
-                <div className="z-10 flex flex-col gap-2 my-auto">
-                  <h3 className="font-display text-lg font-bold tracking-[0.12em] text-white group-hover:text-[#c5a880] transition-colors duration-300">
-                    {project.title}
-                  </h3>
-                  <p className="font-sans text-xs text-[#9999aa] leading-relaxed">
-                    {project.tagline}
-                  </p>
-                </div>
-
-                {/* Footer and trigger button */}
-                <div className="z-10 border-t border-white/5 pt-4 mt-4 flex items-center justify-between">
-                  <span className="font-mono text-[9px] text-[#555566] tracking-wider uppercase">
-                    {project.details.engine.split(" / ")[0]}
-                  </span>
-                  
-                  <button
-                    onClick={() => setSelectedProject(project)}
-                    className="font-sans text-[10px] font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+          {/* Right horizontal scrolling reel track */}
+          <div className="w-full lg:w-[70%] overflow-hidden relative py-8">
+            <div 
+              ref={trackRef}
+              className="flex gap-8 w-max pr-[25vw] items-center"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredProjects.map((project, idx) => (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.94 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.94 }}
+                    transition={{ duration: 0.4 }}
+                    className="glass-card rounded-md p-6 flex flex-col justify-between w-[320px] sm:w-[380px] h-[300px] relative overflow-hidden group border border-white/5 shrink-0"
                   >
-                    <span>OBSERVE METRICS</span>
-                    <span className="text-[#c5a880] group-hover:translate-x-1 transition-transform">→</span>
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                    {/* Accent Background Gradient Glow on Hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-tr ${project.bgGradient} opacity-0 group-hover:opacity-[0.14] transition-opacity duration-500 pointer-events-none`} />
 
+                    {/* Top header details */}
+                    <div className="flex justify-between items-start z-10">
+                      <span className="font-mono text-[9px] tracking-[0.2em] text-[#c5a880] uppercase">
+                        {project.category}
+                      </span>
+                      <span className="font-mono text-sm font-bold text-white/20">
+                        {project.id}
+                      </span>
+                    </div>
+
+                    {/* Title & Tagline */}
+                    <div className="z-10 flex flex-col gap-2 my-auto">
+                      <h3 className="font-outfit text-base font-bold tracking-[0.1em] text-white group-hover:text-[#c5a880] transition-colors duration-300">
+                        {project.title}
+                      </h3>
+                      <p className="font-sans text-xs text-[#9999aa] leading-relaxed line-clamp-3">
+                        {project.tagline}
+                      </p>
+                    </div>
+
+                    {/* Footer and trigger button */}
+                    <div className="z-10 border-t border-white/5 pt-4 flex items-center justify-between">
+                      <span className="font-mono text-[8px] text-[#555566] tracking-wider uppercase">
+                        {project.details.engine.split(" / ")[0]}
+                      </span>
+                      
+                      <button
+                        onClick={() => {
+                          setSelectedProject(project);
+                          (window as any).lenis?.stop();
+                        }}
+                        className="font-outfit text-[10px] font-semibold tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <span>METRICS</span>
+                        <span className="text-[#c5a880] group-hover:translate-x-1 transition-transform">→</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* Case Study Details Modal Overlay */}
@@ -273,19 +341,22 @@ export default function WorksSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-6"
+            className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 md:p-6"
           >
             {/* Modal Body */}
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              transition={{ type: "spring" as const, duration: 0.5 }}
+              exit={{ scale: 0.95, y: 20 }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className="w-full max-w-2xl bg-[#0b0b0e] border border-[#c5a880]/30 rounded-md p-6 md:p-8 relative shadow-[0_0_50px_rgba(197,168,128,0.15)] flex flex-col gap-6"
             >
               {/* Close Button */}
               <button
-                onClick={() => setSelectedProject(null)}
+                onClick={() => {
+                  setSelectedProject(null);
+                  (window as any).lenis?.start();
+                }}
                 className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center cursor-pointer"
                 aria-label="Close modal"
               >
@@ -294,10 +365,10 @@ export default function WorksSection() {
 
               {/* Title & Metadata */}
               <div className="flex flex-col gap-1 pr-12">
-                <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+                <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
                   {selectedProject.category}
                 </span>
-                <h3 className="font-display text-2xl font-bold tracking-[0.1em] text-white">
+                <h3 className="font-outfit text-xl font-bold tracking-[0.1em] text-white">
                   {selectedProject.title}
                 </h3>
               </div>
@@ -305,26 +376,26 @@ export default function WorksSection() {
               {/* Brief Information Row */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-white/5 py-4 my-2 text-xs">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-sans text-[9px] tracking-wider uppercase">CLIENT</span>
-                  <span className="text-white/90 font-medium">{selectedProject.details.client}</span>
+                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">CLIENT</span>
+                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.client}</span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-sans text-[9px] tracking-wider uppercase">TIMELINE</span>
-                  <span className="text-white/90 font-medium">{selectedProject.details.timeline}</span>
+                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">TIMELINE</span>
+                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.timeline}</span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-sans text-[9px] tracking-wider uppercase">ROLE</span>
-                  <span className="text-white/90 font-medium">{selectedProject.details.role}</span>
+                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">ROLE</span>
+                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.role}</span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-sans text-[9px] tracking-wider uppercase">ENGINE</span>
-                  <span className="text-white/90 font-medium">{selectedProject.details.engine}</span>
+                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">ENGINE</span>
+                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.engine}</span>
                 </div>
               </div>
 
               {/* Full Description */}
               <div className="flex flex-col gap-2">
-                <span className="font-sans text-[10px] tracking-[0.2em] text-[#555566] uppercase">PROJECT OVERVIEW</span>
+                <span className="font-mono text-[10px] tracking-[0.2em] text-[#555566] uppercase">PROJECT OVERVIEW</span>
                 <p className="font-sans text-sm text-[#9999aa] leading-relaxed">
                   {selectedProject.description}
                 </p>
@@ -332,7 +403,7 @@ export default function WorksSection() {
 
               {/* Metrics Grid Section */}
               <div className="flex flex-col gap-3">
-                <span className="font-sans text-[10px] tracking-[0.2em] text-[#555566] uppercase flex items-center gap-1">
+                <span className="font-mono text-[10px] tracking-[0.2em] text-[#555566] uppercase flex items-center gap-1">
                   <BarChart3 className="w-3.5 h-3.5 text-[#c5a880]" />
                   <span>QUANTITATIVE METRICS</span>
                 </span>
@@ -340,7 +411,7 @@ export default function WorksSection() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {selectedProject.metrics.map((metric, index) => (
                     <div key={index} className="bg-white/[0.02] border border-white/5 rounded p-3 flex justify-between items-center">
-                      <span className="font-sans text-[10px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
+                      <span className="font-mono text-[10px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
                       <span className="font-mono text-xs text-[#c5a880] font-semibold">{metric.value}</span>
                     </div>
                   ))}
@@ -350,8 +421,11 @@ export default function WorksSection() {
               {/* Footer Button */}
               <div className="flex justify-end mt-4 border-t border-white/5 pt-4">
                 <button
-                  onClick={() => setSelectedProject(null)}
-                  className="px-6 py-2.5 border border-white/10 hover:border-[#c5a880] bg-transparent text-white font-sans text-xs tracking-[0.15em] rounded-sm transition-all duration-300 cursor-pointer"
+                  onClick={() => {
+                    setSelectedProject(null);
+                    (window as any).lenis?.start();
+                  }}
+                  className="px-6 py-2.5 border border-[#c5a880] hover:bg-[#c5a880] hover:text-[#050507] bg-transparent text-white font-outfit text-xs tracking-[0.15em] rounded-sm transition-all duration-300 cursor-pointer"
                 >
                   CLOSE METRICS
                 </button>

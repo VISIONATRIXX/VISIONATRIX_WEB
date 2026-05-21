@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Michroma } from "next/font/google";
+import { Inter, Outfit, Michroma, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 
@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 const outfit = Outfit({
-  variable: "--font-outfit",
+  variable: "--font-outfit-custom",
   subsets: ["latin"],
 });
 
@@ -17,6 +17,12 @@ const michroma = Michroma({
   variable: "--font-michroma",
   subsets: ["latin"],
   weight: ["400"],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-mono-custom",
+  subsets: ["latin"],
+  weight: ["300", "400"],
 });
 
 export const metadata: Metadata = {
@@ -32,9 +38,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} ${michroma.variable} h-full antialiased`}
+      className={`${inter.variable} ${outfit.variable} ${michroma.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#050507] text-white overflow-hidden">
+      <body className="min-h-full flex flex-col bg-[#050507] text-white">
+        <div className="noise-overlay" />
         <CustomCursor />
         {children}
       </body>

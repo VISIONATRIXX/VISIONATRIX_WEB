@@ -13,24 +13,19 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = (e: Event) => {
-      const container = e.target as HTMLElement;
-      if (container && container.scrollTop > 50) {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
     };
 
-    const container = document.querySelector(".snap-container");
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-    }
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
 
     return () => {
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
-      }
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -57,9 +52,13 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-[#050507]/90 backdrop-blur-md border-b border-gold/10 py-3" 
-          : "bg-transparent py-5"
+          ? "bg-[#050507]/85 border-b border-[#c5a880]/15 py-3.5 shadow-lg shadow-black/10" 
+          : "bg-[#050507]/35 border-b border-transparent py-5"
       }`}
+      style={{
+        backdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
+        WebkitBackdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
+      }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" as const }}
@@ -80,7 +79,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               className="object-contain"
             />
           </div>
-          <span className="font-[var(--font-michroma)] tracking-[0.2em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300">
+          <span className="font-display tracking-[0.2em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300">
             VISIONATRIX
           </span>
         </div>
@@ -93,7 +92,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               <button
                 key={idx}
                 onClick={() => onNavClick(item.id)}
-                className={`font-[var(--font-michroma)] text-[11px] tracking-[0.15em] transition-colors duration-300 cursor-pointer ${
+                className={`font-outfit text-[11px] tracking-[0.15em] transition-colors duration-300 cursor-pointer ${
                   active 
                     ? "text-white font-semibold" 
                     : "text-[#7a7a8a] hover:text-white"
@@ -109,7 +108,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavClick("contact")}
-            className="border border-[#c5a880]/40 hover:border-[#c5a880] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] font-[var(--font-michroma)] text-[10px] tracking-[0.18em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+            className="border border-[#c5a880]/40 hover:border-[#c5a880] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] font-outfit text-[10px] tracking-[0.18em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
           >
             <span>GET STARTED</span>
             <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>

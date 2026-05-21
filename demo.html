@@ -1,0 +1,2021 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Security Configurations -->
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com; media-src 'self' blob: https://player.vimeo.com https://vimeo.com; connect-src 'self' ws: wss: https://wa.me https://api.whatsapp.com; frame-src 'self' https://player.vimeo.com; object-src 'none'; base-uri 'self'; form-action 'self' https://wa.me https://api.whatsapp.com;" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- SEO Meta Tags -->
+    <title>VISIONATRIX | Editorial Creative Technology Studio</title>
+    <meta name="description"
+        content="VISIONATRIX is an independent creative technology studio. We design and engineer cinematic digital art, high-performance web systems, and volumetric spatial installations." />
+    <meta name="keywords"
+        content="Visionatrix, Creative Technology Studio, WebGL, Spatial Design, Brand Exhibition, CGI, Luxury Design Agency, VFX, Video Editing" />
+    <meta name="author" content="VISIONATRIX" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="VISIONATRIX | Editorial Creative Technology Studio" />
+    <meta property="og:description"
+        content="Sensory digital experiences engineered with surgical intent for world-class brands. Bengaluru // Mumbai // Delhi." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/studio_interior.png" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VISIONATRIX | Editorial Creative Technology Studio" />
+    <meta name="twitter:description"
+        content="Sensory digital experiences engineered with surgical intent for world-class brands. Bengaluru // Mumbai // Delhi." />
+    <meta name="twitter:image" content="/studio_interior.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;400;500&family=Michroma&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress-bar" class="scroll-progress-bar" aria-hidden="true"></div>
+
+    <!-- Custom Glowing Cursor -->
+    <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
+        <div class="cursor-glow"></div>
+        <div class="cursor-dot"></div>
+    </div>
+
+    <!-- 🎬 Cinematic Brand Intro Splash Screen (Solid Black, White Concentric Logo) -->
+    <div id="cinematic-intro" class="cinematic-intro" aria-label="VISIONATRIX Branding Splash">
+        <div class="intro-logo-wrap">
+            <img src="/LOGO.png" alt="VISIONATRIX Eye Icon" class="intro-logo-img" />
+            <h1 class="intro-title">VISIONATRIX</h1>
+        </div>
+        <div class="intro-skip-btn select-none" id="intro-skip-btn">Skip Intro &darr;</div>
+    </div>
+
+    <!-- Floating Side Dot Navigation -->
+    <nav class="side-dot-nav" id="side-dot-navigation" aria-label="Side Navigation">
+        <a href="#hero" class="dot-link active" data-section="hero"><span class="dot-label">Home</span><span
+                class="dot-circle"></span></a>
+        <a href="#about" class="dot-link" data-section="about"><span class="dot-label">Studio</span><span
+                class="dot-circle"></span></a>
+        <a href="#services" class="dot-link" data-section="services"><span class="dot-label">Services</span><span
+                class="dot-circle"></span></a>
+        <a href="#vfx-breakdown" class="dot-link" data-section="vfx-breakdown"><span
+                class="dot-label">Showcase</span><span class="dot-circle"></span></a>
+        <a href="#portfolio" class="dot-link" data-section="portfolio"><span class="dot-label">Works</span><span
+                class="dot-circle"></span></a>
+        <a href="#process" class="dot-link" data-section="process"><span class="dot-label">Process</span><span
+                class="dot-circle"></span></a>
+        <a href="#faq" class="dot-link" data-section="faq"><span class="dot-label">FAQ</span><span
+                class="dot-circle"></span></a>
+        <a href="#contact" class="dot-link" data-section="contact"><span class="dot-label">Contact</span><span
+                class="dot-circle"></span></a>
+    </nav>
+
+    <!-- WebGL Background Canvas for Organic Fluid Noise Field -->
+    <div id="webgl-canvas-container" class="webgl-canvas-container">
+        <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <!-- Background Noise Overlay -->
+    <div class="noise-overlay" aria-hidden="true"></div>
+
+    <!-- Fixed Premium Navbar -->
+    <header class="site-header" id="site-header">
+        <div class="nav-container">
+            <a href="#hero" class="nav-logo" id="nav-logo-btn" aria-label="VISIONATRIX Home">
+                <img src="/LOGO.png" alt="VISIONATRIX Logo" class="nav-logo-img" />
+                <span class="nav-logo-text">VISIONATRIX</span>
+            </a>
+
+            <nav class="main-nav" id="main-navigation">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">Studio</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#vfx-breakdown" class="nav-link">Showcase</a>
+                <a href="#portfolio" class="nav-link">Works</a>
+                <a href="#process" class="nav-link">Process</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </nav>
+
+            <div class="nav-cta">
+                <a href="#contact" class="nav-btn magnetic" id="header-cta-btn">
+                    <span>Get Started</span>
+                    <svg class="btn-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        aria-hidden="true">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+
+            <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Toggle Navigation Menu"
+                aria-controls="main-navigation" aria-expanded="false">
+                <span class="menu-bar"></span>
+                <span class="menu-bar"></span>
+                <span class="menu-bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Scrollable Smooth Content Container -->
+    <main id="smooth-content">
+
+        <!-- 1. HERO SECTION -->
+        <section id="hero" class="hero-section">
+            <div class="hero-interactive-particle-field" id="hero-particle-field" aria-hidden="true"></div>
+            <div class="hero-grid-pattern" aria-hidden="true"></div>
+
+            <div class="hero-content">
+                <div class="hero-meta-badge select-none">[ CREATIVE TECHNOLOGY STUDIO — MMXXVI ]</div>
+                <div class="hero-brand">
+                    <h1 class="hero-title" id="hero-title">VISIONATRIX</h1>
+                    <p class="hero-tagline" id="hero-tagline">Design. Visualize. Experience.</p>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="#portfolio" class="hero-btn primary-btn magnetic" id="hero-btn-portfolio">
+                        <span>View Portfolio</span>
+                    </a>
+                    <a href="#contact" class="hero-btn secondary-btn magnetic" id="hero-btn-contact">
+                        <span>Start Project</span>
+                    </a>
+                </div>
+
+                <div class="hero-bottom-meta select-none">
+                    <div class="meta-item"><span>LOCATIONS</span><strong>ACROSS THE WORLD</strong></div>
+                    <div class="meta-item"><span>FOCUS</span><strong>SENSORY ARCHITECTURE</strong></div>
+                </div>
+
+                <div class="scroll-indicator" id="scroll-indicator-arrow">
+                    <div class="arrow-down-container">
+                        <span class="indicator-text">Scroll to Observe</span>
+                        <div class="arrow-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+                                aria-hidden="true">
+                                <path d="M12 5v14M19 12l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STUDIO PROFILE SECTION -->
+        <section id="about" class="realities-section">
+            <div class="container realities-split">
+                <div class="realities-left-specs">
+                    <div class="spec-label">[ STUDIO PROFILE ]</div>
+                    <div class="spec-data">
+                        <div class="spec-data-row">
+                            <span class="spec-title">ESTABLISHED:</span>
+                            <span class="spec-val">MMXXVI</span>
+                        </div>
+                        <div class="spec-data-row">
+                            <span class="spec-title">LOCATIONS:</span>
+                            <span class="spec-val">Bengaluru × Mumbai × Delhi</span>
+                        </div>
+                        <div class="spec-data-row">
+                            <span class="spec-title">FOCUS:</span>
+                            <span class="spec-val">Premium Sensory Architectures</span>
+                        </div>
+                        <div class="spec-data-row">
+                            <span class="spec-title">DELIVERY:</span>
+                            <span class="spec-val">CGI, VFX & Volumetric Systems</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="realities-right-content">
+                    <div class="word-reveal-wrapper">
+                        <h2 class="word-reveal" id="word-reveal-header">
+                            <span class="reveal-word">WE</span>
+                            <span class="reveal-word">ENGINEER</span>
+                            <span class="reveal-word">DIGITAL</span>
+                            <span class="reveal-word">LANDMARKS</span>
+                            <span class="reveal-word">THAT</span>
+                            <span class="reveal-word">COMMAND</span>
+                            <span class="reveal-word">HUMAN</span>
+                            <span class="reveal-word">RESONANCE.</span>
+                        </h2>
+                    </div>
+                    <div class="realities-sub">
+                        <p>Our philosophy is defined by intent, not algorithm. We reject generic, template-driven
+                            interfaces to
+                            hand-craft high-fidelity, scroll-driven interactive ecosystems that elevate world-class
+                            brands into
+                            permanent sensory landmarks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SERVICES SECTION -->
+        <section id="services" class="services-section">
+            <div class="services-pinned-container">
+                <div class="services-side-title select-none">
+                    <span class="subtitle">CAPABILITIES</span>
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="horizontal-progress"></div>
+                    </div>
+                </div>
+
+                <div class="horizontal-scroll-track" id="horizontal-scroll-track">
+                    <!-- Cap 1: Video Editing -->
+                    <div class="service-panel panel-blue" id="panel-video-editing">
+                        <div class="panel-background-image" style="background-image: url('/visual_production.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ PRODUCTION HUD ]</div>
+                                <div class="spec-row"><span>FOCUS</span><strong>Cinematic Narrative</strong></div>
+                                <div class="spec-row"><span>OUTPUT</span><strong>4K / 8K Master Deliveries</strong>
+                                </div>
+                                <div class="spec-row"><span>COLOR</span><strong>Bespoke Color Gradients</strong></div>
+                                <div class="spec-row"><span>TECH</span><strong>DaVinci Resolve / Premiere</strong></div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">01</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                                            <line x1="7" y1="2" x2="7" y2="22"></line>
+                                            <line x1="17" y1="2" x2="17" y2="22"></line>
+                                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                                            <line x1="2" y1="7" x2="7" y2="7"></line>
+                                            <line x1="2" y1="17" x2="7" y2="17"></line>
+                                            <line x1="17" y1="17" x2="22" y2="17"></line>
+                                            <line x1="17" y1="7" x2="22" y2="7"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">Video Editing</h3>
+                                </div>
+                                <p class="panel-desc">We structure cinematic narratives, high-impact brand commercials,
+                                    and director's
+                                    cut releases utilizing tailored framing rhythms that command digital presence.</p>
+                                <ul class="panel-list">
+                                    <li>Soundscapes Synthesis</li>
+                                    <li>Rhythmic Staccato Edits</li>
+                                    <li>Haute Couture Commercials</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">DaVinci Resolve</span>
+                                        <span class="tool-badge">Premiere Pro</span>
+                                        <span class="tool-badge">After Effects</span>
+                                        <span class="tool-badge">Avid Link</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 2: VFX -->
+                    <div class="service-panel panel-purple" id="panel-vfx">
+                        <div class="panel-background-image" style="background-image: url('/portfolio_hologram.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ VOLUMETRICS HUD ]</div>
+                                <div class="spec-row"><span>SIMULATION</span><strong>Physics-based Particles</strong>
+                                </div>
+                                <div class="spec-row"><span>ENGINES</span><strong>Houdini / Nuke / Unreal</strong></div>
+                                <div class="spec-row"><span>COMPOSITING</span><strong>Multi-layer Integration</strong>
+                                </div>
+                                <div class="spec-row"><span>FPS TARGET</span><strong>Cinematic 24FPS / 60FPS</strong>
+                                </div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">02</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                            <polyline points="2 17 12 22 22 17"></polyline>
+                                            <polyline points="2 12 12 17 22 12"></polyline>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">VFX Simulations</h3>
+                                </div>
+                                <p class="panel-desc">Bespoke mathematical particle fluids, volumetric simulation
+                                    fields, digital double
+                                    integrations, and atmospheric physics effects engineered for seamless virtual
+                                    composition.</p>
+                                <ul class="panel-list">
+                                    <li>Dynamic Fluid Compositing</li>
+                                    <li>Procedural Asset FX</li>
+                                    <li>Multi-pass Light Projection</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">Houdini FX</span>
+                                        <span class="tool-badge">Nuke Studio</span>
+                                        <span class="tool-badge">Unreal Engine 5</span>
+                                        <span class="tool-badge">Maya Core</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 3: CGI Advertising -->
+                    <div class="service-panel panel-amber" id="panel-cgi">
+                        <div class="panel-background-image" style="background-image: url('/portfolio_automotive.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ RENDER SPECS ]</div>
+                                <div class="spec-row"><span>PIPELINE</span><strong>Sub-pixel Raytracing</strong></div>
+                                <div class="spec-row"><span>MATERIALS</span><strong>Physically Based Shading</strong>
+                                </div>
+                                <div class="spec-row"><span>RESOLUTIONS</span><strong>8K Master Projections</strong>
+                                </div>
+                                <div class="spec-row"><span>AUDIENCE</span><strong>Luxury B2B Focus</strong></div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">03</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <path
+                                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                            </path>
+                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">CGI Advertising</h3>
+                                </div>
+                                <p class="panel-desc">We construct cinematic luxury product renders, automotive concept
+                                    visualizations,
+                                    and bespoke promotional sequences engineered to bridge commercial luxury with
+                                    futuristic aesthetics.
+                                </p>
+                                <ul class="panel-list">
+                                    <li>3D Raytraced Metamorphs</li>
+                                    <li>Physically Accurate Textures</li>
+                                    <li>Luxury Architectural Shaders</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">Blender 3D</span>
+                                        <span class="tool-badge">Cinema 4D</span>
+                                        <span class="tool-badge">Redshift</span>
+                                        <span class="tool-badge">Octane Render</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 4: Environment Creation -->
+                    <div class="service-panel panel-green" id="panel-environments">
+                        <div class="panel-background-image" style="background-image: url('/studio_interior.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ SPATIAL DATA ]</div>
+                                <div class="spec-row"><span>DIMENSIONS</span><strong>Volumetric 3D Spaces</strong></div>
+                                <div class="spec-row"><span>LIGHTING</span><strong>Domain-Warped Ambient</strong></div>
+                                <div class="spec-row"><span>ASSETS</span><strong>Procedural Grid Scapes</strong></div>
+                                <div class="spec-row"><span>FIDELITY</span><strong>Hyper-realistic Textures</strong>
+                                </div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">04</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">Environment Creation</h3>
+                                </div>
+                                <p class="panel-desc">Designing digital spatial pavilions, responsive interior worlds,
+                                    procedural
+                                    virtual landscapes, and detailed conceptual architectural structures tailored for
+                                    cinematic staging.
+                                </p>
+                                <ul class="panel-list">
+                                    <li>Virtual Spatial Pavilions</li>
+                                    <li>Procedural Topography Map</li>
+                                    <li>Dynamic Atmospheric Grids</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">Unreal Engine</span>
+                                        <span class="tool-badge">SpeedTree</span>
+                                        <span class="tool-badge">Substance Painter</span>
+                                        <span class="tool-badge">ZBrush Core</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 5: Full Stack Web Dev -->
+                    <div class="service-panel panel-cyan" id="panel-web-dev">
+                        <div class="panel-background-image" style="background-image: url('/software_dev.png');"></div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ CODE METRICS ]</div>
+                                <div class="spec-row"><span>STACK</span><strong>Vanilla JS / WebGL2 / GLSL</strong>
+                                </div>
+                                <div class="spec-row"><span>PERF</span><strong>60FPS GPU Render Thread</strong></div>
+                                <div class="spec-row"><span>OPTIMIZE</span><strong>Tree-shaken, Micro-bundled</strong>
+                                </div>
+                                <div class="spec-row"><span>SEO</span><strong>Semantic Structured DOM</strong></div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">05</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <polyline points="16 18 22 12 16 6"></polyline>
+                                            <polyline points="8 6 2 12 8 18"></polyline>
+                                            <line x1="12" y1="4" x2="12" y2="20"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">Bespoke Web Development</h3>
+                                </div>
+                                <p class="panel-desc">We build ultra-high performance web interfaces, dynamic
+                                    interactive WebGL engines,
+                                    and lightweight React/Next platforms optimized with extreme technical precision.</p>
+                                <ul class="panel-list">
+                                    <li>Responsive WebGL Cartography</li>
+                                    <li>Bespoke Systems Architecture</li>
+                                    <li>Hardware-Accelerated Layouts</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">Three.js</span>
+                                        <span class="tool-badge">GSAP Core</span>
+                                        <span class="tool-badge">React / Next</span>
+                                        <span class="tool-badge">Web GLSL</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 6: Android/iOS Apps -->
+                    <div class="service-panel panel-neon" id="panel-app-dev">
+                        <div class="panel-background-image" style="background-image: url('/portfolio_avatar.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ ENGINE HUD ]</div>
+                                <div class="spec-row"><span>SYSTEMS</span><strong>Swift / Kotlin / Flutter</strong>
+                                </div>
+                                <div class="spec-row"><span>SYNCHRONY</span><strong>Sub-millisecond Web Sockets</strong>
+                                </div>
+                                <div class="spec-row"><span>GRAPHICS</span><strong>GPU Canvas / Metal Core</strong>
+                                </div>
+                                <div class="spec-row"><span>CRASH RATE</span><strong>0.00% Production Target</strong>
+                                </div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">06</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="18" x2="12" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">Android & iOS Systems</h3>
+                                </div>
+                                <p class="panel-desc">Engineering premium, crash-resistant cross-platform apps featuring
+                                    glassmorphic
+                                    controls and ultra-responsive layout physics synced to local system frameworks.</p>
+                                <ul class="panel-list">
+                                    <li>Dynamic Volumetric Touch UI</li>
+                                    <li>Low-latency Sensor Pipelines</li>
+                                    <li>Hardware-Synced Calibration</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">SwiftUI</span>
+                                        <span class="tool-badge">Kotlin Compose</span>
+                                        <span class="tool-badge">Flutter SDK</span>
+                                        <span class="tool-badge">Metal API</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 7: AI Production Shoots -->
+                    <div class="service-panel panel-rose" id="panel-ai-shoots">
+                        <div class="panel-background-image" style="background-image: url('/ai_creative_lab.png');">
+                        </div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ COMPUTER VISION HUD ]</div>
+                                <div class="spec-row"><span>GENERATION</span><strong>High-fidelity LoRAs</strong></div>
+                                <div class="spec-row"><span>CONSISTENCY</span><strong>Vector CAD Aligned Maps</strong>
+                                </div>
+                                <div class="spec-row"><span>SPEED</span><strong>Dynamic Realtime Rendering</strong>
+                                </div>
+                                <div class="spec-row"><span>DRAFTING</span><strong>Instant Infinite Variations</strong>
+                                </div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">07</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+                                            <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+                                            <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+                                            <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+                                            <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+                                            <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">AI Production Shoots</h3>
+                                </div>
+                                <p class="panel-desc">We construct custom generative model shoots and procedural CGI
+                                    assets mapping
+                                    precise athletic CAD maps to dynamic organic backdrops to reduce prototyping
+                                    bottlenecks.</p>
+                                <ul class="panel-list">
+                                    <li>Dynamic Material Training</li>
+                                    <li>Symmetrical Structural Consistency</li>
+                                    <li>Bespoke Scene Synthesis</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">Stable Diffusion</span>
+                                        <span class="tool-badge">Midjourney</span>
+                                        <span class="tool-badge">ComfyUI</span>
+                                        <span class="tool-badge">ControlNet</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap 8: VR Development -->
+                    <div class="service-panel panel-indigo" id="panel-vr-dev">
+                        <div class="panel-background-image" style="background-image: url('/vr_immersive.png');"></div>
+                        <div class="panel-overlay"></div>
+                        <div class="panel-columns">
+                            <div class="panel-left-specs">
+                                <div class="specs-title">[ SPATIAL XR SPECS ]</div>
+                                <div class="spec-row"><span>DEVICES</span><strong>Vision Pro / Meta Quest 3</strong>
+                                </div>
+                                <div class="spec-row"><span>STANDARD</span><strong>WebXR / OpenXR Engine</strong></div>
+                                <div class="spec-row"><span>COLLISION</span><strong>Physics-based Raycasting</strong>
+                                </div>
+                                <div class="spec-row"><span>REFRESH</span><strong>90Hz - 120Hz Locked</strong></div>
+                            </div>
+                            <div class="panel-right-content">
+                                <span class="panel-num">08</span>
+                                <div class="panel-title-row">
+                                    <div class="panel-icon-wrap" aria-hidden="true">
+                                        <svg class="panel-svg-icon" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="1.5">
+                                            <path
+                                                d="M12 2a10 10 0 0 0-10 10c0 5.523 4.477 10 10 10s10-4.477 10-10A10 10 0 0 0 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="panel-title">VR & Spatial Design</h3>
+                                </div>
+                                <p class="panel-desc">Designing architectural projection installations, virtual retail
+                                    flagship portals,
+                                    WebXR exhibits, and immersive volumetric software mapping physical space
+                                    organically.</p>
+                                <ul class="panel-list">
+                                    <li>Volumetric Brand Flagships</li>
+                                    <li>WebXR Projection Portals</li>
+                                    <li>Spatial Interface Design</li>
+                                </ul>
+                                <div class="panel-tools-section">
+                                    <span class="tools-label font-mono">DOMAIN TOOLS STACK</span>
+                                    <div class="panel-tools-row">
+                                        <span class="tool-badge">WebXR API</span>
+                                        <span class="tool-badge">Unity Engine</span>
+                                        <span class="tool-badge">A-Frame / Spline</span>
+                                        <span class="tool-badge">Quest SDK</span>
+                                    </div>
+                                </div>
+                                <a href="#contact" class="panel-learn-more select-none">Start Inquiry &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. VFX BEFORE/AFTER SLIDER SECTION -->
+        <section id="vfx-breakdown" class="vfx-breakdown-section">
+            <div class="container">
+                <div class="section-header-centered">
+                    <span class="section-label">[ DIGITAL SURGERY ]</span>
+                    <h2 class="section-title">VFX Breakdown</h2>
+                    <p class="section-subtitle">Drag the interactive slider below to peel back the mathematical layers
+                        and expose
+                        the original physical plates underneath our volumetric CGI composites.</p>
+                </div>
+
+                <div class="vfx-slider-container" id="vfx-slider">
+                    <!-- Background Image: CGI Composite -->
+                    <div class="vfx-image-after"
+                        style="background-image: url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1920&auto=format&fit=crop');">
+                        <span class="vfx-label badge-after select-none">CGI FINAL COMPOSITE</span>
+                    </div>
+
+                    <!-- Foreground Image: Raw plate -->
+                    <div class="vfx-image-before" id="vfx-before-mask"
+                        style="background-image: url('https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=1920&auto=format&fit=crop');">
+                        <span class="vfx-label badge-before select-none">RAW ORIGINAL PLATE</span>
+                    </div>
+
+                    <!-- Draggable Bar -->
+                    <div class="vfx-slider-bar" id="vfx-slider-handle" aria-label="Drag to compare composite layers">
+                        <div class="slider-bar-arrow-left"></div>
+                        <div class="slider-bar-line"></div>
+                        <div class="slider-bar-pulse"></div>
+                        <div class="slider-bar-arrow-right"></div>
+                    </div>
+                </div>
+
+                <!-- Key features tags underneath -->
+                <div class="vfx-tech-tags select-none">
+                    <span>[ GPU Refraction Nodes ]</span>
+                    <span>[ Sub-surface Material Scattering ]</span>
+                    <span>[ Dynamic Fluid Vector Grid ]</span>
+                    <span>[ Volumetric Light Path Tracing ]</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. IMMERSIVE VIDEO SHOWCASE GALLERY -->
+        <section id="media-showcase" class="media-showcase-section">
+            <div class="container">
+                <div class="section-header-row">
+                    <div class="section-title-wrapper">
+                        <span class="section-label">CINEMATIC ARCHIVE</span>
+                        <h2 class="section-title">Featured Showreels</h2>
+                    </div>
+                    <div class="section-title-desc">
+                        <p>Observe cinematic luxury edits, computer physics simulations, and generative models
+                            constructed for
+                            global B2B partnerships.</p>
+                    </div>
+                </div>
+
+                <!-- Large Featured Video Hero Block -->
+                <div class="featured-video-hero" id="featured-video-block">
+                    <div class="video-container-frame">
+                        <div class="video-overlay-tint"></div>
+                        <video class="hero-video-element" id="hero-archive-video" loop muted autoplay playsinline
+                            poster="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop"
+                            src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c02f7302f26e0e0a5c4c9e13d962a9c1&profile_id=165&oauth2_token_id=57447761"></video>
+
+                        <!-- Video HUD controls -->
+                        <div class="video-hud-overlay select-none">
+                            <div class="hud-top">
+                                <span class="hud-tag">[ BROADCAST STREAM ACTIVE ]</span>
+                                <span class="hud-resolution">UHD 8K // Stereo PCM</span>
+                            </div>
+                            <div class="hud-center">
+                                <button class="video-play-pause-btn" id="hero-video-play-btn"
+                                    aria-label="Toggle Playback">
+                                    <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    <svg class="pause-svg hidden" viewBox="0 0 24 24" fill="currentColor"
+                                        aria-hidden="true">
+                                        <rect x="6" y="4" width="4" height="16"></rect>
+                                        <rect x="14" y="4" width="4" height="16"></rect>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="hud-bottom">
+                                <div class="hud-project-meta">
+                                    <span class="client">MERCEDES-BENZ GLOBAL</span>
+                                    <strong class="title">AURA VOLUMETRIC EXPO</strong>
+                                </div>
+                                <button class="video-fullscreen-btn" id="hero-video-fs-btn"
+                                    aria-label="Fullscreen media player">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        aria-hidden="true">
+                                        <path
+                                            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Grid Gallery of 6 cinematic preview clips -->
+                <div class="video-gallery-grid">
+
+                    <!-- Clip 1 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/459389137.sd.mp4?s=994b28537c3abf5f68b6cfcf6c7d3f9e973e6dcd&profile_id=165&oauth2_token_id=57447761"
+                        data-title="OMNIS Holographic wearable UI" data-client="Leica Optics"
+                        data-desc="Interactive spatial wearable UI mapping micro-apertures in deep monochrome glass.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&auto=format&fit=crop"
+                                alt="Omnis Case Study Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">01 / BRAND INTERACTION</span>
+                            <strong class="title">OMNIS Glass UI</strong>
+                        </div>
+                    </div>
+
+                    <!-- Clip 2 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/517602126.sd.mp4?s=d7072a43b279d46f5c8f25b15b3c58d04218cd1d&profile_id=165&oauth2_token_id=57447761"
+                        data-title="Neo-City 3D Digital Twin" data-client="Bengaluru Smart Grid"
+                        data-desc="Real-time instanced grid model rendering 500k active energy flow nodes dynamically.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=600&auto=format&fit=crop"
+                                alt="Neo-City Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">02 / SPATIAL MAPPING</span>
+                            <strong class="title">Neo-City Twin</strong>
+                        </div>
+                    </div>
+
+                    <!-- Clip 3 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/435674703.sd.mp4?s=6f43e595304666f7f3a8b417efc6a1cf84d8525b&profile_id=165&oauth2_token_id=57447761"
+                        data-title="Ether liquid YSL Campaign" data-client="Saint Laurent Paris"
+                        data-desc="Computational fluid simulations wrapped around physical models at Paris Fashion Week.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600&auto=format&fit=crop"
+                                alt="Ether YSL Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">03 / LUXURY FLUIDICS</span>
+                            <strong class="title">YSL Ether Campaign</strong>
+                        </div>
+                    </div>
+
+                    <!-- Clip 4 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/481858548.sd.mp4?s=9552199b45663bd6358db60a8863f60b4a4c58cf&profile_id=165&oauth2_token_id=57447761"
+                        data-title="Chronos Micro timepiece VR" data-client="Audemars Piguet"
+                        data-desc="Microscopic horology gears modeled on a stellar scale for immersive spatial headsets.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=600&auto=format&fit=crop"
+                                alt="Chronos VR Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">04 / VOLUMETRIC XR</span>
+                            <strong class="title">Chronos Timepiece VR</strong>
+                        </div>
+                    </div>
+
+                    <!-- Clip 5 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/554838612.sd.mp4?s=1cd90f7a0dc9075727914e9eb0ebbf0b865507cc&profile_id=165&oauth2_token_id=57447761"
+                        data-title="Synapse AI Nike Lab" data-client="Nike Lab"
+                        data-desc="Custom diffusion network modeling structural sneaker weave CAD paths directly.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1514989940723-e8e5163ccbe8?q=80&w=600&auto=format&fit=crop"
+                                alt="Synapse Nike Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">05 / COMPUTER GENERATIVE</span>
+                            <strong class="title">Nike Synapse AI</strong>
+                        </div>
+                    </div>
+
+                    <!-- Clip 6 -->
+                    <div class="gallery-video-card"
+                        data-video-src="https://player.vimeo.com/external/494252666.sd.mp4?s=b6fbdf4a32fa1b0a944deff273a218f28b49e380&profile_id=165&oauth2_token_id=57447761"
+                        data-title="Vortex Fluid stadium acoustics" data-client="Sony Music"
+                        data-desc="60FPS locked stadium fluid displacement maps warped live by digital audio frequencies.">
+                        <div class="card-media-frame">
+                            <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=600&auto=format&fit=crop"
+                                alt="Vortex Fluid Preview" class="card-img" />
+                            <div class="hover-play-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="tag">06 / GRAPHICS COMPUTING</span>
+                            <strong class="title">Vortex Acoustic Fluid</strong>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. PORTFOLIO GRID SHOWCASE SECTION -->
+        <section id="portfolio" class="portfolio-section">
+            <div class="container">
+                <div class="section-header-row">
+                    <div class="section-title-wrapper">
+                        <span class="section-label">SELECTED WORKS</span>
+                        <h2 class="section-title">Case Studies</h2>
+                    </div>
+
+                    <!-- Filters with sliding active underline -->
+                    <div class="portfolio-filters-container">
+                        <div class="portfolio-filters" id="portfolio-filters-list" role="tablist">
+                            <button class="filter-btn active" data-filter="all" role="tab"
+                                aria-selected="true">All</button>
+                            <button class="filter-btn" data-filter="Video Editing" role="tab"
+                                aria-selected="false">Video</button>
+                            <button class="filter-btn" data-filter="VFX" role="tab" aria-selected="false">VFX</button>
+                            <button class="filter-btn" data-filter="CGI Advertising" role="tab"
+                                aria-selected="false">CGI</button>
+                            <button class="filter-btn" data-filter="Full Stack Web Development" role="tab"
+                                aria-selected="false">Web
+                                Dev</button>
+                            <button class="filter-btn" data-filter="Android/iOS Apps" role="tab"
+                                aria-selected="false">Apps</button>
+                            <button class="filter-btn" data-filter="AI Production Shoots" role="tab"
+                                aria-selected="false">AI
+                                Shoots</button>
+                            <button class="filter-btn" data-filter="VR Development" role="tab"
+                                aria-selected="false">VR</button>
+                            <div class="filter-indicator" id="filter-indicator-glow" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asymmetric Masonry Grid Container -->
+                <div class="portfolio-grid" id="dynamic-portfolio-grid">
+                    <!-- Dynamic project cards are dynamically injected by Javascript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. PROCESS ROADMAP SECTION -->
+        <section id="process" class="process-section">
+            <div class="container">
+                <div class="section-header-centered">
+                    <span class="section-label">[ STUDIO WORKFLOW ]</span>
+                    <h2 class="section-title">Execution Pipeline</h2>
+                    <p class="section-subtitle">We translate creative abstract concepts into clean, mathematically
+                        rigorous,
+                        high-fidelity lines of system code and volumetric rendering layers.</p>
+                </div>
+
+                <!-- Timeline with SVG line drawing itself on scroll -->
+                <div class="timeline-container">
+                    <div class="timeline-svg-wrapper" aria-hidden="true">
+                        <svg class="timeline-svg" viewBox="0 0 100 1200" preserveAspectRatio="none">
+                            <!-- Static base grey line -->
+                            <path d="M 50 0 L 50 1200" stroke="rgba(255,255,255,0.06)" stroke-width="3" fill="none">
+                            </path>
+                            <!-- Animated active glowing line -->
+                            <path id="animated-timeline-path" d="M 50 0 L 50 1200" stroke="var(--color-accent)"
+                                stroke-width="3.5" fill="none" stroke-dasharray="1200" stroke-dashoffset="1200"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Step 1 -->
+                    <div class="timeline-step step-left">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">01</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">DISCOVERY & SCOPING</span>
+                            <h3 class="step-title">Tactile Metrics Mapping</h3>
+                            <p class="step-desc">Collaborating closely with luxury design teams to isolate physical
+                                textiles
+                                parameters, atmospheric indices, and creative requirements.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="timeline-step step-right">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">02</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">CONCEPT ARCHITECTURE</span>
+                            <h3 class="step-title">Mathematical Speculation</h3>
+                            <p class="step-desc">Formulating conceptual digital layouts, fluid vector current flow
+                                diagrams, and
+                                abstract lighting trajectories prior to drafting code sheets.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="timeline-step step-left">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">03</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">SYSTEMS LAYOUT DESIGN</span>
+                            <h3 class="step-title">Glassmorphic Sculpting</h3>
+                            <p class="step-desc">Constructing dark, volumetric user interfaces, tailored typography
+                                hierarchies, and
+                                highly responsive micro-bezel elements.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="timeline-step step-right">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">04</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">DEVELOPMENT RUNS</span>
+                            <h3 class="step-title">Sub-pixel Fragment Shading</h3>
+                            <p class="step-desc">Writing custom GLSL shaders, mapping GPU parallel pipelines, and
+                                developing
+                                lightweight, tree-shaken frontend bundles.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="timeline-step step-left">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">05</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">DIAGNOSTIC OPTIMIZATION</span>
+                            <h3 class="step-title">Surgical Frame Stabilization</h3>
+                            <p class="step-desc">Auditing rendering threads under CPU/GPU stress tests, verifying
+                                sub-millisecond
+                                network frames, and debugging memory leaks.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="timeline-step step-right">
+                        <div class="step-icon-wrap" aria-hidden="true">
+                            <span class="step-num">06</span>
+                        </div>
+                        <div class="step-content glass-card">
+                            <span class="step-phase">GLOBAL DEPLOYMENT</span>
+                            <h3 class="step-title">Vercel Edge Integration</h3>
+                            <p class="step-desc">Deploying compile files directly into globally distributed high-speed
+                                systems for
+                                seamless, fluid rendering across target devices.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. WHY US / NUMERICAL METRICS SECTION -->
+        <section id="why-us" class="why-us-section">
+            <div class="container">
+                <div class="why-us-grid">
+
+                    <!-- Block 1 -->
+                    <div class="why-us-card glass-card">
+                        <div class="why-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <h3 class="why-title">Technological Innovation</h3>
+                        <p class="why-desc">We develop procedural vector shaders and low-level GPU layouts that other
+                            template
+                            agencies claim are impossible inside native web browsers.</p>
+                    </div>
+
+                    <!-- Block 2 -->
+                    <div class="why-us-card glass-card">
+                        <div class="why-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="why-title">Surgical Quality Standards</h3>
+                        <p class="why-desc">Every border radius, compression ratio, color shade, and transition curve is
+                            engineered
+                            to compile with 0.00% layout drift margins.</p>
+                    </div>
+
+                    <!-- Block 3 -->
+                    <div class="why-us-card glass-card">
+                        <div class="why-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3 class="why-title">B2B Core Partnerships</h3>
+                        <p class="why-desc">We collaborate directly with your creative leads, establishing direct local
+                            Slack and
+                            shared git repositories for dynamic synchronization.</p>
+                    </div>
+
+                </div>
+
+                <!-- Numerical Counter grid -->
+                <div class="stats-counter-block" id="stats-counter-block">
+                    <div class="counter-item">
+                        <span class="counter-number" data-target="500">0</span>
+                        <span class="counter-plus">+</span>
+                        <span class="counter-label">Projects Completed</span>
+                    </div>
+
+                    <div class="counter-item">
+                        <span class="counter-number" data-target="50">0</span>
+                        <span class="counter-plus">+</span>
+                        <span class="counter-label">Team Members</span>
+                    </div>
+
+                    <div class="counter-item">
+                        <span class="counter-number" data-target="99">0</span>
+                        <span class="counter-plus">%</span>
+                        <span class="counter-label">Client Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 10. TECHNOLOGY STACK SHOWCASE -->
+        <section id="tech-stack" class="tech-stack-section">
+            <div class="container">
+                <div class="section-header-centered">
+                    <span class="section-label">[ DIGITAL TELEMETRY ]</span>
+                    <h2 class="section-title">Engine Stack</h2>
+                    <p class="section-subtitle">We employ state-of-the-art computational algorithms, rendering modules,
+                        and
+                        dynamic network protocols to achieve high-performance results.</p>
+                </div>
+
+                <!-- Stack tabs -->
+                <div class="tech-tabs-wrapper">
+                    <div class="tech-tabs" role="tablist">
+                        <button class="tech-tab-btn active" data-tab="design-vfx" role="tab" aria-selected="true">Design
+                            &
+                            VFX</button>
+                        <button class="tech-tab-btn" data-tab="code-spatial" role="tab" aria-selected="false">Code &
+                            Spatial</button>
+                        <button class="tech-tab-btn" data-tab="ai-engines" role="tab" aria-selected="false">AI & Game
+                            Engines</button>
+                    </div>
+                </div>
+
+                <div class="tech-grids-container">
+
+                    <!-- Tab 1: Design & VFX -->
+                    <div class="tech-grid-tab active" id="tab-design-vfx">
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-houdini">H</div>
+                            <span class="name">Houdini FX</span>
+                            <span class="desc">Procedural physics dynamic systems</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-maya">M</div>
+                            <span class="name">Autodesk Maya</span>
+                            <span class="desc">Hard-surface mesh organic geometry</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-c4d">C4D</div>
+                            <span class="name">Cinema 4D</span>
+                            <span class="desc">Volumetric lighting & luxury packaging</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-blender">Bl</div>
+                            <span class="name">Blender Core</span>
+                            <span class="desc">Bespoke cycles shading calculations</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-ae">Ae</div>
+                            <span class="name">After Effects</span>
+                            <span class="desc">Frame composites & optical leaks</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-resolve">Da</div>
+                            <span class="name">Resolve Color</span>
+                            <span class="desc">Haute couture monochrome levels</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Tab 2: Code & Spatial -->
+                    <div class="tech-grid-tab" id="tab-code-spatial">
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-webgl">GL</div>
+                            <span class="name">WebGL 2.0</span>
+                            <span class="desc">Low-level GPU fragment matrices</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-gsap">GS</div>
+                            <span class="name">GSAP Core</span>
+                            <span class="desc">High-fidelity scroll physics reveals</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-react">R</div>
+                            <span class="name">React Node</span>
+                            <span class="desc">Clean modular systems frameworks</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-nextjs">N</div>
+                            <span class="name">NextJS Node</span>
+                            <span class="desc">SSR & dynamic Vercel edge networks</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-threejs">Th</div>
+                            <span class="name">ThreeJS API</span>
+                            <span class="desc">WebGL coordinate space utilities</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-lenis">Le</div>
+                            <span class="name">Lenis Scroll</span>
+                            <span class="desc">Kinetic scroll dampening thread</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Tab 3: AI & Engines -->
+                    <div class="tech-grid-tab" id="tab-ai-engines">
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-sd">SD</div>
+                            <span class="name">Stable Diffusion</span>
+                            <span class="desc">Tailored Stable Diffusion textiles weaves models</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-midjourney">Mj</div>
+                            <span class="name">Midjourney v6</span>
+                            <span class="desc">Hyper-realistic B2B scenic staging</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-ue5">UE</div>
+                            <span class="name">Unreal Engine 5</span>
+                            <span class="desc">Sub-millisecond volumetric ray casting</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-unity">Un</div>
+                            <span class="name">Unity Core</span>
+                            <span class="desc">Volumetric spatial interfaces platforms</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-comfyui">Co</div>
+                            <span class="name">ComfyUI Nodes</span>
+                            <span class="desc">Procedural generative node paths</span>
+                        </div>
+
+                        <div class="tech-icon-card">
+                            <div class="tech-icon icon-wasm">Wa</div>
+                            <span class="name">WAsm Core</span>
+                            <span class="desc">Native flight telemetry simulators</span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. CLIENT TESTIMONIALS CAROUSEL -->
+        <section id="testimonials" class="testimonials-section">
+            <div class="container">
+                <div class="section-header-centered">
+                    <span class="section-label">[ B2B CLASSIFICATIONS ]</span>
+                    <h2 class="section-title">Client Feedback</h2>
+                </div>
+
+                <div class="testimonial-carousel-wrapper">
+                    <div class="testimonials-carousel" id="testimonial-carousel-track">
+
+                        <!-- Slide 1 -->
+                        <div class="testimonial-slide active">
+                            <div class="testimonial-quote">
+                                "VISIONATRIX engineered our spatial vehicle showcase configurator with unprecedented
+                                speed. The WebGL
+                                shader running locked at 60FPS on mobile devices surpassed every metric benchmark we had
+                                set."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-pic"
+                                    style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop');">
+                                </div>
+                                <div class="author-meta">
+                                    <span class="rating font-mono">★★★★★</span>
+                                    <strong class="name">Alexander Vance</strong>
+                                    <span class="title">Lead Design Director // Mercedes-Benz Concept Group</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2 -->
+                        <div class="testimonial-slide">
+                            <div class="testimonial-quote">
+                                "Their bespoke code has enabled Leica cameras to calibrating narrowing lens apertures
+                                dynamically in
+                                real-time, decreasing astronaut simulator integration thresholds by 80%."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-pic"
+                                    style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop');">
+                                </div>
+                                <div class="author-meta">
+                                    <span class="rating font-mono">★★★★★</span>
+                                    <strong class="name">Dr. Marcus Thorne</strong>
+                                    <span class="title">Chief Technical Officer // Leica Smart Systems</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3 -->
+                        <div class="testimonial-slide">
+                            <div class="testimonial-quote">
+                                "The YSL liquid campaign visual breakdown achieved over 14 million recipients globally.
+                                Working with
+                                their Houdini fluid compositing systems was an absolute masterclass."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-pic"
+                                    style="background-image: url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop');">
+                                </div>
+                                <div class="author-meta">
+                                    <span class="rating font-mono">★★★★★</span>
+                                    <strong class="name">Helena Rostova</strong>
+                                    <span class="title">Creative Campaign Executive // Saint Laurent Paris</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="testimonial-controls select-none">
+                        <button class="nav-arrow-btn prev-btn magnetic" id="testi-prev-btn"
+                            aria-label="Previous testimonial">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <div class="carousel-dots" id="testimonial-carousel-dots">
+                            <button class="dot-btn active" data-index="0" aria-label="View slide 1"></button>
+                            <button class="dot-btn" data-index="1" aria-label="View slide 2"></button>
+                            <button class="dot-btn" data-index="2" aria-label="View slide 3"></button>
+                        </div>
+
+                        <button class="nav-arrow-btn next-btn magnetic" id="testi-next-btn"
+                            aria-label="Next testimonial">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- B2B Client Grayscale logos infinite scroll -->
+                <div class="client-logos-marquee select-none" id="client-marquee">
+                    <div class="marquee-track">
+                        <!-- Logos repeated twice for seamless looping scroll -->
+                        <span class="client-logo-item">MERCEDES-BENZ</span>
+                        <span class="client-logo-item">LEICA OPTICS</span>
+                        <span class="client-logo-item">SAINT LAURENT</span>
+                        <span class="client-logo-item">AUDEMARS PIGUET</span>
+                        <span class="client-logo-item">SONY MUSIC</span>
+                        <span class="client-logo-item">NIKE LAB</span>
+                        <span class="client-logo-item">SPACEX CREW</span>
+                        <!-- Repeat -->
+                        <span class="client-logo-item">MERCEDES-BENZ</span>
+                        <span class="client-logo-item">LEICA OPTICS</span>
+                        <span class="client-logo-item">SAINT LAURENT</span>
+                        <span class="client-logo-item">AUDEMARS PIGUET</span>
+                        <span class="client-logo-item">SONY MUSIC</span>
+                        <span class="client-logo-item">NIKE LAB</span>
+                        <span class="client-logo-item">SPACEX CREW</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 12. FAQ ACCORDION SECTION -->
+        <section id="faq" class="faq-section">
+            <div class="container faq-split">
+                <div class="faq-left-meta">
+                    <span class="section-label">[ SYSTEM DIAGNOSTICS ]</span>
+                    <h2 class="faq-side-title">Common Queries</h2>
+                    <p class="faq-side-desc">Review common queries addressing project timeline bounds, revision
+                        calibrations, and
+                        technological requirements.</p>
+                    <div class="faq-side-inquiry-box select-none glass-card">
+                        <h4>Still have inquiries?</h4>
+                        <p>Connect with a design director directly for system-specific telemetry.</p>
+                        <a href="#contact" class="faq-btn magnetic">Submit Ticket</a>
+                    </div>
+                </div>
+
+                <div class="faq-accordion-group">
+
+                    <!-- Accordion 1 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-1"
+                            aria-controls="faq-panel-1">
+                            <span class="q-text">What services does VISIONATRIX offer?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-1" aria-labelledby="faq-trigger-1" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                We specialize in highly optimized Video Editing, volumetric VFX Simulations, CGI
+                                Advertising renders,
+                                procedural Environment Creation, bespoke Full Stack WebGL Web Development, Android/iOS
+                                App Systems, AI
+                                Production Shoots, and WebXR VR platforms.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 2 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-2"
+                            aria-controls="faq-panel-2">
+                            <span class="q-text">What is the typical project timeline?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-2" aria-labelledby="faq-trigger-2" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                Depending on complexity calibration, typical project timelines range from 15 core days
+                                (Standard Video
+                                Edits) up to 60+ core days (hyper-complex volumetric WebXR VR applications). Timelines
+                                are dynamically
+                                configured during discovery.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 3 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-3"
+                            aria-controls="faq-panel-3">
+                            <span class="q-text">Do you offer retainer services?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-3" aria-labelledby="faq-trigger-3" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                Yes. For selected world-class B2B brands, we establish monthly core retainer contracts
+                                providing
+                                dedicated engineering cells, priority server pipelines, and immediate diagnostic
+                                iterations.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 4 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-4"
+                            aria-controls="faq-panel-4">
+                            <span class="q-text">What is your project revision policy?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-4" aria-labelledby="faq-trigger-4" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                Every standard contract guarantees up to three comprehensive system-wide revisions.
+                                These revisions are
+                                scheduled between the layout design and development phases to maintain surgical quality.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 5 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-5"
+                            aria-controls="faq-panel-5">
+                            <span class="q-text">Can you work with international clients?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-5" aria-labelledby="faq-trigger-5" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                Absolutely. With studio nodes in Bengaluru, Mumbai, and Delhi, we coordinate
+                                synchronously across global
+                                timezones utilizing dedicated Slack bridges and shared repository channels.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 6 -->
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" aria-expanded="false" id="faq-trigger-6"
+                            aria-controls="faq-panel-6">
+                            <span class="q-text">Do you offer ongoing system support?</span>
+                            <span class="accordion-arrow-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div class="accordion-panel" id="faq-panel-6" aria-labelledby="faq-trigger-6" role="region"
+                            style="height: 0px;">
+                            <div class="accordion-inner">
+                                Yes, every system deployment includes 90 days of complimentary security auditing,
+                                diagnostic logging,
+                                and responsive performance patches to ensure 100% stable execution.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 13. SCHEDULE CONSULTATION CALL CTA -->
+        <section id="schedule" class="schedule-section">
+            <div class="container">
+                <div class="schedule-card-wrapper glass-card">
+                    <div class="schedule-left-meta">
+                        <span class="sub">[ REALTIME TELEMETRY ]</span>
+                        <h3 class="title">Schedule Consultation Call</h3>
+                        <p class="desc">Lock in a direct 30-minute system diagnostic meeting with our head architectural
+                            director.
+                            We coordinate timezone syncs automatically.</p>
+                        <div class="clock-display select-none">
+                            <span class="lbl">GLOBAL STUDIO HOURS:</span>
+                            <strong class="val" id="global-clocks">[ BENGALURU: 00:00 // MUMBAI: 00:00 // DELHI: 00:00
+                                ]</strong>
+                        </div>
+                    </div>
+
+                    <div class="schedule-right-calendar select-none">
+                        <!-- Calendar scheduling mock dashboard interface -->
+                        <div class="calendar-header-hud">
+                            <span class="month font-mono">JUNE MMXXVI</span>
+                            <div class="nav-arrows">
+                                <span>&larr;</span>
+                                <span>&rarr;</span>
+                            </div>
+                        </div>
+
+                        <div class="calendar-days-grid" id="calendar-date-grid">
+                            <!-- Injected days -->
+                            <span class="day-lbl">S</span><span class="day-lbl">M</span><span
+                                class="day-lbl">T</span><span class="day-lbl">W</span><span
+                                class="day-lbl">T</span><span class="day-lbl">F</span><span class="day-lbl">S</span>
+                            <span class="day mute">31</span>
+                            <span class="day active-date" data-date="1">1</span>
+                            <span class="day active-date" data-date="2">2</span>
+                            <span class="day active-date" data-date="3">3</span>
+                            <span class="day active-date" data-date="4">4</span>
+                            <span class="day active-date" data-date="5">5</span>
+                            <span class="day" data-date="6">6</span>
+
+                            <span class="day" data-date="7">7</span>
+                            <span class="day active-date" data-date="8">8</span>
+                            <span class="day active-date" data-date="9">9</span>
+                            <span class="day active-date" data-date="10">10</span>
+                            <span class="day active-date" data-date="11">11</span>
+                            <span class="day active-date" data-date="12">12</span>
+                            <span class="day" data-date="13">13</span>
+
+                            <span class="day" data-date="14">14</span>
+                            <span class="day active-date" data-date="15">15</span>
+                            <span class="day active-date" data-date="16">16</span>
+                            <span class="day active-date" data-date="17">17</span>
+                            <span class="day active-date" data-date="18">18</span>
+                            <span class="day active-date" data-date="19">19</span>
+                            <span class="day" data-date="20">20</span>
+
+                            <span class="day" data-date="21">21</span>
+                            <span class="day active-date" data-date="22">22</span>
+                            <span class="day active-date" data-date="23">23</span>
+                            <span class="day active-date" data-date="24">24</span>
+                            <span class="day active-date" data-date="25">25</span>
+                            <span class="day active-date" data-date="26">26</span>
+                            <span class="day" data-date="27">27</span>
+
+                            <span class="day" data-date="28">28</span>
+                            <span class="day active-date" data-date="29">29</span>
+                            <span class="day active-date" data-date="30">30</span>
+                            <span class="day mute">1</span>
+                            <span class="day mute">2</span>
+                            <span class="day mute">3</span>
+                            <span class="day mute">4</span>
+                        </div>
+
+                        <div class="calendar-slots-grid hidden" id="calendar-slots-pane">
+                            <span class="slots-header font-mono">CHOOSE MEETING TIME (IST):</span>
+                            <div class="custom-time-input-wrapper" style="margin-top: 0.5rem; width: 100%;">
+                                <input type="time" id="calendar-custom-time" class="calendar-time-input" />
+                            </div>
+                            <span class="slots-header font-mono" style="margin-top: 0.5rem;">YOUR FULL NAME:</span>
+                            <div class="custom-name-input-wrapper" style="margin-top: 0.5rem; width: 100%;">
+                                <input type="text" id="calendar-user-name" class="calendar-time-input"
+                                    placeholder="e.g. Rahul Sharma" maxlength="100" required />
+                            </div>
+                        </div>
+
+                        <button class="calendar-confirm-btn font-mono" id="calendar-confirm-trigger">INITIALIZE SYNC
+                            CALL</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 14. CONTACT FORM & CTA SECTION -->
+        <section id="contact" class="contact-section">
+            <div class="container contact-split">
+
+                <div class="contact-left-form glass-card">
+                    <!-- Form Success Overlay screen inside -->
+                    <div class="form-overlay-success" id="form-success-overlay" aria-hidden="true" role="status">
+                        <div class="overlay-inner">
+                            <div class="success-icon-wrap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                            <h3>Ticket Initialized Successfully.</h3>
+                            <p>A design director has received your system parameters. We will initiate contact on secure
+                                lines within
+                                12 core hours.</p>
+                            <button class="overlay-close-btn magnetic" id="success-overlay-close">Return to
+                                Form</button>
+                        </div>
+                    </div>
+
+                    <form id="inquiry-system-form" class="inquiry-form" novalidate>
+                        <h3 class="form-title">Launch an Inquiry</h3>
+                        <p class="form-subtitle">Calibrate structural parameters to route your ticket.</p>
+
+                        <!-- Name field -->
+                        <div class="form-group floating-group">
+                            <input type="text" id="contact-name" class="form-input" placeholder=" " maxlength="100"
+                                autocomplete="name" required />
+                            <label for="contact-name" class="form-label">Client Full Name</label>
+                            <span class="filled-indicator" aria-hidden="true">&check;</span>
+                            <span class="error-msg" role="alert">Full name is required.</span>
+                        </div>
+
+                        <!-- Email field -->
+                        <div class="form-group floating-group">
+                            <input type="email" id="contact-email" class="form-input" placeholder=" " maxlength="100"
+                                autocomplete="email" required />
+                            <label for="contact-email" class="form-label">Secure Email Channel</label>
+                            <span class="filled-indicator" aria-hidden="true">&check;</span>
+                            <span class="error-msg" role="alert">Provide a valid email address.</span>
+                        </div>
+
+                        <!-- Company field -->
+                        <div class="form-group floating-group">
+                            <input type="text" id="contact-company" class="form-input" placeholder=" " maxlength="100"
+                                autocomplete="organization" required />
+                            <label for="contact-company" class="form-label">Organization Core</label>
+                            <span class="filled-indicator" aria-hidden="true">&check;</span>
+                            <span class="error-msg" role="alert">Organization field is required.</span>
+                        </div>
+
+                        <!-- Dropdown Choice -->
+                        <div class="form-group select-group">
+                            <label for="contact-service" class="select-label">Target Service Component</label>
+                            <select id="contact-service" class="form-select">
+                                <option value="CGI Advertising">CGI Advertising</option>
+                                <option value="VFX">VFX Simulations</option>
+                                <option value="Video Editing">Video Editing & Rhythms</option>
+                                <option value="Environment Creation">Environment Creation</option>
+                                <option value="Full Stack Web Development">Full Stack Web GL Development</option>
+                                <option value="Android/iOS Apps">App Architectures</option>
+                                <option value="AI Production Shoots">AI Production Shoots</option>
+                                <option value="VR Development">VR & Spatial Installations</option>
+                            </select>
+                        </div>
+
+                        <!-- Budget radios choice -->
+                        <div class="form-group select-group">
+                            <span class="select-label">Core Budget Calibration</span>
+                            <div class="form-radios-row" role="radiogroup" aria-label="Inquiry budget range">
+                                <label class="form-radio-card">
+                                    <input type="radio" name="form-budget" value="under-50k" checked />
+                                    <span>&lt; $50K</span>
+                                </label>
+                                <label class="form-radio-card">
+                                    <input type="radio" name="form-budget" value="50k-100k" />
+                                    <span>$50K - $100K</span>
+                                </label>
+                                <label class="form-radio-card">
+                                    <input type="radio" name="form-budget" value="over-100k" />
+                                    <span>$100K+</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Description textarea -->
+                        <div class="form-group floating-group">
+                            <textarea id="contact-desc" class="form-textarea" placeholder=" " maxlength="2000"
+                                required></textarea>
+                            <label for="contact-desc" class="form-label">Brief Description of Project
+                                Specifications...</label>
+                            <span class="filled-indicator" aria-hidden="true">&check;</span>
+                            <span class="error-msg" role="alert">Please provide details about the project.</span>
+                        </div>
+
+                        <!-- Mock Attachment -->
+                        <div class="form-group file-group">
+                            <div class="file-upload-trigger" id="file-trigger">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    class="upload-icon" aria-hidden="true">
+                                    <path
+                                        d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                                </svg>
+                                <span id="file-label-text">Attach Project Blueprints (CAD/PDF/ZIP, Optional)</span>
+                            </div>
+                            <input type="file" id="contact-attachment" class="hidden"
+                                accept=".zip,.pdf,.cad,.png,.jpg,.txt" />
+                        </div>
+
+                        <!-- Opt-in checkboxes -->
+                        <div class="form-group checkbox-group">
+                            <label class="form-checkbox-label">
+                                <input type="checkbox" id="contact-newsletter" checked />
+                                <span>Opt-in to our monthly secure systems research notes.</span>
+                            </label>
+                        </div>
+
+                        <!-- Submit button with loader spinner inside -->
+                        <button type="submit" class="form-submit-btn font-mono" id="form-submit-btn">
+                            <span class="btn-text">INITIALIZE TICKET PROPOSAL</span>
+                            <div class="btn-loader hidden" aria-hidden="true">
+                                <div class="spinner-dot"></div>
+                                <div class="spinner-dot"></div>
+                                <div class="spinner-dot"></div>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="contact-right-info">
+                    <span class="section-label">[ STUDIO REGISTRIES ]</span>
+                    <h2 class="contact-side-title">Connect Securely</h2>
+                    <p class="contact-side-desc">Direct communications lines are synchronized across our physical
+                        locations.</p>
+
+                    <div class="contact-details-grid">
+
+                        <div class="detail-block">
+                            <strong class="title">BENGALURU CORE ENGINE</strong>
+                            <p class="desc">Indiranagar Silicon Block 12-4<br>Bengaluru, India</p>
+                            <span class="timezone-clock font-mono" data-timezone="Asia/Kolkata" data-label="BENGALURU">[
+                                BENGALURU:
+                                00:00 ]</span>
+                        </div>
+
+                        <div class="detail-block">
+                            <strong class="title">MUMBAI SPATIAL HUB</strong>
+                            <p class="desc">Bandra Volumetric Yard 89<br>Mumbai, India</p>
+                            <span class="timezone-clock font-mono" data-timezone="Asia/Kolkata" data-label="MUMBAI">[
+                                MUMBAI: 00:00
+                                ]</span>
+                        </div>
+
+                        <div class="detail-block">
+                            <strong class="title">DELHI COMPUTATIONAL CELL</strong>
+                            <p class="desc">Gurugram Cyber Hub<br>Delhi NCR, India</p>
+                            <span class="timezone-clock font-mono" data-timezone="Asia/Kolkata" data-label="DELHI">[
+                                DELHI: 00:00
+                                ]</span>
+                        </div>
+
+                        <div class="detail-block">
+                            <strong class="title">INQUIRY INBOX</strong>
+                            <p class="desc"><a href="mailto:visionatrixx@gmail.com"
+                                    class="secure-mail">visionatrixx@gmail.com</a></p>
+                            <p class="desc">Slack integration links available upon secure scoping validation.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 15. FOOTER SECTION -->
+        <footer class="site-footer">
+            <div class="container footer-container">
+                <div class="footer-top">
+
+                    <div class="footer-brand">
+                        <span class="footer-logo">VISIONATRIX</span>
+                        <p class="footer-tag select-none">Design. Visualize. Experience.</p>
+
+                        <!-- Newsletter form with validation -->
+                        <div class="footer-newsletter-wrap">
+                            <span class="news-lbl">SECURE RESEARCH NOTES</span>
+                            <form id="footer-newsletter-form" class="newsletter-form" novalidate>
+                                <div class="news-input-wrap">
+                                    <input type="email" id="news-email" class="news-input" placeholder="Secure Email..."
+                                        required />
+                                    <button type="submit" class="news-submit-btn"
+                                        aria-label="Subscribe to newsletter">&rarr;</button>
+                                </div>
+                                <span class="news-error" id="news-error-label" role="alert">Invalid email
+                                    address.</span>
+                                <span class="news-success" id="news-success-label" role="status">Subscription
+                                    synchronized.</span>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="footer-links">
+
+                        <div class="footer-link-group">
+                            <span class="group-title select-none">CAPABILITIES MENU</span>
+                            <a href="#services">Video Editing</a>
+                            <a href="#services">VFX Simulations</a>
+                            <a href="#services">CGI Advertising</a>
+                            <a href="#services">Environment Creation</a>
+                            <a href="#services">WebGL Web Code</a>
+                            <a href="#services">App Architectures</a>
+                            <a href="#services">AI Production Shoots</a>
+                            <a href="#services">VR & Spatial XR</a>
+                        </div>
+
+                        <div class="footer-link-group">
+                            <span class="group-title select-none">STUDIO SYSTEM</span>
+                            <a href="#studio-profile">Studio Profile</a>
+                            <a href="#process">Roadmap Steps</a>
+                            <a href="#why-us">Metrics Audits</a>
+                            <a href="#tech-stack">Telemetry Stack</a>
+                            <a href="#testimonials">B2B Feedback</a>
+                        </div>
+
+                        <div class="footer-link-group">
+                            <span class="group-title select-none">REGISTRIES</span>
+                            <a href="mailto:visionatrixx@gmail.com">Direct Scoping Inbox</a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">Studio LinkedIn</a>
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Studio X /
+                                Twitter</a>
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer">Shared Github</a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p class="copyright select-none">&copy; 2026 VISIONATRIX STUDIO CO. ALL DESIGN INTEGRITY COMPLIED.
+                    </p>
+                    <div class="local-timestamp" id="footer-local-time-clock">[ CLOCKS: BENGALURU: 00:00 // MUMBAI:
+                        00:00 //
+                        DELHI: 00:00 ]</div>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+
+
+    <!-- 16. CASE STUDY FULLSCREEN DETAIL MODAL -->
+    <div id="case-study-modal" class="modal-overlay" aria-hidden="true" role="dialog">
+        <!-- Ambient volumetric glow background -->
+        <div class="modal-glowing-background" id="modal-glow-field" aria-hidden="true"></div>
+
+        <div class="modal-container">
+            <!-- Sticky Left Panel: Panoramic Cinematic Media Player -->
+            <div class="modal-left-media">
+                <div class="media-viewer-container">
+                    <!-- Loading Indicator -->
+                    <div class="media-loader" id="modal-media-loader" aria-hidden="true">
+                        <span class="loader-dot"></span>
+                        <span class="loader-dot"></span>
+                        <span class="loader-dot"></span>
+                    </div>
+                    <!-- Dynamic Video/Image Frame -->
+                    <video id="modal-video-viewport" class="modal-media-element active" autoplay loop muted playsinline
+                        src=""></video>
+                    <img id="modal-image-viewport" class="modal-media-element" src=""
+                        alt="Case Study Highlight Frame" />
+                </div>
+                <!-- Sliding Media Timeline Gallery -->
+                <div class="media-thumbnail-track" id="modal-thumbnail-track"
+                    aria-label="Project media gallery preview selection">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- Scrollable Right Panel: Surgical Editorial Portfolio Specs -->
+            <div class="modal-right-info">
+                <!-- Top Sticky HUD Header -->
+                <div class="modal-hud-header">
+                    <span class="hud-case-num font-mono" id="modal-project-index">01 / 08</span>
+                    <button class="modal-close-btn magnetic" id="modal-close-trigger" aria-label="Close Case Study">
+                        <span>Close Close</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            aria-hidden="true">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-content-scroll" id="modal-scroll-pane">
+                    <!-- Hero Title & Badges -->
+                    <div class="modal-meta-row select-none">
+                        <span class="modal-client" id="modal-project-client">Mercedes-Benz Concept</span>
+                        <span class="modal-year font-mono" id="modal-project-year">2026</span>
+                    </div>
+                    <h2 class="modal-project-title" id="modal-project-title-text">AURA Configurator</h2>
+                    <div class="modal-tag-row select-none" id="modal-project-tags">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <!-- Problem / Solution (High-Contrast Editorial Columns) -->
+                    <div class="modal-problem-solution-section">
+                        <div class="editorial-block">
+                            <span class="block-label">[ THE CHALLENGE ]</span>
+                            <p class="block-text" id="modal-project-problem">Traditional configurators rely on static,
+                                pre-rendered
+                                image arrays that fail to convey organic reflections of light.</p>
+                        </div>
+                        <div class="editorial-block">
+                            <span class="block-label">[ THE COMPILATION ]</span>
+                            <p class="block-text" id="modal-project-solution">We engineered a high-fidelity WebGL render
+                                pipeline
+                                utilizing physics-based fragment shaders running flawlessly at 60 FPS.</p>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry System Metrics (Luxury HUD style widget) -->
+                    <div class="modal-metrics-section">
+                        <span class="block-label select-none">[ PERFORMANCE HUD TELEMETRY ]</span>
+                        <div class="modal-metrics-grid" id="modal-project-metrics">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Interactive Process Roadmap -->
+                    <div class="modal-roadmap-section">
+                        <span class="block-label select-none">[ SYSTEMS COMPILER ROADMAP ]</span>
+                        <div class="modal-roadmap" id="modal-project-process">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Related Projects Grid Section in Modal -->
+                    <div class="modal-related-section">
+                        <span class="block-label select-none">[ RELATED SYSTEMS EXPLORATIONS ]</span>
+                        <div class="modal-related-grid" id="modal-project-related">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Cinematic Multi-direction Navigation -->
+                    <div class="modal-navigation-row">
+                        <button class="nav-prev-btn magnetic" id="modal-prev-project"
+                            aria-label="Observe Previous Case Study">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                aria-hidden="true">
+                                <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                            <span>Observe Prev</span>
+                        </button>
+                        <button class="nav-next-btn magnetic" id="modal-next-project"
+                            aria-label="Observe Next Case Study">
+                            <span>Observe Next</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                aria-hidden="true">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 17. VIDEO LIGHTBOX MODAL FOR GALLERY CLIPS -->
+    <div id="video-lightbox" class="lightbox-overlay" aria-hidden="true" role="dialog">
+        <div class="lightbox-backdrop" id="lightbox-backdrop-close" aria-hidden="true"></div>
+        <div class="lightbox-container">
+            <button class="lightbox-close-btn magnetic" id="lightbox-close-btn" aria-label="Close Lightbox">
+                <span>Close</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="lightbox-media-wrapper">
+                <video id="lightbox-video-player" controls autoplay playsinline src=""></video>
+            </div>
+            <div class="lightbox-details select-none">
+                <div class="lightbox-top-row">
+                    <span class="client" id="lightbox-client-out">Client Name</span>
+                    <strong class="title" id="lightbox-title-out">Showreel Video Title</strong>
+                </div>
+                <p class="desc" id="lightbox-desc-out">Description explanation of the work done in high-fidelity.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Module Script -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

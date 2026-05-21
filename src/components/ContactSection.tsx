@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, CheckCircle2, Clock, Paperclip, AlertTriangle } from "lucide-react";
 import confetti from "canvas-confetti";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface FormData {
   fullName: string;
@@ -21,6 +23,101 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [timeStr, setTimeStr] = useState<string>("");
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  // Magnetic button hover and scroll text scaling
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const button = buttonRef.current;
+    if (button) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const rect = button.getBoundingClientRect();
+        const btnX = rect.left + rect.width / 2;
+        const btnY = rect.top + rect.height / 2;
+        
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        const distanceX = mouseX - btnX;
+        const distanceY = mouseY - btnY;
+        const distance = Math.hypot(distanceX, distanceY);
+        
+        const threshold = 100; // Trigger distance in pixels
+        
+        if (distance < threshold) {
+          const power = (threshold - distance) / threshold;
+          const x = distanceX * 0.35 * power;
+          const y = distanceY * 0.35 * power;
+          
+          gsap.to(button, {
+            x: x,
+            y: y,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.to(button, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: "power3.out",
+          });
+        }
+      };
+
+      const handleMouseLeave = () => {
+        gsap.to(button, {
+          x: 0,
+          y: 0,
+          duration: 0.5,
+          ease: "power3.out",
+        });
+      };
+
+      window.addEventListener("mousemove", handleMouseMove);
+      button.addEventListener("mouseleave", handleMouseLeave);
+
+      return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        button.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    }
+  }, [submitSuccess]);
+
+  // Scroll Trigger to scale the heading text
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const titleEl = titleRef.current;
+    
+    if (titleEl) {
+      const scrollTween = gsap.fromTo(titleEl, 
+        { scale: 0.9, opacity: 0.7 },
+        { 
+          scale: 1.1, 
+          opacity: 1, 
+          ease: "none",
+          scrollTrigger: {
+            trigger: titleEl,
+            start: "top bottom-=100px",
+            end: "bottom center",
+            scrub: true,
+          }
+        }
+      );
+
+      return () => {
+        if (scrollTween.scrollTrigger) scrollTween.scrollTrigger.kill();
+        scrollTween.kill();
+      };
+    }
+  }, []);
 
   // Live ticking clocks for India Standard Time (IST)
   useEffect(() => {
@@ -99,10 +196,10 @@ export default function ContactSection() {
         {/* Left Side: Header & Intro */}
         <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
           <div className="flex flex-col gap-2">
-            <span className="font-sans text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
               [ DOSSIER INGESTION ]
             </span>
-            <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
+            <h2 ref={titleRef} className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase origin-left">
               INITIALIZE PROPOSAL
             </h2>
           </div>
@@ -124,7 +221,7 @@ export default function ContactSection() {
                   exit={{ opacity: 0 }}
                 >
                   <CheckCircle2 className="w-16 h-16 text-[#c5a880] mb-5 drop-shadow-[0_0_15px_rgba(197,168,128,0.2)] animate-bounce" />
-                  <h3 className="font-display text-lg font-bold tracking-[0.15em] text-white mb-2 uppercase">
+                  <h3 className="font-outfit text-lg font-bold tracking-[0.15em] text-white mb-2 uppercase">
                     PROPOSAL INGESTED
                   </h3>
                   <p className="font-sans text-xs sm:text-sm text-[#9999aa] max-w-sm leading-relaxed">
@@ -143,19 +240,19 @@ export default function ContactSection() {
                   <div className="flex flex-col gap-4">
                     {/* Full Name */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">FULL NAME *</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">FULL NAME *</label>
                       <input 
                         type="text" 
                         placeholder="Your Full Name..."
                         {...register("fullName", { required: true })}
-                        className="bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                       {errors.fullName && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Full name required</span>}
                     </div>
 
                     {/* Email */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">CORPORATE EMAIL *</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">CORPORATE EMAIL *</label>
                       <input 
                         type="email" 
                         placeholder="Corporate Email..."
@@ -163,29 +260,29 @@ export default function ContactSection() {
                           required: true,
                           pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
                         })}
-                        className="bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                       {errors.email && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Valid email required</span>}
                     </div>
 
                     {/* Organization */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">ORGANIZATION</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">ORGANIZATION</label>
                       <input 
                         type="text" 
                         placeholder="Organization / Agency..."
                         {...register("organization")}
-                        className="bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                     </div>
 
                     {/* Service Select */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">SERVICE INTERESTED *</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">SERVICE INTERESTED *</label>
                       <select 
                         {...register("service", { required: true })}
                         defaultValue=""
-                        className="bg-black/90 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full appearance-none cursor-pointer"
+                        className="font-sans bg-black/90 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full appearance-none cursor-pointer"
                       >
                         <option value="" disabled className="text-white/20">Select Service...</option>
                         <option value="video">Video Editing</option>
@@ -205,7 +302,7 @@ export default function ContactSection() {
                   <div className="flex flex-col gap-4">
                     {/* Budget Tiers */}
                     <div className="flex flex-col gap-2">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">ESTIMATED BUDGET</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">ESTIMATED BUDGET</label>
                       <div className="grid grid-cols-2 gap-2">
                         {budgetTiers.map((tier) => (
                           <button
@@ -226,7 +323,7 @@ export default function ContactSection() {
 
                     {/* File Attachment */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">CONCEPT BRIEF / BRIEFING</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">CONCEPT BRIEF / BRIEFING</label>
                       <div className="border border-dashed border-white/10 hover:border-[#c5a880]/40 bg-white/2 rounded p-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 relative">
                         <input 
                           type="file" 
@@ -235,7 +332,7 @@ export default function ContactSection() {
                           aria-label="Upload concept brief"
                         />
                         <Upload className="w-5 h-5 text-[#c5a880]/70" />
-                        <span className="font-sans text-[9px] tracking-wider text-[#9999aa] uppercase">
+                        <span className="font-mono text-[9px] tracking-wider text-[#9999aa] uppercase">
                           {fileName ? "FILE STAGED" : "ATTACH BRIEF (OPTIONAL)"}
                         </span>
                         {fileName && (
@@ -249,21 +346,22 @@ export default function ContactSection() {
 
                     {/* Technical details textarea */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-sans text-[10px] tracking-wider text-[#555566] uppercase">DOSSIER SPECIFICATIONS *</label>
+                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">DOSSIER SPECIFICATIONS *</label>
                       <textarea 
                         rows={3}
                         placeholder="Dossier Details & Technical Scope Specifications..."
                         {...register("details", { required: true })}
-                        className="bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 resize-none w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 resize-none w-full"
                       />
                       {errors.details && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Ingestion specifications required</span>}
                     </div>
 
                     {/* Submit Button */}
                     <button
+                      ref={buttonRef}
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/30 disabled:text-black/40 disabled:cursor-not-allowed text-black font-semibold font-sans text-xs tracking-[0.2em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.2)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/30 disabled:text-black/40 disabled:cursor-not-allowed text-black font-semibold font-outfit text-xs tracking-[0.2em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.2)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>{isSubmitting ? "INGESTING DOSSIER..." : "INITIALIZE TICKET PROPOSAL"}</span>
                       {!isSubmitting && <span>→</span>}

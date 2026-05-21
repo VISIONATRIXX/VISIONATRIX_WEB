@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import ScrollNavigation from "@/components/ScrollNavigation";
 import IntroLoader from "@/components/IntroLoader";
@@ -15,11 +16,15 @@ import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
+// Load Three.js 3D backdrop client-side only
+const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
+
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
+  const [startAnimations, setStartAnimations] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  // Track scroll position to update active dot navigation
+  // Track scroll position to update active dot navigation via window observer
   useEffect(() => {
     if (showIntro) return;
 
@@ -35,12 +40,9 @@ export default function Home() {
       "contact",
     ];
 
-    const container = document.querySelector(".snap-container");
-    if (!container) return;
-
     const observerOptions = {
-      root: container,
-      rootMargin: "-25% 0px -25% 0px", // Trigger when section is in center of viewport
+      root: null, // Track viewport scroll
+      rootMargin: "-40% 0px -40% 0px", // Trigger when section is in the center of viewport
       threshold: 0.1,
     };
 
@@ -64,16 +66,57 @@ export default function Home() {
     };
   }, [showIntro]);
 
-  const scrollToSection = (sectionId: string) => {
-    const container = document.querySelector(".snap-container");
-    const target = document.getElementById(sectionId);
+  // Lenis smooth scroll initialization
+  useEffect(() => {
+    if (showIntro) return;
+
+    // Dynamically load Lenis to avoid Server-Side Rendering issues
+    let lenisInstance: any;
     
-    if (container && target) {
-      // Direct scroll container mapping
-      container.scrollTo({
-        top: target.offsetTop,
-        behavior: "smooth",
+    import("lenis").then(({ default: Lenis }) => {
+      lenisInstance = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        wheelMultiplier: 1,
       });
+
+      // Synchronize ScrollTrigger with Lenis scroll events
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+        lenisInstance.on("scroll", ScrollTrigger.update);
+      });
+
+      const raf = (time: number) => {
+        lenisInstance.raf(time);
+        requestAnimationFrame(raf);
+      };
+
+      requestAnimationFrame(raf);
+      (window as any).lenis = lenisInstance;
+    });
+
+    return () => {
+      if (lenisInstance) {
+        lenisInstance.destroy();
+      }
+    };
+  }, [showIntro]);
+
+  const scrollToSection = (sectionId: string) => {
+    const target = document.getElementById(sectionId);
+    if (target) {
+      const lenis = (window as any).lenis;
+      if (lenis) {
+        lenis.scrollTo(target, {
+          duration: 1.6,
+          offset: 0,
+          lock: false,
+        });
+      } else {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
       setActiveSection(sectionId);
     }
   };
@@ -82,11 +125,20 @@ export default function Home() {
     <>
       {/* Intro Loader screen overlay */}
       {showIntro && (
-        <IntroLoader onComplete={() => setShowIntro(false)} />
+        <IntroLoader 
+          onStartDismiss={() => setStartAnimations(true)}
+          onComplete={() => {
+            setShowIntro(false);
+            setStartAnimations(true);
+          }}
+        />
       )}
 
-      {/* Main layout (pre-mounted for seamless asset loading and animations) */}
-      <div className="relative w-full h-screen bg-[#050507]">
+      {/* Main layout */}
+      <div className="relative w-full min-h-screen bg-[#050507] overflow-x-hidden">
+        {/* Persistent 3D WebGL background */}
+        {startAnimations && <Scene3D />}
+
         {/* Header Sticky Navigation */}
         {!showIntro && (
           <Header activeSection={activeSection} onNavClick={scrollToSection} />
@@ -97,8 +149,9 @@ export default function Home() {
           <ScrollNavigation activeSection={activeSection} onDotClick={scrollToSection} />
         )}
 
-        {/* Core Scroll Snapped Page Sections Container */}
-        <main className={`snap-container ${showIntro ? "pointer-events-none overflow-hidden" : ""}`}>
+        {/* Core Sections Container */}
+        {startAnimations && (
+          <main className={`snap-container ${showIntro ? "pointer-events-none h-screen overflow-hidden" : "w-full"}`}>
           {/* 1. Home Section */}
           <div id="home" className="snap-section">
             <HeroSection onCtaClick={scrollToSection} />
@@ -144,7 +197,8 @@ export default function Home() {
             <ContactSection />
             <Footer onLinkClick={scrollToSection} />
           </div>
-        </main>
+          </main>
+        )}
       </div>
     </>
   );

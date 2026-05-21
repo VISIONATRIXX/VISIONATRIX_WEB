@@ -53,26 +53,51 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
           className="border border-[#c5a880]/25 px-6 py-2 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
           variants={itemVariants}
         >
-          <span className="font-[var(--font-michroma)] text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
+          <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
             [ CREATIVE TECHNOLOGY STUDIO — MMXXVI ]
           </span>
         </motion.div>
 
-        {/* Large Title — Michroma, bold, wide tracked */}
-        <motion.h1 
-          className="font-[var(--font-michroma)] text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)]"
-          variants={itemVariants}
+        {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
+        <h1 
+          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex flex-wrap justify-center overflow-hidden"
         >
-          VISIONATRIX
-        </motion.h1>
+          {"VISIONATRIX".split("").map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ y: "105%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{
+                delay: 0.2 + index * 0.05,
+                duration: 0.85,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              className="inline-block origin-bottom"
+            >
+              {char}
+            </motion.span>
+          ))}
+        </h1>
 
-        {/* Subtext — Michroma, lighter weight, spaced */}
-        <motion.p 
-          className="font-[var(--font-michroma)] text-[11px] sm:text-xs md:text-sm tracking-[0.35em] text-white/50 mb-12"
-          variants={itemVariants}
-        >
-          DESIGN. VISUALIZE. EXPERIENCE.
-        </motion.p>
+        {/* Subtext — Michroma, lighter weight, spaced, word-by-word reveal */}
+        <p className="font-sans text-[11px] sm:text-xs md:text-sm tracking-[0.35em] text-white/50 mb-12 flex flex-wrap justify-center gap-x-2">
+          {"DESIGN. VISUALIZE. EXPERIENCE.".split(" ").map((word, index) => (
+            <span key={index} className="inline-block overflow-hidden py-0.5">
+              <motion.span
+                initial={{ y: "105%" }}
+                animate={{ y: 0 }}
+                transition={{
+                  delay: 0.85 + index * 0.12,
+                  duration: 0.7,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+                className="inline-block"
+              >
+                {word}
+              </motion.span>
+            </span>
+          ))}
+        </p>
 
         {/* Action Buttons — matching 2.png: gold filled + white bordered */}
         <motion.div 
@@ -81,13 +106,13 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         >
           <button
             onClick={() => onCtaClick("works")}
-            className="px-10 py-4 bg-[#c5a880] text-[#0a0a0a] font-[var(--font-michroma)] text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d4bb95] hover:shadow-[0_0_30px_rgba(197,168,128,0.35)] transition-all duration-300 cursor-pointer"
+            className="px-10 py-4 bg-[#c5a880] text-[#0a0a0a] font-outfit text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d4bb95] hover:shadow-[0_0_30px_rgba(197,168,128,0.35)] transition-all duration-300 cursor-pointer"
           >
             VIEW PORTFOLIO
           </button>
           <button
             onClick={() => onCtaClick("contact")}
-            className="px-10 py-4 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-[var(--font-michroma)] text-[11px] tracking-[0.18em] rounded-sm transition-all duration-300 cursor-pointer"
+            className="px-10 py-4 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-outfit text-[11px] tracking-[0.18em] rounded-sm transition-all duration-300 cursor-pointer"
           >
             START PROJECT
           </button>
@@ -106,20 +131,20 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 text-center md:text-left border-t border-white/5 pt-6 mb-6">
           {/* Locations */}
           <div className="flex flex-col gap-1">
-            <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+            <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
               LOCATIONS
             </span>
-            <span className="font-[var(--font-michroma)] text-[11px] tracking-[0.12em] text-white">
-              BENGALURU / MUMBAI / DELHI
+            <span className="font-mono text-[11px] tracking-[0.12em] text-white">
+              ACROSS THE WORLD
             </span>
           </div>
 
           {/* Focus */}
           <div className="flex flex-col gap-1 md:items-end">
-            <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+            <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
               FOCUS
             </span>
-            <span className="font-[var(--font-michroma)] text-[11px] tracking-[0.12em] text-[#c5a880]">
+            <span className="font-mono text-[11px] tracking-[0.12em] text-[#c5a880]">
               SENSORY ARCHITECTURE
             </span>
           </div>
@@ -130,7 +155,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
           className="flex flex-col items-center gap-2 cursor-pointer" 
           onClick={() => onCtaClick("studio")}
         >
-          <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+          <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
             SCROLL TO OBSERVE
           </span>
           <motion.div

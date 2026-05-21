@@ -5,176 +5,135 @@ import Image from "next/image";
 
 interface IntroLoaderProps {
   onComplete: () => void;
+  onStartDismiss?: () => void;
 }
 
-export default function IntroLoader({ onComplete }: IntroLoaderProps) {
+export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderProps) {
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // Auto-dismiss after 6.5 seconds
+    // Auto-dismiss after 5.5 seconds (matching old site timing)
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 6500);
+    }, 5500);
 
     return () => clearTimeout(timer);
   }, []);
 
   const handleDismiss = () => {
     setIsDismissed(true);
+    if (onStartDismiss) {
+      onStartDismiss();
+    }
     setTimeout(() => {
       onComplete();
-    }, 850); // Allow exit animations to finish
+    }, 3000); // Allow exit animation to finish (3 seconds)
   };
-
-  // Logo animation variants
-  const logoVariants = {
-    hidden: { scale: 0.8, opacity: 0, filter: "blur(12px)" },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 1.8,
-        ease: [0.16, 1, 0.3, 1] as const, // easeOutExpo
-      }
-    }
-  };
-
-  const textContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 1.4
-      }
-    }
-  };
-
-  const letterVariants = {
-    hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      filter: "blur(0px)",
-      transition: { type: "spring" as const, stiffness: 90, damping: 15 }
-    }
-  };
-
-  const brandName = "VISIONATRIX";
 
   return (
     <AnimatePresence>
       {!isDismissed && (
         <motion.div
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#000000]"
-          exit={{ 
-            opacity: 0, 
-            filter: "blur(20px)", 
-            transition: { duration: 0.8, ease: "easeInOut" } 
+          className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black overflow-hidden"
+          style={{ pointerEvents: "all" }}
+          exit={{
+            y: "-100%",
+            transition: { duration: 3.0, ease: [0.85, 0, 0.15, 1] },
           }}
         >
-          {/* Logo Container */}
-          <div className="relative mb-8 flex flex-col items-center justify-center">
-            {/* Ambient Background Radial Glow */}
+          {/* Logo + Title Container — matching .intro-logo-wrap */}
+          <div
+            className="flex flex-col items-center justify-center text-center"
+            style={{
+              transformStyle: "preserve-3d",
+              perspective: "1000px",
+            }}
+          >
+            {/* Large Logo Image — matching .intro-logo-img (80vw, max-width 320px) */}
             <motion.div
-              className="absolute w-40 h-40 bg-[#c5a880]/10 blur-2xl rounded-full pointer-events-none"
+              className="relative w-[80vw] max-w-[320px] aspect-square"
+              style={{ marginBottom: "-1.5rem" }}
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: [0, 0.5, 0.25], scale: [0.8, 1.1, 1.0] }}
-              transition={{ delay: 0.5, duration: 2.5, repeat: Infinity, repeatType: "mirror" }}
-            />
-
-            {/* Glowing Logo Element */}
-            <motion.div
-              variants={logoVariants}
-              initial="hidden"
-              animate="visible"
-              className="relative w-28 h-28 md:w-36 md:h-36 flex items-center justify-center overflow-hidden rounded-sm"
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 1.6,
+                ease: [0.25, 1, 0.5, 1],
+              }}
             >
               <Image
                 src="/LOGO.png"
-                alt="Visionatrix Agency Logo"
+                alt="VISIONATRIX Eye Icon"
                 fill
                 priority
-                className="object-contain filter brightness-110"
-              />
-
-              {/* Shimmer sweep animation overlay */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
-                initial={{ left: "-150%" }}
-                animate={{ left: "150%" }}
-                transition={{
-                  delay: 1.8,
-                  duration: 1.8,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatDelay: 3
+                className="object-contain"
+                style={{
+                  filter:
+                    "drop-shadow(0 0 35px rgba(255, 255, 255, 0.12))",
                 }}
               />
             </motion.div>
+
+            {/* Title — matching .intro-title: Michroma, 1.5rem, letter-spacing 0.35em */}
+            <motion.h1
+              className="text-white uppercase"
+              style={{
+                fontFamily: "var(--font-michroma)",
+                fontSize: "1.5rem",
+                fontWeight: 400,
+                letterSpacing: "0.35em",
+                textIndent: "0.35em",
+                marginTop: 0,
+                textShadow: "0 0 15px rgba(255, 255, 255, 0.08)",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 1.2,
+                duration: 1.0,
+                ease: [0.25, 1, 0.5, 1],
+              }}
+            >
+              VISIONATRIX
+            </motion.h1>
           </div>
 
-          {/* Letter by Letter Brand Reveal */}
-          <motion.h1
-            className="font-[var(--font-michroma)] text-lg md:text-xl tracking-[0.4em] text-white text-center flex items-center justify-center pl-[0.4em] mb-3"
-            variants={textContainerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {brandName.split("").map((char, index) => (
-              <motion.span key={index} variants={letterVariants}>
-                {char}
-              </motion.span>
-            ))}
-          </motion.h1>
-
-          {/* Tagline Reveal */}
-          <motion.p
-            className="font-[var(--font-michroma)] text-[8px] md:text-[9px] tracking-[0.25em] text-[#555566] text-center"
+          {/* Skip Intro Button — matching .intro-skip-btn: pill shape, JetBrains Mono */}
+          <motion.button
+            onClick={handleDismiss}
+            className="absolute bottom-16 select-none focus:outline-none cursor-pointer"
+            style={{
+              fontFamily: "var(--font-mono-custom, 'JetBrains Mono', monospace)",
+              fontSize: "0.75rem",
+              letterSpacing: "0.25em",
+              color: "rgba(255, 255, 255, 0.35)",
+              padding: "0.5rem 1.2rem",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "20px",
+              backgroundColor: "rgba(255, 255, 255, 0.02)",
+              backdropFilter: "blur(5px)",
+              transition:
+                "color 0.25s cubic-bezier(0.25,1,0.5,1), border-color 0.25s cubic-bezier(0.25,1,0.5,1), background-color 0.25s cubic-bezier(0.25,1,0.5,1)",
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 2.4, duration: 1 }}
+            transition={{ delay: 2.8, duration: 0.6 }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget;
+              el.style.color = "#c8a261";
+              el.style.borderColor = "#c8a261";
+              el.style.backgroundColor = "rgba(200, 162, 97, 0.05)";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget;
+              el.style.color = "rgba(255, 255, 255, 0.35)";
+              el.style.borderColor = "rgba(255, 255, 255, 0.08)";
+              el.style.backgroundColor = "rgba(255, 255, 255, 0.02)";
+            }}
           >
-            DESIGN. VISUALIZE. EXPERIENCE.
-          </motion.p>
+            Skip Intro ↓
+          </motion.button>
 
-          {/* Skip button at bottom matching 1.png style */}
-          <motion.div
-            className="absolute bottom-16 left-1/2 -translate-x-1/2"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 3, duration: 0.6 }}
-          >
-            <button
-              onClick={handleDismiss}
-              className="flex flex-col items-center gap-2.5 group focus:outline-none cursor-pointer"
-            >
-              <span className="font-[var(--font-michroma)] text-[9px] tracking-[0.2em] text-[#555566] group-hover:text-[#c5a880] transition-colors duration-300 uppercase">
-                Skip Intro
-              </span>
-              <motion.div
-                className="w-7 h-7 rounded-full border border-white/10 flex items-center justify-center text-[#555566] group-hover:text-[#c5a880] group-hover:border-[#c5a880]/30 transition-all duration-300"
-                animate={{ y: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-              >
-                <svg
-                  className="w-3 h-3"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                  />
-                </svg>
-              </motion.div>
-            </button>
-          </motion.div>
+          {/* Mobile responsive adjustments handled via media query in globals */}
         </motion.div>
       )}
     </AnimatePresence>

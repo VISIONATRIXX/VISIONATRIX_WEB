@@ -32,7 +32,7 @@ export default function ScrollNavigation({ activeSection, onDotClick }: ScrollNa
             aria-label={`Scroll to ${sec.label}`}
           >
             {/* Hover Tooltip Label */}
-            <span className="absolute right-8 py-1 px-2.5 bg-black/90 border border-gold/20 text-[#c5a880] text-[10px] font-sans tracking-[0.15em] rounded opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-md">
+            <span className="absolute right-8 py-1 px-2.5 bg-black/90 border border-gold/20 text-[#c5a880] text-[10px] font-mono tracking-[0.15em] rounded opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-md">
               {sec.label}
             </span>
 
