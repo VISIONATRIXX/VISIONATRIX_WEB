@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Calendar, CheckCircle2 } from "lucide-react";
+import { Plus, Minus, Calendar, CheckCircle2, Terminal } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface FAQItem {
@@ -58,195 +58,305 @@ export default function FAQSection() {
     
     // Play premium success confetti
     confetti({
-      particleCount: 100,
-      spread: 70,
+      particleCount: 120,
+      spread: 80,
       origin: { y: 0.6 },
       colors: ["#c5a880", "#ffffff", "#8c7353"]
     });
 
     setTimeout(() => {
       setBookingSuccess(false);
-    }, 4000);
+    }, 4500);
   };
 
   return (
     <section 
       id="faq" 
-      className="snap-section flex items-center bg-[#050507] py-20 px-6 md:px-12 lg:px-24"
+      className="snap-section relative flex items-center bg-[#050507] py-24 px-6 md:px-12 lg:px-24 overflow-hidden"
     >
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute right-[5%] top-[10%] w-[45vw] h-[45vw] bg-[#c5a880]/2 opacity-[0.02] blur-[140px] rounded-full" />
+      {/* 1. Immersive Tech-Grid Background Pattern */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.03] select-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px)
+          `,
+          backgroundSize: "45px 45px",
+          maskImage: "radial-gradient(ellipse at center, black 40%, transparent 90%)",
+          WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 90%)",
+        }}
+      />
+
+      {/* 2. Soft breathing gold ambient backdrop glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <motion.div 
+          className="absolute right-[-10%] top-[10%] w-[60vw] h-[60vw] bg-[#c5a880]/[0.015] blur-[150px] rounded-full"
+          animate={{
+            scale: [1, 1.15, 1],
+            opacity: [0.7, 0.9, 0.7],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div 
+          className="absolute left-[-15%] bottom-[-10%] w-[50vw] h-[50vw] bg-[#c5a880]/[0.008] blur-[140px] rounded-full"
+          animate={{
+            scale: [1.1, 1, 1.1],
+            opacity: [0.6, 0.8, 0.6],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start z-10">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch z-10">
         
-        {/* Left Column: Accordions (Common Queries) */}
-        <div className="lg:col-span-6 flex flex-col gap-6 w-full">
-          <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-              [ GENERAL RESOLUTIONS ]
-            </span>
-            <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
-              COMMON QUERIES
-            </h2>
-          </div>
+        {/* Left Column: Glassmorphic FAQ Accordions (Common Queries) */}
+        <div className="lg:col-span-6 flex flex-col justify-between w-full h-full gap-8">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+                  [ INTEL DIAGNOSTICS ]
+                </span>
+                <div className="w-6 h-[1px] bg-[#c5a880]/20" />
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] text-white uppercase">
+                COMMON QUERIES
+              </h2>
+            </div>
 
-          {/* Accordion container */}
-          <div className="flex flex-col gap-3 mt-4">
-            {faqs.map((faq) => {
-              const isOpen = openId === faq.id;
-              return (
-                <div 
-                  key={faq.id} 
-                  className="border-b border-white/5 pb-4 transition-all duration-300"
-                >
-                  <button
+            {/* Accordion container */}
+            <div className="flex flex-col gap-4 mt-2">
+              {faqs.map((faq) => {
+                const isOpen = openId === faq.id;
+                return (
+                  <div 
+                    key={faq.id} 
                     onClick={() => setOpenId(isOpen ? null : faq.id)}
-                    className="flex justify-between items-center w-full text-left font-outfit text-xs sm:text-sm font-bold tracking-wider py-3 text-white hover:text-[#c5a880] transition-colors duration-300 focus:outline-none cursor-pointer"
+                    className={`relative overflow-hidden rounded-sm border transition-all duration-500 group cursor-pointer p-5 sm:p-6 ${
+                      isOpen
+                        ? "border-[#c5a880]/25 bg-[#09090c]/80 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+                        : "border-white/5 bg-[#09090c]/40 hover:border-white/10 hover:bg-[#09090c]/60"
+                    }`}
                   >
-                    <span className="pr-4">{faq.id}. {faq.question}</span>
-                    {isOpen ? (
-                      <Minus className="w-4 h-4 text-[#c5a880] shrink-0" />
-                    ) : (
-                      <Plus className="w-4 h-4 text-[#c5a880] shrink-0" />
-                    )}
-                  </button>
-                  
-                  <AnimatePresence initial={false}>
+                    {/* Glowing active neon gold indicator bar */}
                     {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed pt-2 pr-4">
-                          {faq.answer}
-                        </p>
-                      </motion.div>
+                      <motion.div 
+                        layoutId="activeFAQBar"
+                        className="absolute left-0 top-0 bottom-0 w-1 bg-[#c5a880] shadow-[0_0_12px_rgba(197,168,128,0.7)]"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
                     )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+
+                    <div className="flex justify-between items-center w-full text-left font-outfit text-xs sm:text-sm font-bold tracking-wider text-white">
+                      <span className={`pr-4 transition-colors duration-300 font-mono ${isOpen ? "text-[#c5a880]" : "text-white/80 group-hover:text-[#c5a880]"}`}>
+                        {faq.id}. {faq.question}
+                      </span>
+                      
+                      <motion.div
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                        className={`w-6 h-6 border rounded-sm flex items-center justify-center shrink-0 transition-colors duration-300 ${
+                          isOpen ? "border-[#c5a880] text-[#c5a880] bg-[#c5a880]/5" : "border-white/10 text-white/50 group-hover:border-white/20 group-hover:text-white"
+                        }`}
+                      >
+                        {isOpen ? (
+                          <Minus className="w-3 h-3" />
+                        ) : (
+                          <Plus className="w-3 h-3" />
+                        )}
+                      </motion.div>
+                    </div>
+                    
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <p className="font-sans text-xs sm:text-[13px] text-[#9999aa] leading-relaxed pt-4 pr-2 pl-0.5">
+                            {faq.answer}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Submit ticket trigger */}
-          <div className="mt-4">
+          <div className="mt-2 pl-0.5">
             <a 
               href="#contact"
-              className="inline-block px-6 py-3 border border-white/10 hover:border-[#c5a880] text-white hover:text-[#c5a880] font-outfit text-[10px] tracking-[0.2em] font-semibold rounded-sm transition-all duration-300"
+              className="inline-block px-7 py-3.5 border border-white/10 hover:border-[#c5a880] hover:bg-[#c5a880]/5 text-white hover:text-[#c5a880] font-outfit text-[10px] tracking-[0.2em] font-semibold rounded-sm transition-all duration-300 shadow-sm"
             >
               SUBMIT INQUIRY TICKET
             </a>
           </div>
         </div>
 
-        {/* Right Column: Dynamic Scheduler */}
-        <div className="lg:col-span-6 flex flex-col gap-6 w-full">
-          <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-              [ SYNC RESERVATION ]
-            </span>
-            <h2 className="font-display text-3xl font-bold tracking-[0.1em] text-white uppercase">
-              RESERVE SYNC CALL
-            </h2>
-          </div>
+        {/* Right Column: Cybernetic Scheduler Calendar (Sync Reservation) */}
+        <div className="lg:col-span-6 flex flex-col justify-between w-full h-full gap-8">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+                  [ SYNC RESERVATION ]
+                </span>
+                <div className="w-6 h-[1px] bg-[#c5a880]/20" />
+              </div>
+              <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-[0.1em] text-white uppercase">
+                RESERVE SYNC CALL
+              </h2>
+            </div>
 
-          {/* Calendar Box */}
-          <div className="glass-card rounded-md p-6 border border-white/5 relative">
-            <AnimatePresence mode="wait">
-              {bookingSuccess ? (
-                <motion.div 
-                  className="flex flex-col items-center justify-center py-12 text-center"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                >
-                  <CheckCircle2 className="w-12 h-12 text-[#c5a880] mb-4 drop-shadow-[0_0_10px_rgba(197,168,128,0.2)]" />
-                  <h3 className="font-outfit text-base font-bold tracking-[0.1em] text-white mb-2 uppercase">
-                    SLOT RESERVED
-                  </h3>
-                  <p className="font-sans text-xs text-[#9999aa] max-w-xs leading-relaxed">
-                    A secure sync invitation has been compiled for <span className="text-[#c5a880] font-semibold">June {selectedDate}, 2026</span>. Please fill the contact dossier below to lock the time.
-                  </p>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {/* Month header */}
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="font-mono text-sm font-bold tracking-[0.2em] text-[#c5a880] uppercase">
-                      JUNE MMXXVI
-                    </span>
-                    <span className="font-mono text-[9px] text-[#555566] tracking-wider uppercase flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#c5a880]" />
-                      <span>TIMEZONE: IST (GMT+5:30)</span>
-                    </span>
-                  </div>
+            {/* Calendar Box */}
+            <div className="bg-[#09090c]/70 backdrop-blur-xl rounded-sm p-6 sm:p-7 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[380px] w-full">
+              {/* Scanline Glow Top Highlight */}
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#c5a880]/20 to-transparent pointer-events-none" />
 
-                  {/* Day headers */}
-                  <div className="grid grid-cols-7 gap-2 mb-3 text-center text-[9px] font-mono font-semibold text-[#555566] tracking-widest">
-                    {daysOfWeek.map((day) => (
-                      <div key={day}>{day}</div>
-                    ))}
-                  </div>
+              <AnimatePresence mode="wait">
+                {bookingSuccess ? (
+                  <motion.div 
+                    className="flex flex-col items-center justify-center py-10 text-center relative"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                  >
+                    {/* Glowing circular backdrop for checkmark */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#c5a880]/[0.03] blur-[30px] rounded-full pointer-events-none" />
 
-                  {/* Days grid */}
-                  <div className="calendar-grid">
-                    {calendarCells.map((cell, idx) => {
-                      if (cell.day === null) {
-                        return <div key={`empty-${idx}`} className="calendar-day empty-day opacity-0 pointer-events-none" />;
-                      }
+                    <motion.div
+                      animate={{ scale: [0.8, 1.1, 1], rotate: [5, -5, 0] }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      className="z-10"
+                    >
+                      <CheckCircle2 className="w-14 h-14 text-[#c5a880] mb-4 drop-shadow-[0_0_12px_rgba(197,168,128,0.4)]" />
+                    </motion.div>
 
-                      const isSelected = selectedDate === cell.day;
-                      const isDisabled = cell.disabled;
-
-                      return (
-                        <button
-                          key={`day-${cell.day}`}
-                          disabled={isDisabled}
-                          onClick={() => setSelectedDate(cell.day)}
-                          className={`calendar-day font-mono ${
-                            isSelected ? "selected-day" : ""
-                          } ${
-                            isDisabled 
-                              ? "opacity-20 cursor-not-allowed disabled-day" 
-                              : "text-white/80"
-                          }`}
-                        >
-                          {cell.day.toString().padStart(2, "0")}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Calendar CTA */}
-                  <div className="border-t border-white/5 pt-5 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-left w-full sm:w-auto">
-                      <span className="font-mono text-[9px] tracking-wider text-[#555566] uppercase block">
-                        SELECTED DATE:
-                      </span>
-                      <span className="font-mono text-xs text-white font-bold tracking-widest">
+                    <h3 className="font-outfit text-base font-extrabold tracking-[0.12em] text-gold-glow mb-2 uppercase z-10">
+                      SLOT RESERVED
+                    </h3>
+                    
+                    <div className="flex flex-col gap-1.5 items-center max-w-sm mt-1 z-10">
+                      <p className="font-sans text-[13px] text-[#9999aa] leading-relaxed">
+                        A secure sync invitation has been locked for:
+                      </p>
+                      <span className="font-mono text-xs text-white border border-[#c5a880]/30 px-3 py-1 bg-[#c5a880]/5 rounded-sm tracking-wider font-bold my-1">
                         JUNE {selectedDate ? selectedDate.toString().padStart(2, "0") : "—"}, 2026
+                      </span>
+                      <p className="font-sans text-[11px] text-[#555566] leading-relaxed max-w-xs mt-1">
+                        Please proceed to the dossier form below to complete verification and secure this slot.
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex items-center gap-2 font-mono text-[9px] text-[#c5a880] tracking-widest opacity-80 uppercase z-10">
+                      <Terminal className="w-3 h-3" />
+                      <span>TELEMETRY SECURE // OK</span>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="flex flex-col justify-between h-full"
+                  >
+                    {/* Month header */}
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="font-mono text-sm font-extrabold tracking-[0.2em] text-[#c5a880] uppercase">
+                        JUNE MMXXVI
+                      </span>
+                      <span className="font-mono text-[9px] text-[#555566] tracking-wider uppercase flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-[#c5a880]" />
+                        <span>TIMEZONE: IST (GMT+5:30)</span>
                       </span>
                     </div>
 
-                    <button
-                      disabled={!selectedDate}
-                      onClick={handleBookCall}
-                      className="w-full sm:w-auto px-6 py-3 bg-[#c5a880] disabled:bg-[#c5a880]/20 disabled:text-white/40 disabled:cursor-not-allowed text-black font-semibold font-outfit text-xs tracking-[0.18em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.25)] transition-all duration-300 cursor-pointer"
-                    >
-                      INITIALIZE SYNC CALL
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    {/* Day headers */}
+                    <div className="grid grid-cols-7 gap-2 mb-3.5 text-center text-[9px] font-mono font-bold text-[#6b7280] tracking-widest border-b border-white/5 pb-2">
+                      {daysOfWeek.map((day) => (
+                        <div key={day}>{day}</div>
+                      ))}
+                    </div>
+
+                    {/* Days grid */}
+                    <div className="grid grid-cols-7 gap-2">
+                      {calendarCells.map((cell, idx) => {
+                        if (cell.day === null) {
+                          return <div key={`empty-${idx}`} className="aspect-square opacity-0 pointer-events-none" />;
+                        }
+
+                        const isSelected = selectedDate === cell.day;
+                        const isDisabled = cell.disabled;
+
+                        return (
+                          <button
+                            key={`day-${cell.day}`}
+                            disabled={isDisabled}
+                            onClick={() => setSelectedDate(cell.day)}
+                            className={`aspect-square relative font-mono text-[11px] rounded-sm flex items-center justify-center focus:outline-none transition-all duration-300 cursor-pointer ${
+                              isSelected 
+                                ? "bg-[#c5a880] text-black font-extrabold shadow-[0_0_20px_rgba(197,168,128,0.4)] z-10" 
+                                : isDisabled 
+                                  ? "text-white/10 opacity-30 cursor-not-allowed" 
+                                  : "text-white/80 border border-white/5 bg-white/[0.01] hover:border-[#c5a880]/30 hover:bg-[#c5a880]/5 hover:text-white"
+                            }`}
+                          >
+                            {/* Breathing halo concentric indicator behind selected day */}
+                            {isSelected && (
+                              <span className="absolute -inset-1 rounded-sm border border-[#c5a880]/35 animate-ping opacity-60 pointer-events-none" />
+                            )}
+                            
+                            {/* Micro-cross hatch line for disabled weekend days */}
+                            {isDisabled && (
+                              <span className="absolute inset-0 bg-[linear-gradient(45deg,transparent_45%,rgba(255,255,255,0.05)_50%,transparent_55%)] pointer-events-none" />
+                            )}
+                            
+                            {cell.day.toString().padStart(2, "0")}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Calendar CTA */}
+                    <div className="border-t border-white/5 pt-5 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="text-left w-full sm:w-auto">
+                        <span className="font-mono text-[9px] tracking-wider text-[#6b7280] uppercase block">
+                          SELECTED DATE:
+                        </span>
+                        <span className="font-mono text-xs text-white font-bold tracking-widest">
+                          JUNE {selectedDate ? selectedDate.toString().padStart(2, "0") : "—"}, 2026
+                        </span>
+                      </div>
+
+                      <button
+                        disabled={!selectedDate}
+                        onClick={handleBookCall}
+                        className="w-full sm:w-auto px-6 py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/10 disabled:text-white/20 disabled:cursor-not-allowed text-black font-semibold font-outfit text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_20px_rgba(197,168,128,0.3)] transition-all duration-300 cursor-pointer"
+                      >
+                        INITIALIZE SYNC CALL
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
