@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface ServiceItem {
   id: string;
@@ -19,101 +20,10 @@ interface ServicesSectionProps {
   onInquiryClick: () => void;
 }
 
-function ServiceCard({ service, onClick, index }: { service: ServiceItem; onClick: () => void; index: number }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  
-  // Position mapping (-0.5 to 0.5)
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Dampened spring transformations for physical tilt response
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [15, -15]), { stiffness: 150, damping: 20 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-15, 15]), { stiffness: 150, damping: 20 });
-
-  // Floating glare tracking
-  const glareOpacity = useSpring(useTransform(y, [-0.5, 0.5], [0.25, 0]), { stiffness: 150, damping: 20 });
-  const glareX = useTransform(x, [-0.5, 0.5], ["0%", "100%"]);
-  const glareY = useTransform(y, [-0.5, 0.5], ["0%", "100%"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const relativeX = (e.clientX - rect.left) / rect.width - 0.5;
-    const relativeY = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(relativeX);
-    y.set(relativeY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onClick={onClick}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-      }}
-      initial={{ opacity: 0, scale: 0.88, y: 40 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ 
-        delay: (index % 4) * 0.08, 
-        duration: 0.7, 
-        ease: [0.16, 1, 0.3, 1] 
-      }}
-      className="glass-card w-full h-full rounded-md p-6 flex flex-col justify-between relative cursor-pointer group hover:border-[#c5a880]/30 transition-all duration-300 select-none overflow-hidden"
-    >
-      {/* Dynamic Glare Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#c5a880]/10 to-transparent pointer-events-none"
-        style={{
-          opacity: glareOpacity,
-          left: glareX,
-          top: glareY,
-          filter: "blur(20px)",
-        }}
-      />
-
-      <div style={{ transform: "translateZ(30px)" }} className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="w-11 h-11 rounded-sm border border-[#c5a880]/20 flex items-center justify-center bg-[#c5a880]/5 group-hover:bg-[#c5a880]/15 transition-colors duration-300">
-            {service.icon}
-          </div>
-          <span className="font-mono text-xs font-bold text-[#c5a880]/50 group-hover:text-[#c5a880] transition-colors duration-300">
-            {service.id}
-          </span>
-        </div>
-
-        <h3 className="font-outfit text-base sm:text-lg font-bold tracking-[0.1em] text-white group-hover:text-[#c5a880] transition-colors duration-300">
-          {service.title}
-        </h3>
-
-        <p className="font-sans text-[11px] leading-relaxed text-[#9999aa] line-clamp-3">
-          {service.description}
-        </p>
-      </div>
-
-      <div style={{ transform: "translateZ(15px)" }} className="mt-6 flex justify-between items-end border-t border-white/5 pt-4">
-        <span className="font-mono text-[8px] tracking-[0.15em] text-[#555566]">
-          {service.hudTitle}
-        </span>
-        <span className="font-outfit text-[10px] tracking-[0.18em] text-[#c5a880] group-hover:text-white transition-colors duration-300 flex items-center gap-1">
-          OBSERVE <span className="translate-y-[0.5px]">→</span>
-        </span>
-      </div>
-    </motion.div>
-  );
-}
-
 export default function ServicesSection({ onInquiryClick }: ServicesSectionProps) {
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const services: ServiceItem[] = [
     {
@@ -270,18 +180,153 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
     }
   ];
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let mm = gsap.matchMedia();
+    let scrollTween: gsap.core.Tween | null = null;
+
+    const timer = setTimeout(() => {
+      mm.add("(min-width: 1024px)", () => {
+        // Initial setup for cards positioning (center stack)
+        services.forEach((_, idx) => {
+          const card = cardRefs.current[idx];
+          if (!card) return;
+          
+          if (idx === 0) {
+            gsap.set(card, {
+              xPercent: 0,
+              rotateY: 0,
+              scale: 1,
+              opacity: 1,
+              pointerEvents: "auto",
+              transformOrigin: "center center",
+            });
+          } else {
+            gsap.set(card, {
+              xPercent: 150,
+              rotateY: -45,
+              scale: 0.8,
+              opacity: 0,
+              pointerEvents: "none",
+              transformOrigin: "center center",
+            });
+          }
+        });
+
+        // 3D Turntable timeline
+        // 7 transitions, each having 0.5 hold + 1.0 animation time. Total duration = 11.0 units.
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            pin: true,
+            start: "top top",
+            end: () => `+=${window.innerHeight * 5}`,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const t = self.progress * tl.duration();
+              let active = 0;
+              if (t < 0.5) {
+                active = 0;
+              } else {
+                active = Math.round((t - 0.25) / 1.5);
+                active = Math.max(0, Math.min(services.length - 1, active));
+              }
+              setActiveIndex(active);
+            }
+          }
+        });
+
+        for (let i = 0; i < services.length - 1; i++) {
+          // Hold active card static for reading
+          tl.to({}, { duration: 0.5 });
+
+          // Transition out current card (slide left & rotate out)
+          tl.to(cardRefs.current[i], {
+            xPercent: -150,
+            rotateY: 45,
+            scale: 0.8,
+            opacity: 0,
+            pointerEvents: "none",
+            ease: "power2.inOut",
+            duration: 1
+          }, `transition-${i}`);
+
+          // Transition in next card (slide in from right & rotate flat)
+          tl.fromTo(cardRefs.current[i + 1], {
+            xPercent: 150,
+            rotateY: -45,
+            scale: 0.8,
+            opacity: 0,
+            pointerEvents: "none"
+          }, {
+            xPercent: 0,
+            rotateY: 0,
+            scale: 1,
+            opacity: 1,
+            pointerEvents: "auto",
+            ease: "power2.inOut",
+            duration: 1
+          }, `transition-${i}`);
+        }
+
+        // Final hold for the last card
+        tl.to({}, { duration: 0.5 });
+
+        // Keep reference to trigger cleanup
+        scrollTween = tl as any;
+      });
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      mm.revert();
+      if (scrollTween && (scrollTween as any).scrollTrigger) {
+        (scrollTween as any).scrollTrigger.kill();
+        scrollTween.kill();
+      }
+    };
+  }, []);
+
+  const handlePaginationClick = (idx: number) => {
+    const lenis = (window as any).lenis;
+    const section = sectionRef.current;
+    if (lenis && section) {
+      const rect = section.getBoundingClientRect();
+      const sectionTop = window.scrollY + rect.top;
+      const totalScrollDistance = window.innerHeight * 5;
+      const D = (services.length - 1) * 1.5 + 0.5;
+      const targetTime = idx * 1.5;
+      const progress = targetTime / D;
+      const targetScroll = sectionTop + progress * totalScrollDistance;
+
+      lenis.scrollTo(targetScroll, {
+        duration: 1.4,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+    }
+  };
+
   return (
     <section 
+      ref={sectionRef}
       id="services" 
-      className="relative min-h-screen flex items-center bg-[#050507] py-24 px-6 md:px-12 lg:px-24"
+      className="relative w-full lg:h-screen bg-[#050507] py-16 lg:py-0 px-6 md:px-12 lg:px-24 flex flex-col justify-center overflow-hidden"
     >
+      {/* Background Soft Glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute left-[5%] top-[10%] w-[45vw] h-[45vw] bg-[#c5a880]/2 opacity-[0.02] blur-[140px] rounded-full" />
+        <div className="absolute left-[5%] top-[10%] w-[45vw] h-[45vw] bg-[#c5a880]/[0.015] blur-[140px] rounded-full" />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full z-10">
+      <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full lg:justify-between justify-center lg:py-16">
+        
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-8 mb-12">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 mb-8 lg:mb-4 shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs tracking-[0.4em] text-[#6b7280] uppercase">
               CAPABILITIES
@@ -293,67 +338,34 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           </h2>
         </div>
 
-        {/* 3D Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Cards Turntable Deck */}
+        <div className="lg:relative lg:flex-1 lg:w-full lg:max-w-5xl lg:mx-auto lg:flex lg:items-center lg:justify-center lg:perspective-[2000px] lg:transform-style-3d flex flex-col gap-8 w-full">
           {services.map((service, index) => (
-            <ServiceCard 
-              key={service.id} 
-              service={service} 
-              index={index} 
-              onClick={() => {
-                setSelectedService(service);
-                // Temporarily disable Lenis scroll
-                (window as any).lenis?.stop();
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Progressive Overlay Details Modal */}
-      <AnimatePresence>
-        {selectedService && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[11000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
-          >
-            {/* Modal Card Frame */}
-            <motion.div 
-              initial={{ scale: 0.95, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 20, opacity: 0 }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="glass-card rounded-md max-w-3xl w-full p-6 md:p-10 relative max-h-[90vh] overflow-y-auto modal-scrollbar"
+            <div
+              key={service.id}
+              ref={(el) => { cardRefs.current[index] = el; }}
+              className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-5xl lg:h-[450px] lg:opacity-0 lg:pointer-events-none w-full h-auto flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/90 backdrop-blur-md border border-white/10 hover:border-[#c5a880]/20 rounded-md transition-colors duration-300 relative shadow-2xl overflow-hidden"
+              style={{ transformStyle: "preserve-3d" }}
             >
-              {/* Close Button */}
-              <button 
-                onClick={() => {
-                  setSelectedService(null);
-                  // Restore Lenis scroll
-                  (window as any).lenis?.start();
-                }}
-                className="absolute top-6 right-6 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:border-white/30 transition-all cursor-pointer z-[11005]"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {/* Glass Glare Highlight */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-transparent pointer-events-none" />
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
-                {/* HUD Telemetry (Left inside modal) */}
-                <div className="md:col-span-5 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 pb-6 md:pb-0 md:pr-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch h-full w-full">
+                
+                {/* Left Column: Specs HUD */}
+                <div className="lg:col-span-5 flex flex-col justify-center border-l border-[#c5a880]/20 pl-6 lg:pr-8 py-2">
                   <div className="flex flex-col gap-6">
                     <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-                      {selectedService.hudTitle}
+                      {service.hudTitle}
                     </span>
                     
-                    <div className="flex flex-col gap-5">
-                      {selectedService.hudItems.map((item, idx) => (
-                        <div key={idx} className="flex flex-col gap-1">
-                          <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-                            {item.label}:
+                    <div className="flex flex-col gap-4">
+                      {service.hudItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2 font-mono">
+                          <span className="text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+                            {item.label}
                           </span>
-                          <span className="font-mono text-xs text-white/90 font-medium tracking-wide uppercase">
+                          <span className="text-xs text-white/95 font-medium tracking-wide uppercase text-right">
                             {item.value}
                           </span>
                         </div>
@@ -362,43 +374,53 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
                   </div>
                 </div>
 
-                {/* Main Content Area (Right inside modal) */}
-                <div className="md:col-span-7 flex flex-col justify-between pl-0 md:pl-4 pt-4 md:pt-0">
-                  <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-sm border border-[#c5a880]/30 flex items-center justify-center bg-[#c5a880]/5">
-                        {selectedService.icon}
+                {/* Right Column: Content */}
+                <div className="lg:col-span-7 flex flex-col justify-between pl-0 lg:pl-4 pt-4 lg:pt-0">
+                  
+                  {/* Service ID, Title & Icon */}
+                  <div className="flex flex-col gap-4">
+                    <div className="flex">
+                      <span className="font-mono text-xs font-bold text-[#c5a880] border-b border-[#c5a880]/30 pb-0.5 pr-3 tracking-widest">
+                        {service.id}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-1">
+                      <div className="w-11 h-11 rounded-sm border border-[#c5a880]/30 flex items-center justify-center bg-[#c5a880]/5">
+                        {service.icon}
                       </div>
-                      <h3 className="font-outfit text-xl sm:text-2xl font-bold tracking-[0.12em] text-white">
-                        {selectedService.title}
+                      <h3 className="font-outfit text-xl sm:text-2xl font-black tracking-[0.1em] text-white uppercase">
+                        {service.title}
                       </h3>
                     </div>
 
-                    <p className="font-sans text-xs sm:text-sm leading-relaxed text-[#9999aa]">
-                      {selectedService.description}
+                    <p className="font-sans text-[12px] sm:text-[13px] leading-relaxed text-[#9999aa] mt-2">
+                      {service.description}
                     </p>
 
-                    {/* Bullet Highlights */}
+                    {/* Highlights Bullet Lines */}
                     <div className="flex flex-col gap-2 mt-2">
-                      {selectedService.bullets.map((bullet, idx) => (
-                        <span key={idx} className="font-mono text-xs text-[#c5a880] tracking-wide">
+                      {service.bullets.map((bullet, idx) => (
+                        <span key={idx} className="font-mono text-[11px] text-[#c5a880]/80 tracking-wide font-medium">
                           {bullet}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  {/* Tools Stack & CTA Footer */}
-                  <div className="border-t border-white/10 pt-6 mt-8 flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end">
-                    <div className="flex flex-col gap-3">
-                      <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+                  {/* Domain Tools & CTA Footer */}
+                  <div className="border-t border-white/10 pt-4 lg:pt-6 mt-6 flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end shrink-0">
+                    
+                    {/* Domain Tools badges */}
+                    <div className="flex flex-col gap-2">
+                      <span className="font-mono text-[8px] tracking-[0.2em] text-[#6b7280] uppercase">
                         DOMAIN TOOLS STACK
                       </span>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedService.tools.map((tool, idx) => (
+                      <div className="flex flex-wrap gap-1.5">
+                        {service.tools.map((tool, idx) => (
                           <span 
                             key={idx} 
-                            className="font-mono border border-white/15 px-2.5 py-1 text-[10px] tracking-wider text-[#9999aa] bg-white/5 rounded-sm"
+                            className="font-mono border border-white/10 px-2 py-0.5 text-[9px] tracking-wider text-[#9999aa] bg-white/5 rounded-sm"
                           >
                             {tool}
                           </span>
@@ -406,24 +428,57 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
                       </div>
                     </div>
 
+                    {/* Inquiry Button */}
                     <button 
-                      onClick={() => {
-                        setSelectedService(null);
-                        (window as any).lenis?.start();
-                        onInquiryClick();
-                      }}
+                      onClick={onInquiryClick}
                       className="font-outfit text-xs font-semibold tracking-[0.18em] text-[#c5a880] hover:text-white transition-colors duration-300 flex items-center gap-1.5 group/link pb-1 border-b border-transparent hover:border-[#c5a880] cursor-pointer"
                     >
                       <span>START INQUIRY</span>
                       <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
                     </button>
                   </div>
+
                 </div>
+
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Interactive Pagination Tracker */}
+        <div className="hidden lg:flex flex-col items-center gap-4 mt-8 shrink-0">
+          <div className="flex items-center gap-6 font-mono text-xs tracking-widest">
+            {services.map((s, idx) => {
+              const isActive = activeIndex === idx;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => handlePaginationClick(idx)}
+                  className={`transition-all duration-300 font-bold px-1.5 cursor-pointer relative ${
+                    isActive ? "text-[#c5a880] scale-110" : "text-[#6b7280] hover:text-white"
+                  }`}
+                >
+                  {s.id}
+                  {isActive && (
+                    <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#c5a880] rounded-full" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Progress Tracker Slider bar */}
+          <div className="relative w-80 h-[1px] bg-white/10 rounded-full overflow-hidden">
+            <div 
+              className="absolute top-0 left-0 h-full bg-[#c5a880] transition-all duration-500 ease-out"
+              style={{
+                width: `${((activeIndex) / (services.length - 1)) * 100}%`
+              }}
+            />
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 }
