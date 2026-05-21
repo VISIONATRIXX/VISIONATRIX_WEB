@@ -60,7 +60,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
 
         {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
         <h1 
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex flex-wrap justify-center overflow-hidden"
+          className="font-display text-3xl min-[360px]:text-4xl min-[480px]:text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center whitespace-nowrap overflow-hidden"
         >
           {"VISIONATRIX".split("").map((char, index) => (
             <motion.span

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 interface HeaderProps {
@@ -11,7 +11,20 @@ interface HeaderProps {
 
 export default function Header({ activeSection, onNavClick }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const progressBarRef = useRef<HTMLDivElement>(null);
+
+  // Disable body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -124,17 +137,104 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           })}
         </nav>
 
-        {/* Get Started CTA */}
+        {/* Right Section: CTA & Mobile Menu Toggle */}
         <div className="flex items-center gap-4">
+          {/* Get Started CTA */}
+          <div className="hidden sm:flex items-center">
+            <button
+              onClick={() => onNavClick("contact")}
+              className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[11.5px] tracking-[0.2em] px-6 py-3 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+            >
+              <span>GET STARTED</span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </button>
+          </div>
+
+          {/* Mobile menu trigger */}
           <button
-            onClick={() => onNavClick("contact")}
-            className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[11.5px] tracking-[0.2em] px-6 py-3 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex lg:hidden flex-col items-center justify-center w-10 h-10 border border-[#c5a880]/35 rounded-sm bg-[#0b0b0e]/80 text-[#c5a880] cursor-pointer z-[10005] relative focus:outline-none"
+            aria-label="Toggle mobile menu"
           >
-            <span>GET STARTED</span>
-            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            <div className="relative w-5 h-4 flex flex-col justify-between items-center">
+              <motion.span
+                animate={isMobileMenuOpen ? { rotate: 45, y: 7.25 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="w-5 h-[1.5px] bg-[#c5a880] origin-center"
+              />
+              <motion.span
+                animate={isMobileMenuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className="w-5 h-[1.5px] bg-[#c5a880] origin-center"
+              />
+              <motion.span
+                animate={isMobileMenuOpen ? { rotate: -45, y: -7.25 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="w-5 h-[1.5px] bg-[#c5a880] origin-center"
+              />
+            </div>
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu Drawer Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[10000] lg:hidden bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center"
+          >
+            {/* Background design pattern */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] bg-[#c5a880]/3 blur-[120px] rounded-full" />
+            </div>
+
+            {/* Menu Links */}
+            <nav className="flex flex-col items-center gap-7 z-10">
+              {navItems.map((item, idx) => {
+                const active = isItemActive(item);
+                return (
+                  <motion.button
+                    key={idx}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05, duration: 0.4 }}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onNavClick(item.id);
+                    }}
+                    className={`font-outfit text-base tracking-[0.22em] transition-colors duration-300 cursor-pointer ${
+                      active 
+                        ? "text-[#c5a880] font-semibold" 
+                        : "text-[#94a3b8] hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </motion.button>
+                );
+              })}
+
+              {/* Mobile CTA Button inside the menu drawer */}
+              <motion.button
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navItems.length * 0.05, duration: 0.4 }}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onNavClick("contact");
+                }}
+                className="mt-6 border border-[#c5a880] bg-[#c5a880]/5 hover:bg-[#c5a880]/15 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[12px] tracking-[0.2em] px-8 py-3.5 rounded-sm transition-all duration-300 flex items-center gap-2 cursor-pointer"
+              >
+                <span>GET STARTED</span>
+                <span>→</span>
+              </motion.button>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

@@ -325,7 +325,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="glass-card rounded-md max-w-3xl w-full p-6 md:p-10 relative overflow-hidden"
+              className="glass-card rounded-md max-w-3xl w-full p-6 md:p-10 relative max-h-[90vh] overflow-y-auto modal-scrollbar"
             >
               {/* Close Button */}
               <button 

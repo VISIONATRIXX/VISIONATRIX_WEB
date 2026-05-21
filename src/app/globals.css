@@ -307,3 +307,40 @@ html.lenis, html.lenis body {
 .nav-link-underline.active::after {
   transform: scaleX(1);
 }
+
+/* Global Responsiveness Overrides */
+@media (max-width: 1023px) {
+  .snap-section {
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .calendar-grid {
+    gap: 4px;
+  }
+  .calendar-day {
+    font-size: 0.75rem;
+  }
+}
+
+/* Custom Scrollbar for Modal content */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 15, 20, 0.2);
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(197, 168, 128, 0.3);
+  border-radius: 2px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(197, 168, 128, 0.6);
+}
+
