@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -11,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ activeSection, onNavClick }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,9 +20,18 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
       } else {
         setScrolled(false);
       }
+
+      // Calculate scroll progress percentage
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${progress}%`;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
     return () => {
@@ -63,6 +73,13 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" as const }}
     >
+      {/* Top Scroll Progress Bar */}
+      <div
+        ref={progressBarRef}
+        className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#c5a880] via-[#e2cbb0] to-[#c5a880] shadow-[0_0_10px_rgba(197,168,128,0.75)] will-change-[width]"
+        style={{ width: "0%" }}
+      />
+
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
         {/* Logo and Brand Name */}
         <div 
