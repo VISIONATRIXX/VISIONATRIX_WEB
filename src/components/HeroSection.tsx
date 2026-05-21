@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 interface HeroSectionProps {
   onCtaClick: (target: string) => void;
@@ -8,6 +8,17 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onCtaClick, triggerEntrance = false }: HeroSectionProps) {
+  const { scrollY } = useScroll();
+
+  // Butter-smooth scroll parallax transforms for main content
+  const opacity = useTransform(scrollY, [0, 450], [1, 0]);
+  const scale = useTransform(scrollY, [0, 450], [1, 0.88]);
+  const y = useTransform(scrollY, [0, 450], [0, -50]);
+
+  // Bottom info panel fades out quicker for a cleaner exit
+  const bottomOpacity = useTransform(scrollY, [0, 220], [1, 0]);
+  const bottomY = useTransform(scrollY, [0, 220], [0, -20]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -43,79 +54,84 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
 
       {/* Main Content Area */}
       <motion.div
-        className="flex flex-col items-center text-center max-w-5xl z-10 my-auto"
+        className="flex flex-col items-center text-center max-w-5xl z-10 my-auto w-full"
         variants={containerVariants}
         initial="hidden"
         animate={triggerEntrance ? "visible" : "hidden"}
       >
-        {/* Upper Tag — matches 2.png exactly */}
         <motion.div
-          className="border border-[#c5a880]/25 px-6 py-2 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
-          variants={itemVariants}
+          className="flex flex-col items-center text-center w-full"
+          style={{ opacity, scale, y }}
         >
-          <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
-            [ CREATIVE TECHNOLOGY STUDIO — 2026 ]
-          </span>
-        </motion.div>
+          {/* Upper Tag — matches 2.png exactly */}
+          <motion.div
+            className="border border-[#c5a880]/25 px-6 py-2 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
+            variants={itemVariants}
+          >
+            <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
+              [ CREATIVE TECHNOLOGY STUDIO — 2026 ]
+            </span>
+          </motion.div>
 
-        {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
-        <h1
-          className="font-display text-3xl min-[360px]:text-4xl min-[480px]:text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center whitespace-nowrap overflow-hidden"
-        >
-          {"VISIONATRIX".split("").map((char, index) => (
-            <motion.span
-              key={index}
-              initial={{ y: "105%", opacity: 0 }}
-              animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
-              transition={{
-                delay: 0.2 + index * 0.05,
-                duration: 0.85,
-                ease: [0.16, 1, 0.3, 1]
-              }}
-              className="inline-block origin-bottom"
-            >
-              {char}
-            </motion.span>
-          ))}
-        </h1>
-
-        {/* Subtext — Michroma, lighter weight, spaced, word-by-word reveal */}
-        <p className="font-sans text-[11px] sm:text-xs md:text-sm tracking-[0.35em] text-white/50 mb-12 flex flex-wrap justify-center gap-x-2">
-          {"DESIGN. VISUALIZE. EXPERIENCE.".split(" ").map((word, index) => (
-            <span key={index} className="inline-block overflow-hidden py-0.5">
+          {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
+          <h1
+            className="font-display text-3xl min-[360px]:text-4xl min-[480px]:text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center whitespace-nowrap overflow-hidden"
+          >
+            {"VISIONATRIX".split("").map((char, index) => (
               <motion.span
-                initial={{ y: "105%" }}
-                animate={triggerEntrance ? { y: 0 } : { y: "105%" }}
+                key={index}
+                initial={{ y: "105%", opacity: 0 }}
+                animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
                 transition={{
-                  delay: 0.85 + index * 0.12,
-                  duration: 0.7,
+                  delay: 0.2 + index * 0.05,
+                  duration: 0.85,
                   ease: [0.16, 1, 0.3, 1]
                 }}
-                className="inline-block"
+                className="inline-block origin-bottom"
               >
-                {word}
+                {char}
               </motion.span>
-            </span>
-          ))}
-        </p>
+            ))}
+          </h1>
 
-        {/* Action Buttons — matching 2.png: gold filled + white bordered */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-5 justify-center items-center"
-          variants={itemVariants}
-        >
-          <button
-            onClick={() => onCtaClick("works")}
-            className="px-10 py-4 bg-[#c5a880] text-[#0a0a0a] font-outfit text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d4bb95] hover:shadow-[0_0_30px_rgba(197,168,128,0.35)] transition-all duration-300 cursor-pointer"
+          {/* Subtext — Michroma, lighter weight, spaced, word-by-word reveal */}
+          <p className="font-sans text-[11px] sm:text-xs md:text-sm tracking-[0.35em] text-white/50 mb-12 flex flex-wrap justify-center gap-x-2">
+            {"DESIGN. VISUALIZE. EXPERIENCE.".split(" ").map((word, index) => (
+              <span key={index} className="inline-block overflow-hidden py-0.5">
+                <motion.span
+                  initial={{ y: "105%" }}
+                  animate={triggerEntrance ? { y: 0 } : { y: "105%" }}
+                  transition={{
+                    delay: 0.85 + index * 0.12,
+                    duration: 0.7,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  className="inline-block"
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
+          </p>
+
+          {/* Action Buttons — matching 2.png: gold filled + white bordered */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-5 justify-center items-center"
+            variants={itemVariants}
           >
-            VIEW PORTFOLIO
-          </button>
-          <button
-            onClick={() => onCtaClick("contact")}
-            className="px-10 py-4 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-outfit text-[11px] tracking-[0.18em] rounded-sm transition-all duration-300 cursor-pointer"
-          >
-            START PROJECT
-          </button>
+            <button
+              onClick={() => onCtaClick("works")}
+              className="px-10 py-4 bg-[#c5a880] text-[#0a0a0a] font-outfit text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d4bb95] hover:shadow-[0_0_30px_rgba(197,168,128,0.35)] transition-all duration-300 cursor-pointer"
+            >
+              VIEW PORTFOLIO
+            </button>
+            <button
+              onClick={() => onCtaClick("contact")}
+              className="px-10 py-4 border border-white/20 hover:border-white/40 hover:bg-white/5 text-white font-outfit text-[11px] tracking-[0.18em] rounded-sm transition-all duration-300 cursor-pointer"
+            >
+              START PROJECT
+            </button>
+          </motion.div>
         </motion.div>
       </motion.div>
 
@@ -126,58 +142,63 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
         animate={triggerEntrance ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ delay: 0.8, duration: 0.6 }}
       >
-        {/* Two column: Locations left, Focus right */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 text-center md:text-left border-t border-white/5 pt-6 mb-6">
-          {/* Locations */}
-          <div className="flex flex-col gap-1">
-            <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-              LOCATIONS
-            </span>
-            <span className="font-mono text-[11px] tracking-[0.12em] text-white">
-              ACROSS THE WORLD
-            </span>
-          </div>
-
-          {/* Focus */}
-          <div className="flex flex-col gap-1 md:items-end">
-            <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-              FOCUS
-            </span>
-            <span className="font-mono text-[11px] tracking-[0.12em] text-[#c5a880]">
-              SENSORY ARCHITECTURE
-            </span>
-          </div>
-        </div>
-
-        {/* Scroll Indicator — centered below, matching 2.png */}
-        <div
-          className="flex flex-col items-center gap-2 cursor-pointer"
-          onClick={() => onCtaClick("studio")}
+        <motion.div
+          className="w-full flex flex-col items-center"
+          style={{ opacity: bottomOpacity, y: bottomY }}
         >
-          <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-            SCROLL TO OBSERVE
-          </span>
-          <motion.div
-            className="text-[#c5a880]"
-            animate={{ y: [0, 5, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          {/* Two column: Locations left, Focus right */}
+          <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 text-center md:text-left border-t border-white/5 pt-6 mb-6">
+            {/* Locations */}
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+                LOCATIONS
+              </span>
+              <span className="font-mono text-[11px] tracking-[0.12em] text-white">
+                ACROSS THE WORLD
+              </span>
+            </div>
+
+            {/* Focus */}
+            <div className="flex flex-col gap-1 md:items-end">
+              <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+                FOCUS
+              </span>
+              <span className="font-mono text-[11px] tracking-[0.12em] text-[#c5a880]">
+                SENSORY ARCHITECTURE
+              </span>
+            </div>
+          </div>
+
+          {/* Scroll Indicator — centered below, matching 2.png */}
+          <div
+            className="flex flex-col items-center gap-2 cursor-pointer"
+            onClick={() => onCtaClick("studio")}
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+            <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
+              SCROLL TO OBSERVE
+            </span>
+            <motion.div
+              className="text-[#c5a880]"
+              animate={{ y: [0, 5, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </motion.div>
-        </div>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+              </svg>
+            </motion.div>
+          </div>
+        </motion.div>
       </motion.div>
     </section>
   );

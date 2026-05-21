@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, BarChart3 } from "lucide-react";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -420,7 +421,8 @@ export default function WorksSection() {
         <div className="absolute right-[5%] top-[10%] w-[35vw] h-[35vw] bg-[#c5a880]/[0.015] blur-[150px] rounded-full" />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full justify-between">
+      <ScrollAnimatedWrapper enableY={false} enableScale={false} className="h-full flex flex-col justify-between">
+        <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full justify-between">
         
         {/* Header Row: Title & Category Navigation */}
         <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-6 mb-4 md:mb-8 shrink-0">
@@ -489,7 +491,8 @@ export default function WorksSection() {
           </div>
         </div>
 
-      </div>
+        </div>
+      </ScrollAnimatedWrapper>
 
       {/* Case Study Details Modal Overlay */}
       <AnimatePresence>

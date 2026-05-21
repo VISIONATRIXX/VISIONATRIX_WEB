@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Activity } from "lucide-react";
 
 interface ServiceItem {
@@ -787,7 +788,8 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
         <div className="absolute right-[5%] bottom-[10%] w-[35vw] h-[35vw] bg-white/[0.008] blur-[100px] rounded-full" />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full z-10 flex flex-col lg:h-[82vh] justify-between relative">
+      <ScrollAnimatedWrapper className="flex flex-col justify-center">
+        <div className="max-w-7xl mx-auto w-full z-10 flex flex-col lg:h-[82vh] justify-between relative">
         
         {/* Modern Cyber Section Header */}
         <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 mb-8 lg:mb-10 shrink-0 relative">
@@ -1032,6 +1034,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
         </div>
 
       </div>
-    </section>
+    </ScrollAnimatedWrapper>
+  </section>
   );
 }

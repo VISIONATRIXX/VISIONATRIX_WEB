@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Calendar, CheckCircle2, Terminal } from "lucide-react";
 import confetti from "canvas-confetti";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface FAQItem {
   id: string;
@@ -148,7 +149,8 @@ I have requested a Sync Call reservation:
         />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch z-10">
+      <ScrollAnimatedWrapper className="z-10 w-full flex items-center justify-center">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-stretch">
         
         {/* Left Column: Glassmorphic FAQ Accordions (Common Queries) */}
         <div className="lg:col-span-6 flex flex-col justify-between w-full h-full gap-8">
@@ -416,7 +418,8 @@ I have requested a Sync Call reservation:
           </div>
         </div>
 
-      </div>
+        </div>
+      </ScrollAnimatedWrapper>
     </section>
   );
 }

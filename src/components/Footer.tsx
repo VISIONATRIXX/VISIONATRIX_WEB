@@ -103,15 +103,15 @@ export default function Footer({ onLinkClick }: FooterProps) {
           <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             CAPABILITIES MENU
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Video Editing</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">VFX Simulations</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">CGI Advertising</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Environment Creation</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">WebGL Web Code</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">App Architectures</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">AI Production Shoots</button>
-            <button onClick={() => onLinkClick("services")} className="text-left hover:text-[#c5a880] transition-colors duration-300">VR & Spatial XR</button>
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60 pl-3">
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">Video Editing</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">VFX Simulations</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">CGI Advertising</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">Environment Creation</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">WebGL Web Code</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">App Architectures</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">AI Production Shoots</button>
+            <button onClick={() => onLinkClick("services")} className="footer-link text-left">VR & Spatial XR</button>
           </div>
         </div>
 
@@ -120,12 +120,12 @@ export default function Footer({ onLinkClick }: FooterProps) {
           <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             STUDIO SYSTEM
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
-            <button onClick={() => onLinkClick("studio")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Studio Profile</button>
-            <button onClick={() => onLinkClick("process")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Roadmap Steps</button>
-            <button onClick={() => onLinkClick("works")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Metrics Audits</button>
-            <button onClick={() => onLinkClick("engine-stack")} className="text-left hover:text-[#c5a880] transition-colors duration-300">Telemetry Stack</button>
-            <button onClick={() => onLinkClick("feedback")} className="text-left hover:text-[#c5a880] transition-colors duration-300">B2B Feedback</button>
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60 pl-3">
+            <button onClick={() => onLinkClick("studio")} className="footer-link text-left">Studio Profile</button>
+            <button onClick={() => onLinkClick("process")} className="footer-link text-left">Roadmap Steps</button>
+            <button onClick={() => onLinkClick("works")} className="footer-link text-left">Metrics Audits</button>
+            <button onClick={() => onLinkClick("engine-stack")} className="footer-link text-left">Telemetry Stack</button>
+            <button onClick={() => onLinkClick("feedback")} className="footer-link text-left">B2B Feedback</button>
           </div>
         </div>
 
@@ -134,11 +134,11 @@ export default function Footer({ onLinkClick }: FooterProps) {
           <span className="font-outfit text-[10px] tracking-widest text-[#c5a880] font-bold uppercase">
             REGISTRIES
           </span>
-          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60">
-            <a href="#contact" className="hover:text-[#c5a880] transition-colors duration-300">Direct Scoping Inbox</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#c5a880] transition-colors duration-300">Studio LinkedIn</a>
-            <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#c5a880] transition-colors duration-300">Studio X / Twitter</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#c5a880] transition-colors duration-300">Shared Github</a>
+          <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60 pl-3">
+            <a href="#contact" className="footer-link">Direct Scoping Inbox</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-link">Studio LinkedIn</a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="footer-link">Studio X / Twitter</a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="footer-link">Shared Github</a>
           </div>
         </div>
 

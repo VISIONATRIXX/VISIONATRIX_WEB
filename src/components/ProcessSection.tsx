@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface TimelineStep {
   id: string;
@@ -164,7 +165,8 @@ export default function ProcessSection() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] bg-[#c5a880]/[0.015] opacity-50 blur-[200px] rounded-full" />
       </div>
 
-      <div className="max-w-6xl mx-auto w-full z-10 flex flex-col items-center">
+      <ScrollAnimatedWrapper>
+        <div className="max-w-6xl mx-auto w-full z-10 flex flex-col items-center">
         {/* Section Header */}
         <div className="w-full flex flex-col items-center text-center mb-16 md:mb-24">
           <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
@@ -268,6 +270,7 @@ export default function ProcessSection() {
 
         </div>
       </div>
-    </section>
+    </ScrollAnimatedWrapper>
+  </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface Tool {
   name: string;
@@ -160,7 +161,8 @@ export default function EngineStackSection() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#c5a880]/[0.012] opacity-60 blur-[150px] rounded-full" />
       </div>
 
-      <div className="max-w-7xl mx-auto w-full z-10 flex flex-col items-center">
+      <ScrollAnimatedWrapper>
+        <div className="max-w-7xl mx-auto w-full z-10 flex flex-col items-center">
         
         {/* Centered Section Header */}
         <div className="w-full flex flex-col items-center text-center mb-12">
@@ -245,6 +247,7 @@ export default function EngineStackSection() {
         </div>
 
       </div>
-    </section>
+    </ScrollAnimatedWrapper>
+  </section>
   );
 }

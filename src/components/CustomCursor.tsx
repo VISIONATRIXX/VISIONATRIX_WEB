@@ -8,6 +8,7 @@ export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const cursorOuterRef = useRef<HTMLDivElement>(null);
   const cursorInnerRef = useRef<HTMLDivElement>(null);
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -22,11 +23,13 @@ export default function CustomCursor() {
     const cursor = cursorRef.current;
     const outer = cursorOuterRef.current;
     const inner = cursorInnerRef.current;
-    if (!cursor || !outer || !inner) return;
+    const glow = cursorGlowRef.current;
+    if (!cursor || !outer || !inner || !glow) return;
 
     let mouseCoords = { x: -100, y: -100 };
     let outerCoords = { x: -100, y: -100 };
     let innerCoords = { x: -100, y: -100 };
+    let glowCoords = { x: -100, y: -100 };
     let isVisible = false;
 
     const moveCursor = (e: MouseEvent) => {
@@ -50,11 +53,18 @@ export default function CustomCursor() {
       innerCoords.x += (mouseCoords.x - innerCoords.x) * 0.45;
       innerCoords.y += (mouseCoords.y - innerCoords.y) * 0.45;
 
+      // Lerp for glow spotlight (slowest, dreamy lag)
+      glowCoords.x += (mouseCoords.x - glowCoords.x) * 0.08;
+      glowCoords.y += (mouseCoords.y - glowCoords.y) * 0.08;
+
       if (cursorOuterRef.current) {
         cursorOuterRef.current.style.transform = `translate3d(${outerCoords.x}px, ${outerCoords.y}px, 0) translate(-50%, -50%)`;
       }
       if (cursorInnerRef.current) {
         cursorInnerRef.current.style.transform = `translate3d(${innerCoords.x}px, ${innerCoords.y}px, 0) translate(-50%, -50%)`;
+      }
+      if (cursorGlowRef.current) {
+        cursorGlowRef.current.style.transform = `translate3d(${glowCoords.x}px, ${glowCoords.y}px, 0) translate(-50%, -50%)`;
       }
 
       animationFrameId = requestAnimationFrame(updatePhysics);
@@ -145,6 +155,16 @@ export default function CustomCursor() {
       ref={cursorRef}
       className="fixed top-0 left-0 pointer-events-none z-[9999] opacity-0 transition-opacity duration-300 w-full h-full"
     >
+      {/* Blur Spotlight Glow — large soft radial halo */}
+      <div
+        ref={cursorGlowRef}
+        className="absolute rounded-full cursor-glow"
+        style={{
+          transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
+          willChange: "transform",
+        }}
+      />
+
       {/* Outer Ring */}
       <div
         ref={cursorOuterRef}

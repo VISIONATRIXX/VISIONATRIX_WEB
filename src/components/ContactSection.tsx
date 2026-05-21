@@ -7,6 +7,7 @@ import { Upload, CheckCircle2, Clock, Paperclip, AlertTriangle } from "lucide-re
 import confetti from "canvas-confetti";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface FormData {
   fullName: string;
@@ -240,8 +241,10 @@ A new Project Proposal has been submitted:
       {/* Spacer */}
       <div className="h-10" />
 
-      {/* Main Grid Content */}
-      <div className="max-w-7xl mx-auto w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start my-auto">
+      {/* Animated Wrapper for scroll parallax */}
+      <ScrollAnimatedWrapper className="flex flex-col justify-between my-auto w-full z-10">
+        {/* Main Grid Content */}
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Side: Header & Intro */}
         <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
@@ -432,18 +435,19 @@ A new Project Proposal has been submitted:
 
       </div>
 
-      {/* Clocks Registry Footer */}
-      <div className="w-full border-t border-white/5 pt-6 mt-12 flex justify-center text-center z-10">
-        <div className="font-mono text-[10px] text-[#555566] tracking-[0.18em] uppercase flex items-center gap-1.5">
-          <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
-          <span>CLOCKS: </span>
-          <span className="text-white/80 font-medium">BENGALURU: {timeStr || "00:00:00"}</span>
-          <span> // </span>
-          <span className="text-white/80 font-medium">MUMBAI: {timeStr || "00:00:00"}</span>
-          <span> // </span>
-          <span className="text-white/80 font-medium">DELHI: {timeStr || "00:00:00"}</span>
+        {/* Clocks Registry Footer */}
+        <div className="w-full border-t border-white/5 pt-6 mt-12 flex justify-center text-center">
+          <div className="font-mono text-[10px] text-[#555566] tracking-[0.18em] uppercase flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
+            <span>CLOCKS: </span>
+            <span className="text-white/80 font-medium">BENGALURU: {timeStr || "00:00:00"}</span>
+            <span> // </span>
+            <span className="text-white/80 font-medium">MUMBAI: {timeStr || "00:00:00"}</span>
+            <span> // </span>
+            <span className="text-white/80 font-medium">DELHI: {timeStr || "00:00:00"}</span>
+          </div>
         </div>
-      </div>
+      </ScrollAnimatedWrapper>
 
     </section>
   );

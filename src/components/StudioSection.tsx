@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 export default function StudioSection() {
   const containerVariants = {
@@ -42,13 +43,14 @@ export default function StudioSection() {
         <div className="absolute right-[10%] bottom-[20%] w-[50vw] h-[50vw] bg-[#c5a880]/2 opacity-[0.03] blur-[130px] rounded-full" />
       </div>
 
-      <motion.div 
-        className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start z-10"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false, margin: "-100px" }}
-      >
+      <ScrollAnimatedWrapper>
+        <motion.div 
+          className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start z-10"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-100px" }}
+        >
         {/* Left Side: Metadata Panel */}
         <motion.div 
           className="lg:col-span-4 border-l border-[#c5a880]/20 pl-6 md:pl-8 flex flex-col gap-8"
@@ -150,7 +152,8 @@ export default function StudioSection() {
             ))}
           </p>
         </div>
-      </motion.div>
+        </motion.div>
+      </ScrollAnimatedWrapper>
     </section>
   );
 }
