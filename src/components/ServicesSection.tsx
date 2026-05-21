@@ -19,9 +19,10 @@ interface ServiceItem {
 
 interface ServicesSectionProps {
   onInquiryClick: () => void;
+  isIntroCompleted?: boolean;
 }
 
-export default function ServicesSection({ onInquiryClick }: ServicesSectionProps) {
+export default function ServicesSection({ onInquiryClick, isIntroCompleted = false }: ServicesSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const bgCarRef = useRef<HTMLDivElement>(null);
@@ -183,7 +184,9 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
   ];
 
   useEffect(() => {
+    if (!isIntroCompleted) return; // Wait until intro is finished and Lenis coordinates stabilize
     if (typeof window === "undefined") return;
+    
     gsap.registerPlugin(ScrollTrigger);
 
     const section = sectionRef.current;
@@ -194,12 +197,14 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
 
     const timer = setTimeout(() => {
       mm.add("(min-width: 1024px)", () => {
-        // Safe list of mounted card elements
-        const activeCards = cardRefs.current.filter((c): c is HTMLDivElement => c !== null);
-        if (activeCards.length === 0) return;
+        // Direct individual card selection to prevent array hole issues
+        const cards = services.map((_, idx) => cardRefs.current[idx]);
+        const allPresent = cards.every((c) => c !== null);
+        if (!allPresent) return;
 
-        // Initial setup for cards positioning (vertical stack setup)
-        activeCards.forEach((card, idx) => {
+        // Initial setup for cards positioning (centered stack layout)
+        cards.forEach((card, idx) => {
+          if (!card) return;
           if (idx === 0) {
             gsap.set(card, {
               xPercent: -50,
@@ -215,7 +220,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
             gsap.set(card, {
               xPercent: -50,
               yPercent: -50,
-              y: "100vh",
+              y: "110vh", // Position fully offscreen at bottom
               rotateX: -20,
               scale: 0.85,
               opacity: 0,
@@ -245,7 +250,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
                 active = 0;
               } else {
                 active = Math.round((t - 0.25) / 1.5);
-                active = Math.max(0, Math.min(activeCards.length - 1, active));
+                active = Math.max(0, Math.min(services.length - 1, active));
               }
               setActiveIndex(active);
             }
@@ -258,19 +263,23 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
             scale: 1.12,
             yPercent: -8,
             ease: "none",
-            duration: (activeCards.length - 1) * 1.5 + 0.5
+            duration: (services.length - 1) * 1.5 + 0.5
           }, 0);
         }
 
-        for (let i = 0; i < activeCards.length - 1; i++) {
+        for (let i = 0; i < services.length - 1; i++) {
+          const currentCard = cardRefs.current[i];
+          const nextCard = cardRefs.current[i + 1];
+          if (!currentCard || !nextCard) continue;
+
           // Hold active card static for reading
           tl.to({}, { duration: 0.5 });
 
           // Transition out current card (slide up and fade)
-          tl.to(activeCards[i], {
+          tl.to(currentCard, {
             xPercent: -50,
             yPercent: -50,
-            y: "-100vh",
+            y: "-110vh", // Slide fully offscreen to top
             rotateX: 20,
             scale: 0.85,
             opacity: 0,
@@ -280,10 +289,10 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           }, `transition-${i}`);
 
           // Transition in next card (slide in from bottom)
-          tl.fromTo(activeCards[i + 1], {
+          tl.fromTo(nextCard, {
             xPercent: -50,
             yPercent: -50,
-            y: "100vh",
+            y: "110vh",
             rotateX: -20,
             scale: 0.85,
             opacity: 0,
@@ -306,7 +315,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
 
         scrollTween = tl as any;
       });
-    }, 150);
+    }, 100);
 
     return () => {
       clearTimeout(timer);
@@ -316,7 +325,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
         scrollTween.kill();
       }
     };
-  }, []);
+  }, [isIntroCompleted]);
 
   const handlePaginationClick = (idx: number) => {
     const lenis = (window as any).lenis;
@@ -365,7 +374,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
       <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full lg:justify-between justify-center lg:py-16">
         
         {/* Section Header */}
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 mb-8 lg:mb-4 shrink-0">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 mb-8 lg:mb-12 shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs tracking-[0.4em] text-[#6b7280] uppercase">
               CAPABILITIES
@@ -377,149 +386,154 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           </h2>
         </div>
 
-        {/* Cards Elevator Deck */}
-        <div className="lg:relative lg:flex-1 lg:w-full lg:max-w-5xl lg:mx-auto lg:flex lg:items-center lg:justify-center lg:perspective-[2000px] lg:transform-style-3d flex flex-col gap-8 w-full">
-          {services.map((service, index) => (
-            <div
-              key={service.id}
-              ref={(el) => { cardRefs.current[index] = el; }}
-              className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-5xl lg:h-[460px] lg:opacity-0 lg:pointer-events-none w-full h-auto flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/90 backdrop-blur-md border border-white/10 hover:border-[#c5a880]/20 rounded-md transition-colors duration-300 relative shadow-2xl overflow-hidden"
-              style={{ transformStyle: "preserve-3d" }}
-            >
-              {/* Glass Glare Highlight */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-transparent pointer-events-none" />
+        {/* Space-Age Console Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch lg:flex-1 w-full relative">
+          
+          {/* Left Column: Cybernetic HUD Menu Sidebar (4 cols) */}
+          <div className="hidden lg:flex flex-col justify-center gap-3.5 col-span-4 pl-6 border-l border-white/5 relative z-20 font-mono">
+            {/* Ambient indicator bar */}
+            <div className="absolute left-0 top-[10%] bottom-[10%] w-[1px] bg-gradient-to-b from-transparent via-[#c5a880]/15 to-transparent pointer-events-none" />
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch h-full w-full">
-                
-                {/* Left Column: Specs HUD */}
-                <div className="lg:col-span-5 flex flex-col justify-center border-l border-[#c5a880]/20 pl-6 lg:pr-8 py-2">
-                  <div className="flex flex-col gap-6">
-                    <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-                      {service.hudTitle}
-                    </span>
-                    
-                    <div className="flex flex-col gap-4">
-                      {service.hudItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2 font-mono">
-                          <span className="text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
-                            {item.label}
-                          </span>
-                          <span className="text-xs text-white/95 font-medium tracking-wide uppercase text-right">
-                            {item.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            {services.map((s, idx) => {
+              const isActive = activeIndex === idx;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => handlePaginationClick(idx)}
+                  className="group flex items-center gap-4 text-left transition-all duration-300 py-1.5 focus:outline-none cursor-pointer relative"
+                >
+                  {/* Glowing active block line marker */}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeHUDMarker"
+                      className="absolute -left-[25px] w-1.5 h-6 bg-[#c5a880] shadow-[0_0_12px_rgba(197,168,128,0.7)]"
+                      transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    />
+                  )}
 
-                {/* Right Column: Content */}
-                <div className="lg:col-span-7 flex flex-col justify-between pl-0 lg:pl-4 pt-4 lg:pt-0">
+                  <span className={`text-[10px] tracking-wider transition-colors duration-300 font-medium ${isActive ? "text-[#c5a880]" : "text-white/20 group-hover:text-white/50"}`}>
+                    {s.id}
+                  </span>
                   
-                  {/* Service ID, Title & Icon */}
-                  <div className="flex flex-col gap-4">
-                    <div className="flex">
-                      <span className="font-mono text-xs font-bold text-[#c5a880] border-b border-[#c5a880]/30 pb-0.5 pr-3 tracking-widest">
-                        {service.id}
+                  <span className={`font-mono text-[11px] tracking-[0.18em] uppercase transition-all duration-300 ${
+                    isActive 
+                      ? "text-[#c5a880] font-bold drop-shadow-[0_0_8px_rgba(197,168,128,0.4)] translate-x-2" 
+                      : "text-white/40 group-hover:text-white/80 group-hover:translate-x-1"
+                  }`}>
+                    {isActive ? `[ ${s.title} ]` : s.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Column: Elevator Deck (8 cols) */}
+          <div className="lg:col-span-8 lg:relative lg:w-full lg:max-w-4xl lg:flex lg:items-center lg:justify-center lg:perspective-[2000px] lg:transform-style-3d flex flex-col gap-8 w-full min-h-[460px]">
+            {services.map((service, index) => (
+              <div
+                key={service.id}
+                ref={(el) => { cardRefs.current[index] = el; }}
+                className="lg:absolute lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-4xl lg:h-[460px] lg:opacity-0 lg:pointer-events-none w-full h-auto flex flex-col p-6 md:p-10 lg:p-12 bg-[#09090c]/85 backdrop-blur-xl border border-white/5 hover:border-[#c5a880]/15 rounded-sm transition-colors duration-300 relative shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                {/* Glass Glare Highlight */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-transparent pointer-events-none" />
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch h-full w-full">
+                  
+                  {/* Left Column: Specs HUD */}
+                  <div className="lg:col-span-5 flex flex-col justify-center border-l border-[#c5a880]/20 pl-6 lg:pr-8 py-2">
+                    <div className="flex flex-col gap-6">
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+                        {service.hudTitle}
                       </span>
-                    </div>
-
-                    <div className="flex items-center gap-4 mt-1">
-                      <div className="w-11 h-11 rounded-sm border border-[#c5a880]/30 flex items-center justify-center bg-[#c5a880]/5">
-                        {service.icon}
+                      
+                      <div className="flex flex-col gap-4">
+                        {service.hudItems.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2 font-mono group/item">
+                            <span className="text-[9px] tracking-[0.2em] text-[#6b7280] uppercase group-hover/item:text-[#c5a880]/70 transition-colors duration-300">
+                              {item.label}
+                            </span>
+                            <span className="text-xs text-white/95 font-medium tracking-wide uppercase text-right group-hover/item:text-[#c5a880] transition-colors duration-300">
+                              {item.value}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      <h3 className="font-outfit text-xl sm:text-2xl font-black tracking-[0.1em] text-white uppercase">
-                        {service.title}
-                      </h3>
-                    </div>
-
-                    <p className="font-sans text-[12px] sm:text-[13px] leading-relaxed text-[#9999aa] mt-2">
-                      {service.description}
-                    </p>
-
-                    {/* Highlights Bullet Lines */}
-                    <div className="flex flex-col gap-2 mt-2">
-                      {service.bullets.map((bullet, idx) => (
-                        <span key={idx} className="font-mono text-[11px] text-[#c5a880]/80 tracking-wide font-medium">
-                          {bullet}
-                        </span>
-                      ))}
                     </div>
                   </div>
 
-                  {/* Domain Tools & CTA Footer */}
-                  <div className="border-t border-white/10 pt-4 lg:pt-6 mt-6 flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end shrink-0">
+                  {/* Right Column: Content */}
+                  <div className="lg:col-span-7 flex flex-col justify-between pl-0 lg:pl-4 pt-4 lg:pt-0">
                     
-                    {/* Domain Tools badges */}
-                    <div className="flex flex-col gap-2">
-                      <span className="font-mono text-[8px] tracking-[0.2em] text-[#6b7280] uppercase">
-                        DOMAIN TOOLS STACK
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {service.tools.map((tool, idx) => (
-                          <span 
-                            key={idx} 
-                            className="font-mono border border-white/10 px-2 py-0.5 text-[9px] tracking-wider text-[#9999aa] bg-white/5 rounded-sm"
-                          >
-                            {tool}
+                    {/* Service ID, Title & Icon */}
+                    <div className="flex flex-col gap-4">
+                      <div className="flex">
+                        <span className="font-mono text-xs font-bold text-[#c5a880] border-b border-[#c5a880]/30 pb-0.5 pr-3 tracking-widest">
+                          {service.id}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-4 mt-1">
+                        <div className="w-11 h-11 rounded-sm border border-[#c5a880]/30 flex items-center justify-center bg-[#c5a880]/5">
+                          {service.icon}
+                        </div>
+                        <h3 className="font-outfit text-xl sm:text-2xl font-black tracking-[0.1em] text-white uppercase">
+                          {service.title}
+                        </h3>
+                      </div>
+
+                      <p className="font-sans text-[12px] sm:text-[13px] leading-relaxed text-[#9999aa] mt-2">
+                        {service.description}
+                      </p>
+
+                      {/* Highlights Bullet Lines */}
+                      <div className="flex flex-col gap-2 mt-2">
+                        {service.bullets.map((bullet, idx) => (
+                          <span key={idx} className="font-mono text-[11px] text-[#c5a880]/80 tracking-wide font-medium">
+                            {bullet}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    {/* Inquiry Button */}
-                    <button 
-                      onClick={onInquiryClick}
-                      className="font-outfit text-xs font-semibold tracking-[0.18em] text-[#c5a880] hover:text-white transition-colors duration-300 flex items-center gap-1.5 group/link pb-1 border-b border-transparent hover:border-[#c5a880] cursor-pointer"
-                    >
-                      <span>START INQUIRY</span>
-                      <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
-                    </button>
+                    {/* Domain Tools & CTA Footer */}
+                    <div className="border-t border-white/10 pt-4 lg:pt-6 mt-6 flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end shrink-0">
+                      
+                      {/* Domain Tools badges */}
+                      <div className="flex flex-col gap-2">
+                        <span className="font-mono text-[8px] tracking-[0.2em] text-[#6b7280] uppercase">
+                          DOMAIN TOOLS STACK
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {service.tools.map((tool, idx) => (
+                            <span 
+                              key={idx} 
+                              className="font-mono border border-white/10 px-2 py-0.5 text-[9px] tracking-wider text-[#9999aa] bg-white/5 rounded-sm"
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Inquiry Button */}
+                      <button 
+                        onClick={onInquiryClick}
+                        className="font-outfit text-xs font-semibold tracking-[0.18em] text-[#c5a880] hover:text-white transition-colors duration-300 flex items-center gap-1.5 group/link pb-1 border-b border-transparent hover:border-[#c5a880] cursor-pointer"
+                      >
+                        <span>START INQUIRY</span>
+                        <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
+                      </button>
+                    </div>
+
                   </div>
 
                 </div>
-
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        {/* Vertical Pagination Tracker (Desktop - Right Edge) */}
-        <div className="hidden lg:flex flex-col items-center gap-5 absolute right-10 top-1/2 -translate-y-1/2 z-30">
-          {services.map((s, idx) => {
-            const isActive = activeIndex === idx;
-            return (
-              <button
-                key={s.id}
-                onClick={() => handlePaginationClick(idx)}
-                className="group relative flex items-center justify-center w-6 h-6 focus:outline-none cursor-pointer"
-                aria-label={`Go to service ${s.title}`}
-              >
-                {/* Hover Tooltip Label */}
-                <span className="absolute right-8 py-1 px-2.5 bg-black/90 border border-[#c5a880]/20 text-[#c5a880] text-[10px] font-mono tracking-[0.15em] rounded opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-md">
-                  {s.title}
-                </span>
-
-                {/* Glowing active outer ring */}
-                {isActive && (
-                  <motion.div
-                    className="absolute w-4 h-4 rounded-full border border-[#c5a880] bg-transparent"
-                    layoutId="activeServiceDot"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-
-                {/* Dot itself */}
-                <div
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    isActive
-                      ? "bg-[#c5a880] scale-125"
-                      : "bg-white/20 group-hover:bg-[#c5a880]/60 group-hover:scale-110"
-                  }`}
-                />
-              </button>
-            );
-          })}
         </div>
 
       </div>

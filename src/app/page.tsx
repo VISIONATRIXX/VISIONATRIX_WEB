@@ -105,6 +105,17 @@ export default function Home() {
     };
   }, [showIntro]);
 
+  // Trigger ScrollTrigger refresh once the intro screen is dismissed to calculate correct page heights
+  useEffect(() => {
+    if (!showIntro) {
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 300);
+      });
+    }
+  }, [showIntro]);
+
   const scrollToSection = (sectionId: string) => {
     const target = document.getElementById(sectionId);
     if (target) {
@@ -166,7 +177,10 @@ export default function Home() {
             <StudioSection />
 
             {/* 3. Services Section */}
-            <ServicesSection onInquiryClick={() => scrollToSection("contact")} />
+            <ServicesSection 
+              onInquiryClick={() => scrollToSection("contact")} 
+              isIntroCompleted={!showIntro}
+            />
 
             {/* 4. Works Section */}
             <WorksSection />
