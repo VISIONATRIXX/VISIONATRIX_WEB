@@ -23,6 +23,7 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [timeStr, setTimeStr] = useState<string>("");
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -145,8 +146,28 @@ export default function ContactSection() {
   ];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileError(null);
     if (e.target.files && e.target.files.length > 0) {
-      setFileName(e.target.files[0].name);
+      const file = e.target.files[0];
+      const allowedExtensions = /(\.pdf|\.zip|\.doc|\.docx|\.txt|\.png|\.jpg|\.jpeg)$/i;
+      
+      // 1. File Size Verification (Max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setFileError("// File size exceeds 10MB limit");
+        setFileName(null);
+        e.target.value = ""; // Clear input
+        return;
+      }
+      
+      // 2. File Format / Extension Verification
+      if (!allowedExtensions.exec(file.name)) {
+        setFileError("// Forbidden file format staged");
+        setFileName(null);
+        e.target.value = ""; // Clear input
+        return;
+      }
+      
+      setFileName(file.name);
     }
   };
 
@@ -328,6 +349,7 @@ export default function ContactSection() {
                         <input 
                           type="file" 
                           onChange={handleFileChange}
+                          accept=".pdf,.zip,.doc,.docx,.txt,.png,.jpg,.jpeg"
                           className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                           aria-label="Upload concept brief"
                         />
@@ -339,6 +361,12 @@ export default function ContactSection() {
                           <span className="font-mono text-[9px] text-[#c5a880] tracking-wide max-w-[200px] truncate flex items-center gap-1">
                             <Paperclip className="w-3 h-3 shrink-0" />
                             {fileName}
+                          </span>
+                        )}
+                        {fileError && (
+                          <span className="font-mono text-[9px] text-[#c5a880] tracking-wide mt-1 flex items-center gap-1 text-center justify-center">
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                            {fileError}
                           </span>
                         )}
                       </div>

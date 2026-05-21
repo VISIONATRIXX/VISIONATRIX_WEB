@@ -55,6 +55,12 @@ export default function FAQSection() {
 
   const handleBookCall = () => {
     if (!selectedDate || clientName.trim().length < 2) return;
+    
+    // Sanitize client name: remove any non-alphanumeric, spaces, dots, or dashes
+    const sanitizedName = clientName.trim().replace(/[^a-zA-Z0-9.\-\s]/g, "");
+    if (sanitizedName.length < 2) return;
+
+    setClientName(sanitizedName);
     setBookingSuccess(true);
     
     // Play premium success confetti
@@ -350,6 +356,7 @@ export default function FAQSection() {
                       <input
                         type="text"
                         required
+                        maxLength={40}
                         placeholder="ENTER YOUR FULL NAME OR ID CODE"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
