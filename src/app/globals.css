@@ -293,10 +293,10 @@ html.lenis, html.lenis body {
   position: absolute;
   width: 100%;
   transform: scaleX(0);
-  height: 1px;
-  bottom: -4px;
+  height: 1.5px;
+  bottom: -5px;
   left: 0;
-  background-color: #c5a880;
+  background-color: currentColor;
   transform-origin: bottom right;
   transition: transform 0.25s ease-out;
 }

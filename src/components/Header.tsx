@@ -73,10 +73,13 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" as const }}
     >
+      {/* Top Gold Gradient Border (Background Line) */}
+      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#7c5f35] via-[#e2cbb0] via-[#7c5f35] via-[#e2cbb0] to-[#7c5f35] opacity-25 z-40" />
+
       {/* Top Scroll Progress Bar */}
       <div
         ref={progressBarRef}
-        className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[#c5a880] via-[#e2cbb0] to-[#c5a880] shadow-[0_0_10px_rgba(197,168,128,0.75)] will-change-[width]"
+        className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-[#7c5f35] via-[#e2cbb0] via-[#7c5f35] via-[#e2cbb0] to-[#7c5f35] shadow-[0_0_8px_rgba(197,168,128,0.6)] z-50 will-change-[width]"
         style={{ width: "0%" }}
       />
 
@@ -96,7 +99,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               className="object-contain"
             />
           </div>
-          <span className="font-display tracking-[0.2em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300">
+          <span className="font-display tracking-[0.25em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300 font-medium">
             VISIONATRIX
           </span>
         </div>
@@ -109,10 +112,10 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               <button
                 key={idx}
                 onClick={() => onNavClick(item.id)}
-                className={`font-outfit text-[11px] tracking-[0.15em] transition-colors duration-300 cursor-pointer ${
+                className={`font-outfit text-[11px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${
                   active 
                     ? "text-white font-semibold" 
-                    : "text-[#7a7a8a] hover:text-white"
+                    : "text-[#94a3b8] hover:text-white"
                 } nav-link-underline ${active ? "active" : ""}`}
               >
                 {item.label}
@@ -125,7 +128,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavClick("contact")}
-            className="border border-[#c5a880]/40 hover:border-[#c5a880] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] font-outfit text-[10px] tracking-[0.18em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+            className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[10.5px] tracking-[0.2em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
           >
             <span>GET STARTED</span>
             <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
