@@ -9,38 +9,33 @@ interface TimelineStep {
   category: string;
   title: string;
   description: string;
-  details: string[];
 }
 
 export default function ProcessSection() {
   const steps: TimelineStep[] = [
     {
       id: "01",
-      category: "SPATIAL COORDINATION",
+      category: "DISCOVERY & SCOPING",
       title: "Tactile Metrics Mapping",
-      description: "Mapping spatial coordinates, user tracking nodes, and rendering constraints to ensure absolute structural feasibility.",
-      details: ["// Spatial Node Mapping", "// Core Feasibility Report", "// Volumetric Target Scopes"]
+      description: "Collaborating closely with luxury design teams to isolate physical textiles parameters, atmospheric indices, and creative requirements.",
     },
     {
       id: "02",
       category: "CONCEPT ARCHITECTURE",
       title: "Mathematical Speculation",
       description: "Formulating conceptual digital layouts, fluid vector current flow diagrams, and abstract lighting trajectories prior to drafting code sheets.",
-      details: ["// GLSL Custom Shaders", "// Material Shader Matrices", "// Procedural Noise Generation"]
     },
     {
       id: "03",
-      category: "SYSTEMS LAYOUT DESIGN",
+      category: "DEVELOPMENT & PRODUCTION",
       title: "Glassmorphic Sculpting",
       description: "Constructing dark, volumetric user interfaces, tailored typography hierarchies, and highly responsive micro-bezel elements.",
-      details: ["// Octane Render Farms", "// Fluid Simulation Compositing", "// 3D Gaussian Splat Injection"]
     },
     {
       id: "04",
-      category: "TELEMETRIC VALIDATION",
+      category: "TELEMETRIC INTEGRATION",
       title: "System Integration",
       description: "Executing frame rate stress tests, asset optimization cycles, loading latency checks, and strict visual fidelity audits before final delivery.",
-      details: ["// 60FPS Refresh Auditing", "// Load-latency Compression", "// Deep Quality Inspections"]
     }
   ];
 
@@ -83,13 +78,13 @@ export default function ProcessSection() {
 
       const isLeft = idx % 2 === 0;
 
-      // Card Animation (slide in and fade in, remain visible once revealed)
+      // Card Animation (slide in and fade in)
       gsap.fromTo(
         card,
         {
           opacity: 0,
-          x: isLeft ? -60 : 60,
-          scale: 0.95,
+          x: isLeft ? -50 : 50,
+          scale: 0.96,
         },
         {
           opacity: 1,
@@ -105,46 +100,41 @@ export default function ProcessSection() {
         }
       );
 
-      // Node State Transitions (Unreached -> Active/Focus -> Completed)
+      // Node Expansion and Glow Transitions
       ScrollTrigger.create({
         trigger: row,
         start: "top 60%", // enters active range
-        end: "bottom 40%", // leaves active range
         onEnter: () => {
           gsap.to(node, {
-            borderColor: "#00f2fe", // cyan border
-            color: "#ffffff",
-            boxShadow: "0 0 25px rgba(0, 242, 254, 0.6), inset 0 0 10px rgba(0, 242, 254, 0.3)", // cyan glow ring
-            scale: 1.15,
-            duration: 0.4,
+            width: window.innerWidth >= 768 ? 52 : 44,
+            height: window.innerWidth >= 768 ? 52 : 44,
+            borderColor: "#c5a880",
+            boxShadow: "0 0 22px rgba(0, 242, 254, 0.55), inset 0 0 10px rgba(0, 242, 254, 0.25)",
+            duration: 0.45,
+            ease: "back.out(1.5)",
           });
-        },
-        onLeave: () => {
-          gsap.to(node, {
-            borderColor: "#c5a880", // gold border
-            color: "#c5a880",
-            boxShadow: "0 0 15px rgba(197, 168, 128, 0.4)", // gold glow
-            scale: 1.0,
-            duration: 0.4,
-          });
-        },
-        onEnterBack: () => {
-          gsap.to(node, {
-            borderColor: "#00f2fe",
-            color: "#ffffff",
-            boxShadow: "0 0 25px rgba(0, 242, 254, 0.6), inset 0 0 10px rgba(0, 242, 254, 0.3)",
-            scale: 1.15,
-            duration: 0.4,
-          });
+          
+          const num = node.querySelector(".node-number");
+          if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
+          
+          const dot = node.querySelector(".node-dot");
+          if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
         },
         onLeaveBack: () => {
           gsap.to(node, {
-            borderColor: "rgba(197, 168, 128, 0.2)", // dim gold border
-            color: "rgba(197, 168, 128, 0.5)",
-            boxShadow: "0 0 0px rgba(0, 0, 0, 0)",
-            scale: 1.0,
-            duration: 0.4,
+            width: 20,
+            height: 20,
+            borderColor: "rgba(197, 168, 128, 0.35)",
+            boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
+            duration: 0.45,
+            ease: "power2.out",
           });
+          
+          const num = node.querySelector(".node-number");
+          if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
+          
+          const dot = node.querySelector(".node-dot");
+          if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
         }
       });
     });
@@ -186,7 +176,7 @@ export default function ProcessSection() {
           <div className="absolute left-6 md:left-1/2 -translate-x-1/2 top-10 bottom-10 w-[2px] pointer-events-none">
             <div 
               ref={activeLineRef}
-              className="w-full bg-gradient-to-b from-[#c5a880] to-[#00f2fe] origin-top"
+              className="w-full bg-[#c5a880] shadow-[0_0_8px_rgba(197,168,128,0.5)] origin-top"
               style={{ height: "0%" }}
             />
           </div>
@@ -205,40 +195,22 @@ export default function ProcessSection() {
                   {isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#0b0b0e]/80 backdrop-blur-md border border-white/5 rounded-xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/30 transition-all duration-500 group relative"
+                      className="w-full max-w-lg bg-[#0b0b0e]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left md:text-right items-start md:items-end group relative"
                     >
-                      {/* Decorative Gold Dot and Category */}
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-                          <div className="w-2 h-2 rounded-full bg-[#c5a880]" />
-                          <div className="absolute inset-0 rounded-full border border-[#c5a880]/40 animate-pulse scale-150" />
-                        </div>
-                        <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-                          {step.category}
-                        </span>
-                      </div>
+                      {/* Category */}
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
+                        {step.category}
+                      </span>
 
                       {/* Title */}
-                      <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 md:mb-4 group-hover:text-[#c5a880] transition-colors duration-300">
+                      <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="font-sans text-xs md:text-sm text-[#9999aa] leading-relaxed mb-6">
+                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
                         {step.description}
                       </p>
-
-                      {/* Subdetails bullets */}
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                        {step.details.map((det, dIdx) => (
-                          <span 
-                            key={dIdx} 
-                            className="font-mono text-[9px] text-white/30 bg-white/[0.02] px-2 py-1 rounded border border-white/[0.05]"
-                          >
-                            {det}
-                          </span>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
@@ -248,40 +220,22 @@ export default function ProcessSection() {
                   {!isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#0b0b0e]/80 backdrop-blur-md border border-white/5 rounded-xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/30 transition-all duration-500 group relative"
+                      className="w-full max-w-lg bg-[#0b0b0e]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left items-start group relative"
                     >
-                      {/* Decorative Gold Dot and Category */}
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="relative w-3.5 h-3.5 flex items-center justify-center">
-                          <div className="w-2 h-2 rounded-full bg-[#c5a880]" />
-                          <div className="absolute inset-0 rounded-full border border-[#c5a880]/40 animate-pulse scale-150" />
-                        </div>
-                        <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
-                          {step.category}
-                        </span>
-                      </div>
+                      {/* Category */}
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
+                        {step.category}
+                      </span>
 
                       {/* Title */}
-                      <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 md:mb-4 group-hover:text-[#c5a880] transition-colors duration-300">
+                      <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="font-sans text-xs md:text-sm text-[#9999aa] leading-relaxed mb-6">
+                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
                         {step.description}
                       </p>
-
-                      {/* Subdetails bullets */}
-                      <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                        {step.details.map((det, dIdx) => (
-                          <span 
-                            key={dIdx} 
-                            className="font-mono text-[9px] text-white/30 bg-white/[0.02] px-2 py-1 rounded border border-white/[0.05]"
-                          >
-                            {det}
-                          </span>
-                        ))}
-                      </div>
                     </div>
                   )}
                 </div>
@@ -289,9 +243,15 @@ export default function ProcessSection() {
                 {/* Centered Circular Node */}
                 <div 
                   ref={el => { if (el) nodeRefs.current[idx] = el; }}
-                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-11 h-11 md:w-13 md:h-13 rounded-full border border-[#c5a880]/20 bg-[#050507] text-[#c5a880]/50 z-20 flex items-center justify-center font-mono text-[11px] md:text-xs font-bold transition-all duration-300 cursor-default shadow-sm"
+                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-[#c5a880]/35 bg-[#050507] z-20 flex items-center justify-center transition-all duration-500 cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden"
                 >
-                  {step.id}
+                  {/* Number Tag (hidden by default) */}
+                  <span className="node-number opacity-0 font-display text-[10px] md:text-[11px] font-bold text-[#c5a880] transition-opacity duration-300 select-none">
+                    {step.id}
+                  </span>
+                  
+                  {/* Center Dot (visible by default) */}
+                  <div className="node-dot w-1.5 h-1.5 rounded-full bg-[#c5a880] transition-opacity duration-300 absolute" />
                 </div>
               </div>
             );
