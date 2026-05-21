@@ -62,8 +62,8 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     <motion.header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? "bg-[#050507]/85 border-b border-[#c5a880]/15 py-3.5 shadow-lg shadow-black/10" 
-          : "bg-[#050507]/35 border-b border-transparent py-5"
+          ? "bg-[#050507]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10" 
+          : "bg-[#050507]/35 border-b border-transparent py-[26px]"
       }`}
       style={{
         backdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
@@ -86,11 +86,11 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
         {/* Logo and Brand Name */}
         <div 
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-3.5 cursor-pointer group"
           onClick={() => onNavClick("home")}
         >
           {/* Actual LOGO.png */}
-          <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
+          <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-110">
             <Image
               src="/LOGO.png"
               alt="Visionatrix Logo"
@@ -99,20 +99,20 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               className="object-contain"
             />
           </div>
-          <span className="font-display tracking-[0.25em] text-white text-sm md:text-base group-hover:text-[#c5a880] transition-colors duration-300 font-medium">
+          <span className="font-display tracking-[0.25em] text-white text-base md:text-[17px] group-hover:text-[#c5a880] transition-colors duration-300 font-medium">
             VISIONATRIX
           </span>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-11">
           {navItems.map((item, idx) => {
             const active = isItemActive(item);
             return (
               <button
                 key={idx}
                 onClick={() => onNavClick(item.id)}
-                className={`font-outfit text-[11px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${
+                className={`font-outfit text-[12.5px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${
                   active 
                     ? "text-white font-semibold" 
                     : "text-[#94a3b8] hover:text-white"
@@ -128,7 +128,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
         <div className="flex items-center gap-4">
           <button
             onClick={() => onNavClick("contact")}
-            className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[10.5px] tracking-[0.2em] px-5 py-2.5 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
+            className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[11.5px] tracking-[0.2em] px-6 py-3 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
           >
             <span>GET STARTED</span>
             <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
