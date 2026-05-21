@@ -72,7 +72,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[9995] transition-all duration-300 ${
         scrolled 
           ? "bg-[#0b0b0f]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10" 
           : "bg-[#0b0b0f]/35 border-b border-transparent py-[26px]"
