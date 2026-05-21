@@ -152,51 +152,35 @@ export default function Home() {
         {/* Core Sections Container */}
         {startAnimations && (
           <main className={`snap-container ${showIntro ? "pointer-events-none h-screen overflow-hidden" : "w-full"}`}>
-          {/* 1. Home Section */}
-          <div id="home" className="snap-section">
+            {/* 1. Home Section */}
             <HeroSection onCtaClick={scrollToSection} />
-          </div>
 
-          {/* 2. Studio Section */}
-          <div id="studio" className="snap-section">
+            {/* 2. Studio Section */}
             <StudioSection />
-          </div>
 
-          {/* 3. Services Section */}
-          <div id="services" className="snap-section">
+            {/* 3. Services Section */}
             <ServicesSection onInquiryClick={() => scrollToSection("contact")} />
-          </div>
 
-          {/* 4. Works Section */}
-          <div id="works" className="snap-section">
+            {/* 4. Works Section */}
             <WorksSection />
-          </div>
 
-          {/* 5. Process: Timeline Section */}
-          <div id="process" className="snap-section">
+            {/* 5. Process: Timeline Section */}
             <ProcessSection />
-          </div>
 
-          {/* 6. Process: Engine Stack Section */}
-          <div id="engine-stack" className="snap-section">
+            {/* 6. Process: Engine Stack Section */}
             <EngineStackSection />
-          </div>
 
-          {/* 7. Process: Client Feedback Section */}
-          <div id="feedback" className="snap-section">
+            {/* 7. Process: Client Feedback Section */}
             <FeedbackSection />
-          </div>
 
-          {/* 8. FAQ & Booking Calendar Section */}
-          <div id="faq" className="snap-section">
+            {/* 8. FAQ & Booking Calendar Section */}
             <FAQSection />
-          </div>
 
-          {/* 9. Contact Dossier & Footer Section */}
-          <div id="contact" className="snap-section flex flex-col justify-between overflow-y-auto no-scrollbar">
-            <ContactSection />
-            <Footer onLinkClick={scrollToSection} />
-          </div>
+            {/* 9. Contact Dossier & Footer Section */}
+            <div className="relative w-full">
+              <ContactSection />
+              <Footer onLinkClick={scrollToSection} />
+            </div>
           </main>
         )}
       </div>

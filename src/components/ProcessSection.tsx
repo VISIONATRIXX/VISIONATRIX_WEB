@@ -69,9 +69,33 @@ export default function ProcessSection() {
       hPath.style.strokeDashoffset = `${hLength}`;
     }
 
-    // Set initial states for cards (card 0 is active, 1-3 are hidden)
-    gsap.set(cardRefs.current.slice(1), { opacity: 0, y: 40, pointerEvents: "none" });
-    gsap.set(cardRefs.current[0], { opacity: 1, y: 0, pointerEvents: "auto" });
+    // Set initial states for cards in a stacked 3D deck format
+    cardRefs.current.forEach((card, idx) => {
+      if (idx === 0) {
+        gsap.set(card, {
+          opacity: 1,
+          y: 0,
+          z: 0,
+          rotateX: 0,
+          scale: 1,
+          filter: "blur(0px)",
+          pointerEvents: "auto",
+          transformOrigin: "50% 50%"
+        });
+      } else {
+        const factor = idx; // 1, 2, 3
+        gsap.set(card, {
+          opacity: Math.max(0, 0.45 - factor * 0.15), // index 1: 0.3, index 2: 0.15, index 3: 0
+          y: factor * 16, // index 1: 16, index 2: 32, index 3: 48
+          z: -factor * 40, // index 1: -40, index 2: -80, index 3: -120
+          rotateX: -factor * 4, // index 1: -4, index 2: -8, index 3: -12
+          scale: 1 - factor * 0.05, // index 1: 0.95, index 2: 0.90, index 3: 0.85
+          filter: `blur(${factor * 2}px)`,
+          pointerEvents: "none",
+          transformOrigin: "50% 50%"
+        });
+      }
+    });
 
     // Node 0 starts highlighted
     gsap.set(nodeRefs.current[0], {
@@ -82,80 +106,175 @@ export default function ProcessSection() {
     });
 
     // Create the master timeline linked to ScrollTrigger pinning
+    // We use end: "+=500%" to give the user plenty of scroll room
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top top",
-        end: "+=300%",
+        end: "+=500%",
         pin: true,
-        scrub: 0.5,
+        scrub: 1, // Smooth out scrub lag
+        snap: {
+          // Snap progress points corresponding to timeline times: 0, 0.4, 0.8, 1.2, 1.5
+          // (0/1.5 = 0, 0.4/1.5 = 0.2667, 0.8/1.5 = 0.5333, 0.8, 1.0)
+          snapTo: [0, 0.2667, 0.5333, 0.8, 1.0],
+          delay: 0.05,
+          duration: { min: 0.2, max: 0.6 },
+          ease: "power2.out"
+        },
         invalidateOnRefresh: true,
       }
     });
 
-    // Animate the line paths drawing
+    // Animate the line paths drawing up to 1.2 duration (corresponds to step 4)
     if (vPath) {
-      tl.to(vPath, { strokeDashoffset: 0, ease: "none" }, 0);
+      tl.to(vPath, { strokeDashoffset: 0, ease: "none", duration: 1.2 }, 0);
     }
     if (hPath) {
-      tl.to(hPath, { strokeDashoffset: 0, ease: "none" }, 0);
+      tl.to(hPath, { strokeDashoffset: 0, ease: "none", duration: 1.2 }, 0);
     }
 
-    // Timeline Animations (total duration normalized to 1.0)
+    // Timeline Animations (total duration is 1.5, allowing holding on Step 4)
     
     // Card 1 -> 2
-    tl.to(cardRefs.current[0], { opacity: 0, y: -40, pointerEvents: "none", duration: 0.1 }, 0.22)
+    tl.to(cardRefs.current[0], { 
+      opacity: 0, 
+      y: -120, 
+      z: 80,
+      rotateX: 12, 
+      scale: 0.9, 
+      filter: "blur(6px)", 
+      pointerEvents: "none", 
+      duration: 0.2 
+    }, 0.1)
       .to(nodeRefs.current[0], {
-        borderColor: "rgba(197, 168, 128, 0.4)",
+        borderColor: "rgba(197, 168, 128, 0.3)",
         backgroundColor: "#050507",
-        color: "rgba(197, 168, 128, 0.8)",
+        color: "rgba(197, 168, 128, 0.6)",
         boxShadow: "0 0 0px rgba(197, 168, 128, 0)",
-        duration: 0.05
-      }, 0.22)
-      .to(cardRefs.current[1], { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.1 }, 0.3)
+        duration: 0.2
+      }, 0.1)
+      .to(cardRefs.current[1], { 
+        opacity: 1, 
+        y: 0, 
+        z: 0,
+        rotateX: 0, 
+        scale: 1, 
+        filter: "blur(0px)", 
+        pointerEvents: "auto", 
+        duration: 0.2 
+      }, 0.2)
       .to(nodeRefs.current[1], {
         borderColor: "#c5a880",
         backgroundColor: "#c5a880",
         color: "#050507",
         boxShadow: "0 0 15px rgba(197, 168, 128, 0.6)",
-        duration: 0.05
-      }, 0.3);
+        duration: 0.2
+      }, 0.2)
+      // Shift remaining deck up by 1 level
+      .to(cardRefs.current[2], {
+        opacity: 0.3,
+        y: 16,
+        z: -40,
+        rotateX: -4,
+        scale: 0.95,
+        filter: "blur(2px)",
+        duration: 0.2
+      }, 0.2)
+      .to(cardRefs.current[3], {
+        opacity: 0.15,
+        y: 32,
+        z: -80,
+        rotateX: -8,
+        scale: 0.90,
+        filter: "blur(4px)",
+        duration: 0.2
+      }, 0.2);
 
     // Card 2 -> 3
-    tl.to(cardRefs.current[1], { opacity: 0, y: -40, pointerEvents: "none", duration: 0.1 }, 0.55)
+    tl.to(cardRefs.current[1], { 
+      opacity: 0, 
+      y: -120, 
+      z: 80,
+      rotateX: 12, 
+      scale: 0.9, 
+      filter: "blur(6px)", 
+      pointerEvents: "none", 
+      duration: 0.2 
+    }, 0.5)
       .to(nodeRefs.current[1], {
-        borderColor: "rgba(197, 168, 128, 0.4)",
+        borderColor: "rgba(197, 168, 128, 0.3)",
         backgroundColor: "#050507",
-        color: "rgba(197, 168, 128, 0.8)",
+        color: "rgba(197, 168, 128, 0.6)",
         boxShadow: "0 0 0px rgba(197, 168, 128, 0)",
-        duration: 0.05
-      }, 0.55)
-      .to(cardRefs.current[2], { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.1 }, 0.63)
+        duration: 0.2
+      }, 0.5)
+      .to(cardRefs.current[2], { 
+        opacity: 1, 
+        y: 0, 
+        z: 0,
+        rotateX: 0, 
+        scale: 1, 
+        filter: "blur(0px)", 
+        pointerEvents: "auto", 
+        duration: 0.2 
+      }, 0.6)
       .to(nodeRefs.current[2], {
         borderColor: "#c5a880",
         backgroundColor: "#c5a880",
         color: "#050507",
         boxShadow: "0 0 15px rgba(197, 168, 128, 0.6)",
-        duration: 0.05
-      }, 0.63);
+        duration: 0.2
+      }, 0.6)
+      // Shift card 3 up to active background level
+      .to(cardRefs.current[3], {
+        opacity: 0.3,
+        y: 16,
+        z: -40,
+        rotateX: -4,
+        scale: 0.95,
+        filter: "blur(2px)",
+        duration: 0.2
+      }, 0.6);
 
     // Card 3 -> 4
-    tl.to(cardRefs.current[2], { opacity: 0, y: -40, pointerEvents: "none", duration: 0.1 }, 0.85)
+    tl.to(cardRefs.current[2], { 
+      opacity: 0, 
+      y: -120, 
+      z: 80,
+      rotateX: 12, 
+      scale: 0.9, 
+      filter: "blur(6px)", 
+      pointerEvents: "none", 
+      duration: 0.2 
+    }, 0.9)
       .to(nodeRefs.current[2], {
-        borderColor: "rgba(197, 168, 128, 0.4)",
+        borderColor: "rgba(197, 168, 128, 0.3)",
         backgroundColor: "#050507",
-        color: "rgba(197, 168, 128, 0.8)",
+        color: "rgba(197, 168, 128, 0.6)",
         boxShadow: "0 0 0px rgba(197, 168, 128, 0)",
-        duration: 0.05
-      }, 0.85)
-      .to(cardRefs.current[3], { opacity: 1, y: 0, pointerEvents: "auto", duration: 0.1 }, 0.93)
+        duration: 0.2
+      }, 0.9)
+      .to(cardRefs.current[3], { 
+        opacity: 1, 
+        y: 0, 
+        z: 0,
+        rotateX: 0, 
+        scale: 1, 
+        filter: "blur(0px)", 
+        pointerEvents: "auto", 
+        duration: 0.2 
+      }, 1.0)
       .to(nodeRefs.current[3], {
         borderColor: "#c5a880",
         backgroundColor: "#c5a880",
         color: "#050507",
         boxShadow: "0 0 15px rgba(197, 168, 128, 0.6)",
-        duration: 0.05
-      }, 0.93);
+        duration: 0.2
+      }, 1.0);
+
+    // Hold step 4 active up to 1.5 to provide adequate hold space
+    tl.to({}, { duration: 0.3 }, 1.2);
 
     return () => {
       if (tl.scrollTrigger) tl.scrollTrigger.kill();
@@ -267,12 +386,12 @@ export default function ProcessSection() {
           </div>
 
           {/* Right Side: Stacked Card display */}
-          <div className="w-full md:w-2/3 relative h-[280px] md:h-[360px] flex items-center justify-center">
+          <div className="w-full md:w-2/3 relative h-[280px] md:h-[360px] flex items-center justify-center [perspective:1200px] [transform-style:preserve-3d]">
             {steps.map((step, idx) => (
               <div 
                 key={step.id}
                 ref={(el) => { if (el) cardRefs.current[idx] = el; }}
-                className="absolute w-full max-w-lg glass-card rounded p-6 md:p-8 border border-white/5 shadow-2xl flex flex-col justify-between h-full"
+                className="absolute w-full max-w-lg glass-card rounded p-6 md:p-8 border border-white/5 shadow-2xl flex flex-col justify-between h-full [backface-visibility:hidden] hover:border-[#c5a880]/30 transition-all duration-300 select-none"
               >
                 <div>
                   {/* Step Header */}
