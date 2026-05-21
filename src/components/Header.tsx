@@ -57,7 +57,6 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
     { label: "STUDIO", id: "studio" },
     { label: "SERVICES", id: "services" },
     { label: "SHOWCASE", id: "works" },
-    { label: "WORKS", id: "works" },
     { label: "PROCESS", id: "process" },
     { label: "FAQ", id: "faq" },
     { label: "CONTACT", id: "contact" },

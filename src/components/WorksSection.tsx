@@ -330,6 +330,38 @@ export default function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
+  const handleCategoryChange = (cat: string) => {
+    const lenis = (window as any).lenis;
+    const section = sectionRef.current;
+    if (section) {
+      const rect = section.getBoundingClientRect();
+      const targetScroll = window.scrollY + rect.top;
+      
+      if (lenis) {
+        lenis.scrollTo(targetScroll, {
+          duration: 0.8,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          onComplete: () => {
+            setActiveCategory(cat);
+            if (trackRef.current) {
+              gsap.set(trackRef.current, { x: 0 });
+            }
+          }
+        });
+      } else {
+        window.scrollTo({ top: targetScroll, behavior: "smooth" });
+        setTimeout(() => {
+          setActiveCategory(cat);
+          if (trackRef.current) {
+            gsap.set(trackRef.current, { x: 0 });
+          }
+        }, 500);
+      }
+    } else {
+      setActiveCategory(cat);
+    }
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -408,12 +440,7 @@ export default function WorksSection() {
               return (
                 <button
                   key={cat}
-                  onClick={() => {
-                    setActiveCategory(cat);
-                    if (trackRef.current) {
-                      gsap.set(trackRef.current, { x: 0 });
-                    }
-                  }}
+                  onClick={() => handleCategoryChange(cat)}
                   className={`relative py-1.5 cursor-pointer transition-colors duration-300 ${
                     isActive ? "text-[#c5a880] font-semibold" : "hover:text-white"
                   }`}

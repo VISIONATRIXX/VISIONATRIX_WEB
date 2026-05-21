@@ -51,96 +51,98 @@ export default function ProcessSection() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Line Growth Animation
-    if (activeLineRef.current && containerRef.current) {
-      gsap.fromTo(
-        activeLineRef.current,
-        { height: "0%" },
-        {
-          height: "100%",
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 60%",
-            end: "bottom 60%",
-            scrub: true,
+    const ctx = gsap.context(() => {
+      // 1. Line Growth Animation
+      if (activeLineRef.current && containerRef.current) {
+        gsap.fromTo(
+          activeLineRef.current,
+          { height: "0%" },
+          {
+            height: "100%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top 60%",
+              end: "bottom 60%",
+              scrub: true,
+            }
           }
-        }
-      );
-    }
+        );
+      }
 
-    // 2. Loop through steps to apply ScrollTrigger animations
-    steps.forEach((_, idx) => {
-      const row = rowRefs.current[idx];
-      const card = cardRefs.current[idx];
-      const node = nodeRefs.current[idx];
-      if (!row || !card || !node) return;
+      // 2. Loop through steps to apply ScrollTrigger animations
+      steps.forEach((_, idx) => {
+        const row = rowRefs.current[idx];
+        const card = cardRefs.current[idx];
+        const node = nodeRefs.current[idx];
+        if (!row || !card || !node) return;
 
-      const isLeft = idx % 2 === 0;
+        const isLeft = idx % 2 === 0;
 
-      // Card Animation (slide in and fade in)
-      gsap.fromTo(
-        card,
-        {
-          opacity: 0,
-          x: isLeft ? -50 : 50,
-          scale: 0.96,
-        },
-        {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: row,
-            start: "top 75%",
-            toggleActions: "play none none none",
-          }
-        }
-      );
-
-      // Node Expansion and Glow Transitions
-      ScrollTrigger.create({
-        trigger: row,
-        start: "top 60%", // enters active range
-        onEnter: () => {
-          gsap.to(node, {
-            width: window.innerWidth >= 768 ? 52 : 44,
-            height: window.innerWidth >= 768 ? 52 : 44,
-            borderColor: "#c5a880",
-            boxShadow: "0 0 22px rgba(0, 242, 254, 0.55), inset 0 0 10px rgba(0, 242, 254, 0.25)",
-            duration: 0.45,
-            ease: "back.out(1.5)",
-          });
-          
-          const num = node.querySelector(".node-number");
-          if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
-          
-          const dot = node.querySelector(".node-dot");
-          if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
-        },
-        onLeaveBack: () => {
-          gsap.to(node, {
-            width: 20,
-            height: 20,
-            borderColor: "rgba(197, 168, 128, 0.35)",
-            boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
-            duration: 0.45,
+        // Card Animation (slide in and fade in)
+        gsap.fromTo(
+          card,
+          {
+            opacity: 0,
+            x: isLeft ? -50 : 50,
+            scale: 0.96,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            duration: 0.8,
             ease: "power2.out",
-          });
-          
-          const num = node.querySelector(".node-number");
-          if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
-          
-          const dot = node.querySelector(".node-dot");
-          if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
-        }
+            scrollTrigger: {
+              trigger: row,
+              start: "top 75%",
+              toggleActions: "play none none none",
+            }
+          }
+        );
+
+        // Node Expansion and Glow Transitions
+        ScrollTrigger.create({
+          trigger: row,
+          start: "top 60%", // enters active range
+          onEnter: () => {
+            gsap.to(node, {
+              width: window.innerWidth >= 768 ? 52 : 44,
+              height: window.innerWidth >= 768 ? 52 : 44,
+              borderColor: "#c5a880",
+              boxShadow: "0 0 22px rgba(197, 168, 128, 0.55), inset 0 0 10px rgba(197, 168, 128, 0.25)",
+              duration: 0.45,
+              ease: "back.out(1.5)",
+            });
+            
+            const num = node.querySelector(".node-number");
+            if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
+            
+            const dot = node.querySelector(".node-dot");
+            if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
+          },
+          onLeaveBack: () => {
+            gsap.to(node, {
+              width: 20,
+              height: 20,
+              borderColor: "rgba(197, 168, 128, 0.35)",
+              boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
+              duration: 0.45,
+              ease: "power2.out",
+            });
+            
+            const num = node.querySelector(".node-number");
+            if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
+            
+            const dot = node.querySelector(".node-dot");
+            if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
+          }
+        });
       });
-    });
+    }, sectionRef);
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      ctx.revert();
     };
   }, []);
 
