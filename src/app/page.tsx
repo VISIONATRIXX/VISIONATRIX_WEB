@@ -22,8 +22,9 @@ const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [startAnimations, setStartAnimations] = useState(false);
+  const [triggerHeroEntrance, setTriggerHeroEntrance] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-
+  
   // Track scroll position to update active dot navigation via window observer
   useEffect(() => {
     if (showIntro) return;
@@ -126,10 +127,16 @@ export default function Home() {
       {/* Intro Loader screen overlay */}
       {showIntro && (
         <IntroLoader 
-          onStartDismiss={() => setStartAnimations(true)}
+          onStartDismiss={() => {
+            setStartAnimations(true);
+            setTimeout(() => {
+              setTriggerHeroEntrance(true);
+            }, 1200);
+          }}
           onComplete={() => {
             setShowIntro(false);
             setStartAnimations(true);
+            setTriggerHeroEntrance(true);
           }}
         />
       )}
@@ -153,7 +160,7 @@ export default function Home() {
         {startAnimations && (
           <main className={`snap-container ${showIntro ? "pointer-events-none h-screen overflow-hidden" : "w-full"}`}>
             {/* 1. Home Section */}
-            <HeroSection onCtaClick={scrollToSection} />
+            <HeroSection onCtaClick={scrollToSection} triggerEntrance={triggerHeroEntrance} />
 
             {/* 2. Studio Section */}
             <StudioSection />

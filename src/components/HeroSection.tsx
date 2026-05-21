@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 
 interface HeroSectionProps {
   onCtaClick: (target: string) => void;
+  triggerEntrance?: boolean;
 }
 
-export default function HeroSection({ onCtaClick }: HeroSectionProps) {
+export default function HeroSection({ onCtaClick, triggerEntrance = false }: HeroSectionProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -45,8 +46,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
         className="flex flex-col items-center text-center max-w-5xl z-10 my-auto"
         variants={containerVariants}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate={triggerEntrance ? "visible" : "hidden"}
       >
         {/* Upper Tag — matches 2.png exactly */}
         <motion.div 
@@ -66,7 +66,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             <motion.span
               key={index}
               initial={{ y: "105%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
+              animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
               transition={{
                 delay: 0.2 + index * 0.05,
                 duration: 0.85,
@@ -85,7 +85,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
             <span key={index} className="inline-block overflow-hidden py-0.5">
               <motion.span
                 initial={{ y: "105%" }}
-                animate={{ y: 0 }}
+                animate={triggerEntrance ? { y: 0 } : { y: "105%" }}
                 transition={{
                   delay: 0.85 + index * 0.12,
                   duration: 0.7,
@@ -123,8 +123,7 @@ export default function HeroSection({ onCtaClick }: HeroSectionProps) {
       <motion.div 
         className="w-full max-w-6xl px-4 md:px-8 z-10"
         initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        animate={triggerEntrance ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         transition={{ delay: 0.8, duration: 0.6 }}
       >
         {/* Two column: Locations left, Focus right */}

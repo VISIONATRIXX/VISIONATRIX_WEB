@@ -194,14 +194,17 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
 
     const timer = setTimeout(() => {
       mm.add("(min-width: 1024px)", () => {
+        // Safe list of mounted card elements
+        const activeCards = cardRefs.current.filter((c): c is HTMLDivElement => c !== null);
+        if (activeCards.length === 0) return;
+
         // Initial setup for cards positioning (vertical stack setup)
-        services.forEach((_, idx) => {
-          const card = cardRefs.current[idx];
-          if (!card) return;
-          
+        activeCards.forEach((card, idx) => {
           if (idx === 0) {
             gsap.set(card, {
-              yPercent: 0,
+              xPercent: -50,
+              yPercent: -50,
+              y: 0,
               rotateX: 0,
               scale: 1,
               opacity: 1,
@@ -210,7 +213,9 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
             });
           } else {
             gsap.set(card, {
-              yPercent: 150,
+              xPercent: -50,
+              yPercent: -50,
+              y: "100vh",
               rotateX: -20,
               scale: 0.85,
               opacity: 0,
@@ -240,7 +245,7 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
                 active = 0;
               } else {
                 active = Math.round((t - 0.25) / 1.5);
-                active = Math.max(0, Math.min(services.length - 1, active));
+                active = Math.max(0, Math.min(activeCards.length - 1, active));
               }
               setActiveIndex(active);
             }
@@ -253,17 +258,19 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
             scale: 1.12,
             yPercent: -8,
             ease: "none",
-            duration: (services.length - 1) * 1.5 + 0.5
+            duration: (activeCards.length - 1) * 1.5 + 0.5
           }, 0);
         }
 
-        for (let i = 0; i < services.length - 1; i++) {
+        for (let i = 0; i < activeCards.length - 1; i++) {
           // Hold active card static for reading
           tl.to({}, { duration: 0.5 });
 
           // Transition out current card (slide up and fade)
-          tl.to(cardRefs.current[i], {
-            yPercent: -150,
+          tl.to(activeCards[i], {
+            xPercent: -50,
+            yPercent: -50,
+            y: "-100vh",
             rotateX: 20,
             scale: 0.85,
             opacity: 0,
@@ -273,14 +280,18 @@ export default function ServicesSection({ onInquiryClick }: ServicesSectionProps
           }, `transition-${i}`);
 
           // Transition in next card (slide in from bottom)
-          tl.fromTo(cardRefs.current[i + 1], {
-            yPercent: 150,
+          tl.fromTo(activeCards[i + 1], {
+            xPercent: -50,
+            yPercent: -50,
+            y: "100vh",
             rotateX: -20,
             scale: 0.85,
             opacity: 0,
             pointerEvents: "none"
           }, {
-            yPercent: 0,
+            xPercent: -50,
+            yPercent: -50,
+            y: 0,
             rotateX: 0,
             scale: 1,
             opacity: 1,
