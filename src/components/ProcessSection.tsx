@@ -96,47 +96,54 @@ export default function ProcessSection() {
             scrollTrigger: {
               trigger: row,
               start: "top 75%",
-              toggleActions: "play none none none",
+              toggleActions: "play reverse play reverse",
             }
           }
         );
 
-        // Node Expansion and Glow Transitions
+        // Node Expansion and Glow Transitions helpers
+        const activateNode = () => {
+          gsap.to(node, {
+            width: window.innerWidth >= 768 ? 52 : 44,
+            height: window.innerWidth >= 768 ? 52 : 44,
+            borderColor: "#c5a880",
+            boxShadow: "0 0 22px rgba(197, 168, 128, 0.55), inset 0 0 10px rgba(197, 168, 128, 0.25)",
+            duration: 0.45,
+            ease: "back.out(1.5)",
+          });
+          
+          const num = node.querySelector(".node-number");
+          if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
+          
+          const dot = node.querySelector(".node-dot");
+          if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
+        };
+
+        const deactivateNode = () => {
+          gsap.to(node, {
+            width: 20,
+            height: 20,
+            borderColor: "rgba(197, 168, 128, 0.35)",
+            boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
+            duration: 0.45,
+            ease: "power2.out",
+          });
+          
+          const num = node.querySelector(".node-number");
+          if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
+          
+          const dot = node.querySelector(".node-dot");
+          if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
+        };
+
         ScrollTrigger.create({
           trigger: row,
           start: "top 60%", // enters active range
-          onEnter: () => {
-            gsap.to(node, {
-              width: window.innerWidth >= 768 ? 52 : 44,
-              height: window.innerWidth >= 768 ? 52 : 44,
-              borderColor: "#c5a880",
-              boxShadow: "0 0 22px rgba(197, 168, 128, 0.55), inset 0 0 10px rgba(197, 168, 128, 0.25)",
-              duration: 0.45,
-              ease: "back.out(1.5)",
-            });
-            
-            const num = node.querySelector(".node-number");
-            if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
-            
-            const dot = node.querySelector(".node-dot");
-            if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
-          },
-          onLeaveBack: () => {
-            gsap.to(node, {
-              width: 20,
-              height: 20,
-              borderColor: "rgba(197, 168, 128, 0.35)",
-              boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
-              duration: 0.45,
-              ease: "power2.out",
-            });
-            
-            const num = node.querySelector(".node-number");
-            if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
-            
-            const dot = node.querySelector(".node-dot");
-            if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
-          }
+          end: "bottom 60%", // leaves active range
+          onEnter: activateNode,
+          onLeave: deactivateNode,
+          onEnterBack: activateNode,
+          onLeaveBack: deactivateNode,
         });
       });
     }, sectionRef);

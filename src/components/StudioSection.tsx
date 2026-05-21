@@ -47,7 +47,7 @@ export default function StudioSection() {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: false, margin: "-100px" }}
       >
         {/* Left Side: Metadata Panel */}
         <motion.div 
@@ -114,7 +114,7 @@ export default function StudioSection() {
                   <motion.span
                     initial={{ y: "105%", opacity: 0 }}
                     whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: true, margin: "-100px" }}
+                    viewport={{ once: false, margin: "-100px" }}
                     transition={{
                       delay: wordIndex * 0.06,
                       duration: 0.8,
@@ -136,7 +136,7 @@ export default function StudioSection() {
                 <motion.span
                   initial={{ y: "105%", opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true, margin: "-120px" }}
+                  viewport={{ once: false, margin: "-120px" }}
                   transition={{
                     delay: 0.15 + wordIndex * 0.015,
                     duration: 0.65,

@@ -29,8 +29,8 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
   };
 
   return (
-    <section 
-      id="home" 
+    <section
+      id="home"
       className="snap-section flex flex-col justify-between items-center pt-24 pb-8 px-6 md:px-12 bg-[#0b0b0f]"
     >
       {/* Background ambient glow */}
@@ -42,24 +42,24 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
       </div>
 
       {/* Main Content Area */}
-      <motion.div 
+      <motion.div
         className="flex flex-col items-center text-center max-w-5xl z-10 my-auto"
         variants={containerVariants}
         initial="hidden"
         animate={triggerEntrance ? "visible" : "hidden"}
       >
         {/* Upper Tag — matches 2.png exactly */}
-        <motion.div 
+        <motion.div
           className="border border-[#c5a880]/25 px-6 py-2 rounded-sm bg-[#c5a880]/5 mb-8 md:mb-10"
           variants={itemVariants}
         >
           <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase">
-            [ CREATIVE TECHNOLOGY STUDIO — MMXXVI ]
+            [ CREATIVE TECHNOLOGY STUDIO — 2026 ]
           </span>
         </motion.div>
 
         {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
-        <h1 
+        <h1
           className="font-display text-3xl min-[360px]:text-4xl min-[480px]:text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center whitespace-nowrap overflow-hidden"
         >
           {"VISIONATRIX".split("").map((char, index) => (
@@ -100,7 +100,7 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
         </p>
 
         {/* Action Buttons — matching 2.png: gold filled + white bordered */}
-        <motion.div 
+        <motion.div
           className="flex flex-col sm:flex-row gap-5 justify-center items-center"
           variants={itemVariants}
         >
@@ -120,7 +120,7 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
       </motion.div>
 
       {/* Bottom Information Panel — matches 2.png layout: two columns + scroll center */}
-      <motion.div 
+      <motion.div
         className="w-full max-w-6xl px-4 md:px-8 z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={triggerEntrance ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -150,8 +150,8 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
         </div>
 
         {/* Scroll Indicator — centered below, matching 2.png */}
-        <div 
-          className="flex flex-col items-center gap-2 cursor-pointer" 
+        <div
+          className="flex flex-col items-center gap-2 cursor-pointer"
           onClick={() => onCtaClick("studio")}
         >
           <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
