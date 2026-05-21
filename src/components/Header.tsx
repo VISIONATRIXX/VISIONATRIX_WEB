@@ -101,6 +101,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
         <div 
           className="flex items-center gap-3.5 cursor-pointer group"
           onClick={() => onNavClick("home")}
+          data-cursor="home"
         >
           {/* Actual LOGO.png */}
           <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-110">
@@ -125,6 +126,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               <button
                 key={idx}
                 onClick={() => onNavClick(item.id)}
+                data-cursor={`goto ${item.label.toLowerCase()}`}
                 className={`font-outfit text-[12.5px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${
                   active 
                     ? "text-white font-semibold" 
@@ -143,6 +145,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           <div className="hidden sm:flex items-center">
             <button
               onClick={() => onNavClick("contact")}
+              data-cursor="get started"
               className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[11.5px] tracking-[0.2em] px-6 py-3 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
             >
               <span>GET STARTED</span>
@@ -153,6 +156,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           {/* Mobile menu trigger */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            data-cursor={isMobileMenuOpen ? "close menu" : "open menu"}
             className="flex lg:hidden flex-col items-center justify-center w-10 h-10 border border-[#c5a880]/35 rounded-sm bg-[#0b0b0e]/80 text-[#c5a880] cursor-pointer z-[10005] relative focus:outline-none"
             aria-label="Toggle mobile menu"
           >

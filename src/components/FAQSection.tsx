@@ -14,6 +14,7 @@ interface FAQItem {
 export default function FAQSection() {
   const [openId, setOpenId] = useState<string | null>("01");
   const [selectedDate, setSelectedDate] = useState<number | null>(15);
+  const [clientName, setClientName] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const faqs: FAQItem[] = [
@@ -53,7 +54,7 @@ export default function FAQSection() {
   }
 
   const handleBookCall = () => {
-    if (!selectedDate) return;
+    if (!selectedDate || clientName.trim().length < 2) return;
     setBookingSuccess(true);
     
     // Play premium success confetti
@@ -66,6 +67,7 @@ export default function FAQSection() {
 
     setTimeout(() => {
       setBookingSuccess(false);
+      setClientName("");
     }, 4500);
   };
 
@@ -141,6 +143,7 @@ export default function FAQSection() {
                   <div 
                     key={faq.id} 
                     onClick={() => setOpenId(isOpen ? null : faq.id)}
+                    data-cursor={isOpen ? "close" : "expand query"}
                     className={`relative overflow-hidden rounded-sm border transition-all duration-500 group cursor-pointer p-5 sm:p-6 ${
                       isOpen
                         ? "border-[#c5a880]/25 bg-[#09090c]/80 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
@@ -201,6 +204,7 @@ export default function FAQSection() {
           <div className="mt-2 pl-0.5">
             <a 
               href="#contact"
+              data-cursor="open dossier"
               className="inline-block px-7 py-3.5 border border-white/10 hover:border-[#c5a880] hover:bg-[#c5a880]/5 text-white hover:text-[#c5a880] font-outfit text-[10px] tracking-[0.2em] font-semibold rounded-sm transition-all duration-300 shadow-sm"
             >
               SUBMIT INQUIRY TICKET
@@ -209,8 +213,8 @@ export default function FAQSection() {
         </div>
 
         {/* Right Column: Cybernetic Scheduler Calendar (Sync Reservation) */}
-        <div className="lg:col-span-6 flex flex-col justify-between w-full h-full gap-8">
-          <div className="flex flex-col gap-6">
+        <div className="lg:col-span-6 flex flex-col justify-between w-full h-full gap-8 lg:items-end">
+          <div className="flex flex-col gap-6 w-full max-w-[460px]">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
@@ -224,7 +228,7 @@ export default function FAQSection() {
             </div>
 
             {/* Calendar Box */}
-            <div className="bg-[#09090c]/70 backdrop-blur-xl rounded-sm p-6 sm:p-7 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[380px] w-full">
+            <div className="bg-[#09090c]/70 backdrop-blur-xl rounded-sm p-5 sm:p-6 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[350px] w-full">
               {/* Scanline Glow Top Highlight */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#c5a880]/20 to-transparent pointer-events-none" />
 
@@ -256,8 +260,11 @@ export default function FAQSection() {
                       <p className="font-sans text-[13px] text-[#9999aa] leading-relaxed">
                         A secure sync invitation has been locked for:
                       </p>
-                      <span className="font-mono text-xs text-white border border-[#c5a880]/30 px-3 py-1 bg-[#c5a880]/5 rounded-sm tracking-wider font-bold my-1">
-                        JUNE {selectedDate ? selectedDate.toString().padStart(2, "0") : "—"}, 2026
+                      <span className="font-mono text-xs text-white border border-[#c5a880]/30 px-3 py-1.5 bg-[#c5a880]/5 rounded-sm tracking-wider font-extrabold my-1 uppercase">
+                        {clientName || "VISITOR"}
+                      </span>
+                      <span className="font-mono text-[10px] text-white/50 tracking-wider">
+                        ON JUNE {selectedDate ? selectedDate.toString().padStart(2, "0") : "—"}, 2026
                       </span>
                       <p className="font-sans text-[11px] text-[#555566] leading-relaxed max-w-xs mt-1">
                         Please proceed to the dossier form below to complete verification and secure this slot.
@@ -278,7 +285,7 @@ export default function FAQSection() {
                     className="flex flex-col justify-between h-full"
                   >
                     {/* Month header */}
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex justify-between items-center mb-5">
                       <span className="font-mono text-sm font-extrabold tracking-[0.2em] text-[#c5a880] uppercase">
                         JUNE MMXXVI
                       </span>
@@ -289,14 +296,14 @@ export default function FAQSection() {
                     </div>
 
                     {/* Day headers */}
-                    <div className="grid grid-cols-7 gap-2 mb-3.5 text-center text-[9px] font-mono font-bold text-[#6b7280] tracking-widest border-b border-white/5 pb-2">
+                    <div className="grid grid-cols-7 gap-1.5 mb-3 text-center text-[9px] font-mono font-bold text-[#6b7280] tracking-widest border-b border-white/5 pb-2">
                       {daysOfWeek.map((day) => (
                         <div key={day}>{day}</div>
                       ))}
                     </div>
 
                     {/* Days grid */}
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-1.5">
                       {calendarCells.map((cell, idx) => {
                         if (cell.day === null) {
                           return <div key={`empty-${idx}`} className="aspect-square opacity-0 pointer-events-none" />;
@@ -310,7 +317,8 @@ export default function FAQSection() {
                             key={`day-${cell.day}`}
                             disabled={isDisabled}
                             onClick={() => setSelectedDate(cell.day)}
-                            className={`aspect-square relative font-mono text-[11px] rounded-sm flex items-center justify-center focus:outline-none transition-all duration-300 cursor-pointer ${
+                            data-cursor={isDisabled ? undefined : `select june ${cell.day.toString().padStart(2, "0")}`}
+                            className={`aspect-square relative font-mono text-[10px] sm:text-[11px] rounded-sm flex items-center justify-center focus:outline-none transition-all duration-300 cursor-pointer ${
                               isSelected 
                                 ? "bg-[#c5a880] text-black font-extrabold shadow-[0_0_20px_rgba(197,168,128,0.4)] z-10" 
                                 : isDisabled 
@@ -334,8 +342,24 @@ export default function FAQSection() {
                       })}
                     </div>
 
+                    {/* Client Name Callsign Validation Input */}
+                    <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-1.5 text-left">
+                      <label className="font-mono text-[8px] tracking-[0.2em] text-[#6b7280] uppercase block">
+                        [ CLIENT CALLSIGN / ID NAME ] *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="ENTER YOUR FULL NAME OR ID CODE"
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        data-cursor="type callsign"
+                        className="w-full bg-[#050507]/60 border border-white/10 focus:border-[#c5a880]/40 text-white font-mono text-[10px] tracking-[0.15em] px-3 py-2.5 rounded-sm outline-none transition-all duration-300 placeholder-white/20 uppercase"
+                      />
+                    </div>
+
                     {/* Calendar CTA */}
-                    <div className="border-t border-white/5 pt-5 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="border-t border-white/5 pt-4 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                       <div className="text-left w-full sm:w-auto">
                         <span className="font-mono text-[9px] tracking-wider text-[#6b7280] uppercase block">
                           SELECTED DATE:
@@ -346,8 +370,9 @@ export default function FAQSection() {
                       </div>
 
                       <button
-                        disabled={!selectedDate}
+                        disabled={!selectedDate || clientName.trim().length < 2}
                         onClick={handleBookCall}
+                        data-cursor={!selectedDate || clientName.trim().length < 2 ? undefined : "initialize call"}
                         className="w-full sm:w-auto px-6 py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/10 disabled:text-white/20 disabled:cursor-not-allowed text-black font-semibold font-outfit text-[11px] tracking-[0.18em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_20px_rgba(197,168,128,0.3)] transition-all duration-300 cursor-pointer"
                       >
                         INITIALIZE SYNC CALL
