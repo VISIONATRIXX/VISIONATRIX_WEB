@@ -174,7 +174,36 @@ export default function ContactSection() {
   const onSubmit = (data: FormData) => {
     setIsSubmitting(true);
     
-    // Simulate API pipeline delay
+    // Construct formatted text message summary
+    const textMessage = `Hello Visionatrix Studio!
+
+A new Project Proposal has been submitted:
+- Name: ${data.fullName}
+- Email: ${data.email}
+- Organization: ${data.organization || 'N/A'}
+- Selected Service: ${data.service}
+- Estimated Budget: ${budgetTier}
+- Ingestion Details: ${data.details}
+- Staged Concept Brief: ${fileName || 'None'}`;
+
+    // WhatsApp Integration (wa.me)
+    const encodedMsg = encodeURIComponent(textMessage);
+    const whatsappUrl = `https://wa.me/919727905010?text=${encodedMsg}`;
+
+    // Email Integration (mailto)
+    const mailtoUrl = `mailto:visionatrixx@gmail.com?subject=${encodeURIComponent("New Project Proposal - " + data.fullName)}&body=${encodedMsg}`;
+
+    // Trigger WhatsApp instantly in a new tab (satisfies direct click event stream bypass for pop-up blocker)
+    try {
+      window.open(whatsappUrl, "_blank");
+    } catch (e) {
+      console.error("Popup blocked:", e);
+    }
+
+    // Trigger Email client redirection
+    window.location.href = mailtoUrl;
+
+    // Simulate API pipeline delay and set success
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitSuccess(true);

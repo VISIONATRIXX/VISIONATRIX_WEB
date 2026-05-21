@@ -61,6 +61,30 @@ export default function FAQSection() {
     if (sanitizedName.length < 2) return;
 
     setClientName(sanitizedName);
+
+    // Format reservation sync call message
+    const textMessage = `Hello Visionatrix Studio!
+
+I have requested a Sync Call reservation:
+- Client ID/Name: ${sanitizedName}
+- Reserved Date: JUNE ${selectedDate.toString().padStart(2, "0")}, 2026
+- Timezone: IST (GMT+5:30)`;
+
+    // WhatsApp Integration (wa.me)
+    const encodedMsg = encodeURIComponent(textMessage);
+    const whatsappUrl = `https://wa.me/919727905010?text=${encodedMsg}`;
+
+    // Email Integration (mailto)
+    const mailtoUrl = `mailto:visionatrixx@gmail.com?subject=${encodeURIComponent("Sync Call Reservation - " + sanitizedName)}&body=${encodedMsg}`;
+
+    // Trigger redirects instantly to bypass popup blocks
+    try {
+      window.open(whatsappUrl, "_blank");
+    } catch (e) {
+      console.error("Popup blocked:", e);
+    }
+    window.location.href = mailtoUrl;
+
     setBookingSuccess(true);
     
     // Play premium success confetti
