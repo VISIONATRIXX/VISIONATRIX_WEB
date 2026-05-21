@@ -13,10 +13,10 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // 1. Cinematic auto-dismiss after 3.2 seconds
+    // 1. Cinematic auto-dismiss after 4.0 seconds (allows full appreciation of logo-first sequence)
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 3200);
+    }, 4000);
 
     // 2. Keyboard listener for Escape key to bypass loader
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -87,14 +87,14 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
             {/* Core Logo + Title Container */}
             <div className="relative flex flex-col items-center justify-center text-center px-6">
               
-              {/* 1. Central Logo Asset - delayed to bloom after text reveals */}
+              {/* 1. Central Logo Asset - appears first of all */}
               <motion.div
-                className="relative w-[100px] h-[100px] z-10 mb-6"
+                className="relative w-[150px] h-[150px] md:w-[180px] md:h-[180px] z-10 mb-8"
                 initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)", y: -10 }}
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)", y: 0 }}
                 transition={{ 
-                  delay: 0.8, 
-                  duration: 1.2, 
+                  delay: 0.2, 
+                  duration: 1.0, 
                   ease: [0.16, 1, 0.3, 1] 
                 }}
               >
@@ -110,7 +110,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                 />
               </motion.div>
 
-              {/* 2. Typographic Letter-by-Letter Staggered Reveal - starts immediately */}
+              {/* 2. Typographic Letter-by-Letter Staggered Reveal - delayed to start after logo blooms */}
               <motion.h1
                 className="text-white font-display text-base md:text-lg tracking-[0.4em] z-10 uppercase flex justify-center items-center select-none"
                 style={{
@@ -125,7 +125,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                     transition={{
                       duration: 0.8,
                       ease: [0.16, 1, 0.3, 1],
-                      delay: index * 0.05,
+                      delay: 1.0 + (index * 0.05),
                     }}
                     className={index === textLetters.length - 1 ? "" : "mr-[0.4em]"}
                   >
@@ -136,7 +136,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
 
             </div>
 
-            {/* 3. Skip Intro Bypass Action Pill Button - delayed and sweeps with shine */}
+            {/* 3. Skip Intro Bypass Action Pill Button - delayed to fade in seamlessly as text finishes */}
             <motion.button
               onClick={handleDismiss}
               className="absolute bottom-16 px-6 py-2.5 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md text-white/50 cursor-pointer overflow-hidden z-40 select-none focus:outline-none"
@@ -148,7 +148,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
               }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.4, duration: 0.8, ease: "easeOut" }}
+              transition={{ delay: 1.8, duration: 0.8, ease: "easeOut" }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget;
                 el.style.color = "#ffffff";
