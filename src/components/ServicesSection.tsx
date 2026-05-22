@@ -27,7 +27,7 @@ interface ServicesSectionProps {
 // -------------------------------------------------------------
 interface TextScrambleProps {
   text: string;
-  trigger: any;
+  trigger: number;
 }
 
 function TextScramble({ text, trigger }: TextScrambleProps) {
@@ -38,9 +38,8 @@ function TextScramble({ text, trigger }: TextScrambleProps) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$@&*[]%";
     const targetText = text;
     const duration = 10;
-    let interval: NodeJS.Timeout;
     
-    interval = setInterval(() => {
+    const interval = setInterval(() => {
       setDisplayText(() => {
         return targetText
           .split("")
@@ -73,11 +72,10 @@ function TextScramble({ text, trigger }: TextScrambleProps) {
 // -------------------------------------------------------------
 interface CanvasSimulatorProps {
   type: string;
-  mousePos: { x: number; y: number };
   isHovered: boolean;
 }
 
-function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
+function CanvasSimulator({ type, isHovered }: CanvasSimulatorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
@@ -98,6 +96,37 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     resizeObserver.observe(canvas);
     
     let time = 0;
+
+    // Natively track relative mouse position on parent element without React state
+    const localMousePos = { x: width / 2, y: height / 2 };
+    let parentRect: DOMRect | null = null;
+    
+    const handleMouseMoveInternal = (e: MouseEvent) => {
+      if (!parentRect && canvas.parentElement) {
+        parentRect = canvas.parentElement.getBoundingClientRect();
+      }
+      if (parentRect) {
+        localMousePos.x = e.clientX - parentRect.left;
+        localMousePos.y = e.clientY - parentRect.top;
+      }
+    };
+    
+    const handleMouseEnterInternal = () => {
+      if (canvas.parentElement) {
+        parentRect = canvas.parentElement.getBoundingClientRect();
+      }
+    };
+    
+    const handleMouseLeaveInternal = () => {
+      parentRect = null;
+    };
+    
+    const parent = canvas.parentElement;
+    if (parent) {
+      parent.addEventListener("mousemove", handleMouseMoveInternal, { passive: true });
+      parent.addEventListener("mouseenter", handleMouseEnterInternal, { passive: true });
+      parent.addEventListener("mouseleave", handleMouseLeaveInternal, { passive: true });
+    }
     
     // Particles setup (re-used for VFX, WebGL, AI vector flow)
     const particles: { 
@@ -152,8 +181,8 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
         ctx.clearRect(0, 0, width, height);
       }
       
-      const mouseRelativeX = mousePos.x;
-      const mouseRelativeY = mousePos.y;
+      const mouseRelativeX = localMousePos.x;
+      const mouseRelativeY = localMousePos.y;
       
       if (type === "video") {
         // Video timeline display
@@ -252,12 +281,12 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
         
         const projected = vertices.map((v) => {
           // X rotation
-          let y1 = v.y * Math.cos(rotX) - v.z * Math.sin(rotX);
-          let z1 = v.y * Math.sin(rotX) + v.z * Math.cos(rotX);
+          const y1 = v.y * Math.cos(rotX) - v.z * Math.sin(rotX);
+          const z1 = v.y * Math.sin(rotX) + v.z * Math.cos(rotX);
           
           // Y rotation
-          let x2 = v.x * Math.cos(rotY) - z1 * Math.sin(rotY);
-          let z2 = v.x * Math.sin(rotY) + z1 * Math.cos(rotY);
+          const x2 = v.x * Math.cos(rotY) - z1 * Math.sin(rotY);
+          const z2 = v.x * Math.sin(rotY) + z1 * Math.cos(rotY);
           
           const fov = 3.2;
           const perspective = fov / (fov + z2);
@@ -519,8 +548,13 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     return () => {
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
+      if (parent) {
+        parent.removeEventListener("mousemove", handleMouseMoveInternal);
+        parent.removeEventListener("mouseenter", handleMouseEnterInternal);
+        parent.removeEventListener("mouseleave", handleMouseLeaveInternal);
+      }
     };
-  }, [type, mousePos, isHovered]);
+  }, [type, isHovered]);
   
   return (
     <canvas 
@@ -533,7 +567,7 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
 // -------------------------------------------------------------
 // Component: ServicesSection
 // -------------------------------------------------------------
-export default function ServicesSection({ onInquiryClick, isIntroCompleted = false }: ServicesSectionProps) {
+export default function ServicesSection({ onInquiryClick }: ServicesSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -542,7 +576,6 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
   
   // Track relative mouse position inside active card
   const cardRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
 
@@ -725,7 +758,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
       if (step >= totalSteps) {
         setActiveIndex((prev) => {
           const next = (prev + 1) % services.length;
-          setScrambleTrigger(Math.random());
+          setScrambleTrigger((prevTrigger) => prevTrigger + 1);
           return next;
         });
         setProgress(0);
@@ -734,23 +767,13 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
     }, intervalTime);
     
     return () => clearInterval(timer);
-  }, [isPlaying, activeIndex, progress]);
+  }, [isPlaying, activeIndex, progress, services.length]);
 
   // Handle manual menu link clicks
   const selectService = (idx: number) => {
     setActiveIndex(idx);
     setProgress(0);
-    setScrambleTrigger(Math.random());
-  };
-
-  // Tracking cursor coords inside parent card
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    setScrambleTrigger((prev) => prev + 1);
   };
 
   // Mobile gesture touch listeners
@@ -873,7 +896,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
                 </span>
               </div>
               <span className="text-[10px] text-white/45 tracking-widest">
-                {activeService.id} // {services.length.toString().padStart(2, '0')}
+                {activeService.id} {"//"} {services.length.toString().padStart(2, '0')}
               </span>
             </div>
 
@@ -885,7 +908,6 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
 
             <div
               ref={cardRef}
-              onMouseMove={handleMouseMove}
               onMouseEnter={() => {
                 setIsCardHovered(true);
                 setIsPlaying(false); // Pause autoplay
@@ -896,7 +918,7 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
               }}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="w-full min-h-[440px] flex flex-col p-6 md:p-10 lg:p-12 bg-[#121217]/80 backdrop-blur-xl border border-white/5 hover:border-[#c5a880]/15 rounded-sm transition-all duration-300 relative shadow-[0_0_40px_rgba(0,0,0,0.65)] overflow-hidden cursor-crosshair select-none"
+              className="w-full min-h-[440px] flex flex-col p-6 md:p-10 lg:p-12 bg-[#121217]/80 backdrop-blur-xl border border-white/5 hover:border-[#c5a880]/15 rounded-sm transition-[border-color] duration-300 relative shadow-[0_0_40px_rgba(0,0,0,0.65)] overflow-hidden cursor-crosshair select-none"
             >
               {/* Glass subtle glaze reflection */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/[0.015] via-transparent to-transparent pointer-events-none z-10" />
@@ -904,7 +926,6 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
               {/* Dynamic canvas telemetry micro-simulation */}
               <CanvasSimulator 
                 type={activeService.canvasType} 
-                mousePos={mousePos} 
                 isHovered={isCardHovered} 
               />
 

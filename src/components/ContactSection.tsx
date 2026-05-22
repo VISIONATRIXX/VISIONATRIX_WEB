@@ -37,8 +37,16 @@ export default function ContactSection() {
 
     const button = buttonRef.current;
     if (button) {
+      let rect = button.getBoundingClientRect();
+
+      const updateRect = () => {
+        rect = button.getBoundingClientRect();
+      };
+
+      window.addEventListener("scroll", updateRect, { passive: true });
+      window.addEventListener("resize", updateRect);
+
       const handleMouseMove = (e: MouseEvent) => {
-        const rect = button.getBoundingClientRect();
         const btnX = rect.left + rect.width / 2;
         const btnY = rect.top + rect.height / 2;
         
@@ -85,6 +93,8 @@ export default function ContactSection() {
       button.addEventListener("mouseleave", handleMouseLeave);
 
       return () => {
+        window.removeEventListener("scroll", updateRect);
+        window.removeEventListener("resize", updateRect);
         window.removeEventListener("mousemove", handleMouseMove);
         button.removeEventListener("mouseleave", handleMouseLeave);
       };
@@ -202,7 +212,7 @@ A new Project Proposal has been submitted:
     }
 
     // Trigger Email client redirection
-    window.location.href = mailtoUrl;
+    window.location.assign(mailtoUrl);
 
     // Simulate API pipeline delay and set success
     setTimeout(() => {
@@ -300,7 +310,7 @@ A new Project Proposal has been submitted:
                         {...register("fullName", { required: true })}
                         className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
-                      {errors.fullName && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Full name required</span>}
+                      {errors.fullName && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Full name required"}</span>}
                     </div>
 
                     {/* Email */}
@@ -315,7 +325,7 @@ A new Project Proposal has been submitted:
                         })}
                         className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
-                      {errors.email && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Valid email required</span>}
+                      {errors.email && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Valid email required"}</span>}
                     </div>
 
                     {/* Organization */}
@@ -347,7 +357,7 @@ A new Project Proposal has been submitted:
                         <option value="ai">AI Production Shoots</option>
                         <option value="xr">VR & Spatial XR</option>
                       </select>
-                      {errors.service && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Please select a service</span>}
+                      {errors.service && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Please select a service"}</span>}
                     </div>
                   </div>
 
@@ -413,7 +423,7 @@ A new Project Proposal has been submitted:
                         {...register("details", { required: true })}
                         className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 resize-none w-full"
                       />
-                      {errors.details && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">// Ingestion specifications required</span>}
+                      {errors.details && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Ingestion specifications required"}</span>}
                     </div>
 
                     {/* Submit Button */}
@@ -441,9 +451,9 @@ A new Project Proposal has been submitted:
             <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
             <span>CLOCKS: </span>
             <span className="text-white/80 font-medium">BENGALURU: {timeStr || "00:00:00"}</span>
-            <span> // </span>
+            <span>{" // "}</span>
             <span className="text-white/80 font-medium">MUMBAI: {timeStr || "00:00:00"}</span>
-            <span> // </span>
+            <span>{" // "}</span>
             <span className="text-white/80 font-medium">DELHI: {timeStr || "00:00:00"}</span>
           </div>
         </div>
