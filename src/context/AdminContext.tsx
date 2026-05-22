@@ -22,6 +22,7 @@ export interface Project {
     timeline: string;
     role: string;
     engine: string;
+    videoUrl?: string | null;
   };
   metrics: {
     label: string;
@@ -517,7 +518,13 @@ const mapProjectFromDb = (dbProj: any): Project => ({
   tagline: dbProj.tagline || "",
   description: dbProj.description || "",
   bgGradient: dbProj.bg_gradient || "from-slate-900 via-sky-950 to-[#050507]",
-  details: dbProj.details || { client: "", timeline: "", role: "", engine: "" },
+  details: {
+    client: dbProj.details?.client || "",
+    timeline: dbProj.details?.timeline || "",
+    role: dbProj.details?.role || "",
+    engine: dbProj.details?.engine || "",
+    videoUrl: dbProj.details?.videoUrl || null
+  },
   metrics: dbProj.metrics || []
 });
 

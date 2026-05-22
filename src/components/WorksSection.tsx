@@ -232,6 +232,27 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
     </div>
   );
 }
+const getVideoEmbedUrl = (url: string) => {
+  if (url.includes("vimeo.com")) {
+    const reg = /video\/(\d+)/;
+    const match = url.match(reg);
+    const id = match ? match[1] : url.split("/").pop()?.split("?")[0];
+    return `https://player.vimeo.com/video/${id}?autoplay=1&loop=1&muted=1&background=1&autopause=0`;
+  }
+  if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    let id = "";
+    if (url.includes("youtu.be")) {
+      id = url.split("/").pop()?.split("?")[0] || "";
+    } else if (url.includes("embed/")) {
+      id = url.split("embed/")[1].split("?")[0];
+    } else {
+      const match = url.match(/[?&]v=([^&#]+)/);
+      id = match ? match[1] : "";
+    }
+    return `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3`;
+  }
+  return url;
+};
 
 export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
@@ -239,18 +260,17 @@ export default function WorksSection() {
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  const { projects } = useAdmin();
+
   const categories = [
     "ALL",
-    "VIDEO",
-    "VFX",
-    "CGI",
-    "WEB DEV",
-    "APPS",
-    "AI SHOOTS",
-    "VR",
+    ...Array.from(new Set(
+      projects
+        .flatMap(p => p.categories || [])
+        .map(cat => cat.toUpperCase().trim())
+        .filter(Boolean)
+    ))
   ];
-
-  const { projects } = useAdmin();
 
   const filteredProjects = activeCategory === "ALL" 
     ? projects 
@@ -441,16 +461,40 @@ export default function WorksSection() {
               <div className="relative col-span-5 min-h-[200px] md:min-h-[500px] h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center">
                 {/* Background ambient light */}
                 <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10" />
 
-                {/* Animated project image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_infinite_alternate]"
-                  style={{ animationDuration: "12s" }}
-                />
+                {/* Dynamic Project Media Player (Video or fallback Image) */}
+                {selectedProject.details?.videoUrl ? (
+                  <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
+                    {selectedProject.details.videoUrl.includes("vimeo.com") || selectedProject.details.videoUrl.includes("youtube.com") || selectedProject.details.videoUrl.includes("youtu.be") ? (
+                      <iframe
+                        src={getVideoEmbedUrl(selectedProject.details.videoUrl)}
+                        className="w-full h-full border-0 aspect-[9/16] md:aspect-[10/16] pointer-events-none scale-[1.02]"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowFullScreen
+                        title={selectedProject.title}
+                      />
+                    ) : (
+                      <video
+                        src={selectedProject.details.videoUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover opacity-90"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  /* Animated project fallback image */
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_infinite_alternate]"
+                    style={{ animationDuration: "12s" }}
+                  />
+                )}
 
                 {/* Floating overlay text on visual side */}
                 <div className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-2">

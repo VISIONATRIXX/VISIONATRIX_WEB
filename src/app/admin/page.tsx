@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAdmin, Project, ServiceItem, Testimonial, Proposal } from "@/context/AdminContext";
+import { supabase } from "@/utils/supabase";
 import { 
   Lock, 
   Unlock, 
@@ -30,7 +31,8 @@ import {
   Star,
   ChevronRight,
   Clock,
-  UserCheck
+  UserCheck,
+  Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -75,6 +77,13 @@ export default function AdminPage() {
   const [projectModal, setProjectModal] = useState<{ isOpen: boolean; mode: "add" | "edit"; data?: Project }>({ isOpen: false, mode: "add" });
   const [testimonialModal, setTestimonialModal] = useState<{ isOpen: boolean; mode: "add" | "edit"; data?: Testimonial }>({ isOpen: false, mode: "add" });
   const [serviceEditor, setServiceEditor] = useState<ServiceItem | null>(null);
+
+  const [customTagInput, setCustomTagInput] = useState("");
+  const [localTags, setLocalTags] = useState<string[]>([]);
+
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   const budgetTiers = ["$5K - $15K", "$15K - $40K", "$40K - $100K", "$100K+"];
 
@@ -151,13 +160,25 @@ export default function AdminPage() {
     subtitle: "",
     year: "2026",
     bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
-    details: { client: "", timeline: "", role: "", engine: "" },
+    details: { client: "", timeline: "", role: "", engine: "", videoUrl: "" },
     metrics: [{ label: "", value: "" }, { label: "", value: "" }, { label: "", value: "" }]
   });
 
   const openProjectModal = (mode: "add" | "edit", data?: Project) => {
+    setLocalTags([]);
+    setCustomTagInput("");
+    setUploadError("");
     if (mode === "edit" && data) {
-      setProjForm({ ...data });
+      setProjForm({ 
+        ...data,
+        details: {
+          client: data.details?.client || "",
+          timeline: data.details?.timeline || "",
+          role: data.details?.role || "",
+          engine: data.details?.engine || "",
+          videoUrl: data.details?.videoUrl || ""
+        }
+      });
     } else {
       setProjForm({
         title: "",
@@ -169,7 +190,7 @@ export default function AdminPage() {
         subtitle: "",
         year: "2026",
         bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
-        details: { client: "", timeline: "", role: "", engine: "" },
+        details: { client: "", timeline: "", role: "", engine: "", videoUrl: "" },
         metrics: [
           { label: "RESOLUTION", value: "8K Projections" },
           { label: "RENDER ENGINE", value: "Octane / WebGL" },
@@ -178,6 +199,85 @@ export default function AdminPage() {
       });
     }
     setProjectModal({ isOpen: true, mode, data });
+  };
+
+  const handleAddCustomTag = () => {
+    const formattedTag = customTagInput.trim().toUpperCase();
+    if (formattedTag) {
+      if (!localTags.includes(formattedTag)) {
+        setLocalTags(prev => [...prev, formattedTag]);
+      }
+      const current = projForm.categories || [];
+      if (!current.includes(formattedTag)) {
+        setProjForm(prev => ({ ...prev, categories: [...(prev.categories || []), formattedTag] }));
+      }
+      setCustomTagInput("");
+      addHudLog(`Registered custom section tag: "${formattedTag}"`, "info");
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError("");
+    if (type === "image") {
+      setIsUploadingImage(true);
+    } else {
+      setIsUploadingVideo(true);
+    }
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const baseName = file.name.substring(0, file.name.lastIndexOf(".")).replace(/[^a-zA-Z0-9]/g, "_");
+      const fileName = `${Date.now()}_${baseName}.${fileExt}`;
+      const filePath = `uploads/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("portfolio")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
+      
+      if (!data?.publicUrl) {
+        throw new Error("Failed to retrieve public URL from storage.");
+      }
+
+      if (type === "image") {
+        setProjForm(prev => ({ ...prev, image: data.publicUrl }));
+        addHudLog(`Uploaded project image: "${file.name}"`, "success");
+      } else {
+        setProjForm(prev => ({
+          ...prev,
+          details: {
+            client: prev.details?.client || "",
+            timeline: prev.details?.timeline || "",
+            role: prev.details?.role || "",
+            engine: prev.details?.engine || "",
+            videoUrl: data.publicUrl
+          }
+        }));
+        addHudLog(`Uploaded project video: "${file.name}"`, "success");
+      }
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      const errMsg = err.message || "Upload process failed.";
+      setUploadError(errMsg);
+      addHudLog(`File upload failed: ${errMsg}`, "error");
+    } finally {
+      if (type === "image") {
+        setIsUploadingImage(false);
+      } else {
+        setIsUploadingVideo(false);
+      }
+      // Reset input element value so same file can be re-selected if needed
+      e.target.value = "";
+    }
   };
 
   const handleProjectSubmit = (e: React.FormEvent) => {
@@ -201,7 +301,8 @@ export default function AdminPage() {
         client: projForm.details?.client || "Spec Project",
         timeline: projForm.details?.timeline || "Q1 2026",
         role: projForm.details?.role || "Digital Studio",
-        engine: projForm.details?.engine || "Octane Render"
+        engine: projForm.details?.engine || "Octane Render",
+        videoUrl: projForm.details?.videoUrl || null
       },
       metrics: projForm.metrics || []
     };
@@ -1032,7 +1133,7 @@ export default function AdminPage() {
                       type="text" 
                       value={projForm.title || ""} 
                       onChange={(e) => setProjForm({ ...projForm, title: e.target.value })} 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider"
+                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider font-semibold"
                       placeholder="e.g. AURA CONFIGURATOR"
                       required
                     />
@@ -1048,6 +1149,70 @@ export default function AdminPage() {
                       placeholder="e.g. CGI & Cinematic Visuals"
                       required
                     />
+                  </div>
+                </div>
+
+                {/* Tag multi-select categories */}
+                <div className="flex flex-col gap-2 bg-[#121217] border border-white/5 p-4 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">
+                      CASE STUDIES TAB FILTERS (MULTI-SELECT TAGS)
+                    </span>
+                    <span className="text-[8px] font-mono text-white/30 uppercase">
+                      SELECT ALL SECTIONS THAT APPLY
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5 mt-1 select-none">
+                    {Array.from(new Set([
+                      "VIDEO", "VFX", "CGI", "WEB DEV", "APPS", "AI SHOOTS", "VR",
+                      ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
+                      ...localTags
+                    ])).map((tag) => {
+                      const selected = (projForm.categories || []).includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => {
+                            const current = projForm.categories || [];
+                            const updated = current.includes(tag)
+                              ? current.filter(t => t !== tag)
+                              : [...current, tag];
+                            setProjForm({ ...projForm, categories: updated });
+                          }}
+                          className={`px-3.5 py-1.5 rounded-full border text-[9px] font-mono tracking-wider font-bold transition-all duration-200 active:scale-95 cursor-pointer uppercase ${
+                            selected 
+                              ? "bg-[#c5a880]/15 border-[#c5a880] text-white shadow-[0_0_12px_rgba(197,168,128,0.18)]" 
+                              : "border-white/10 bg-black/40 text-white/35 hover:text-white/70 hover:border-white/20"
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
+                    <input 
+                      type="text" 
+                      value={customTagInput} 
+                      onChange={(e) => setCustomTagInput(e.target.value)} 
+                      placeholder="ADD CUSTOM SECTION/TAG..." 
+                      className="bg-black/35 border border-white/10 rounded px-2.5 py-1.5 text-[10px] text-white tracking-wider outline-none focus:border-[#c5a880]/40 flex-1 font-mono uppercase"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddCustomTag();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddCustomTag}
+                      className="bg-[#c5a880]/10 border border-[#c5a880]/20 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3.5 py-1.5 rounded text-[10px] font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase"
+                    >
+                      + ADD TAG
+                    </button>
                   </div>
                 </div>
 
@@ -1071,6 +1236,89 @@ export default function AdminPage() {
                     className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white/80 leading-relaxed font-sans font-light"
                     placeholder="Detailed paragraph explaining creative methodologies..."
                   />
+                </div>
+
+                {/* Project media files upload / configure card */}
+                <div className="border border-white/5 bg-[#121217] rounded-lg p-4 flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">
+                      PROJECT MEDIA ASSETS CONFIGURATION
+                    </span>
+                    {uploadError && (
+                      <span className="text-[9px] font-mono text-red-500 font-semibold uppercase tracking-wider animate-pulse">
+                        ⚠️ UPLOAD ERROR: {uploadError}
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Image Path / URL</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={projForm.image || ""} 
+                          onChange={(e) => setProjForm({ ...projForm, image: e.target.value })} 
+                          className="flex-1 bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                          placeholder="e.g. /work_aura_configurator.png"
+                          required
+                        />
+                        <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/10 border border-[#c5a880]/30 hover:bg-[#c5a880]/20 hover:border-[#c5a880]/50 text-[#c5a880] hover:text-white px-3.5 rounded-md text-xs font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase">
+                          {isUploadingImage ? (
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Upload className="w-3.5 h-3.5" />
+                          )}
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => handleFileUpload(e, "image")}
+                            disabled={isUploadingImage}
+                          />
+                        </label>
+                      </div>
+                      {projForm.image && (projForm.image.startsWith("http") || projForm.image.includes("supabase")) && (
+                        <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                          <Check className="w-2.5 h-2.5" /> UPLOADED TO SUPABASE
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Video Link / URL (Optional)</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={projForm.details?.videoUrl || ""} 
+                          onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, videoUrl: e.target.value } })} 
+                          className="flex-1 bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                          placeholder="e.g. /my_video.mp4 or https://player.vimeo.com/video/..."
+                        />
+                        <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/10 border border-[#c5a880]/30 hover:bg-[#c5a880]/20 hover:border-[#c5a880]/50 text-[#c5a880] hover:text-white px-3.5 rounded-md text-xs font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase">
+                          {isUploadingVideo ? (
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Upload className="w-3.5 h-3.5" />
+                          )}
+                          <input 
+                            type="file" 
+                            accept="video/*" 
+                            className="hidden" 
+                            onChange={(e) => handleFileUpload(e, "video")}
+                            disabled={isUploadingVideo}
+                          />
+                        </label>
+                      </div>
+                      {projForm.details?.videoUrl && (projForm.details.videoUrl.startsWith("http") || projForm.details.videoUrl.includes("supabase")) && (
+                        <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                          <Check className="w-2.5 h-2.5" /> UPLOADED TO SUPABASE
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[8px] font-mono text-white/30 uppercase leading-normal">
+                    💡 Tip: Paste a raw .mp4 video path, or an external Vimeo/YouTube iframe embed URL to showcase high-fidelity motion. Or click the upload icon to upload a file directly.
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
