@@ -8,12 +8,48 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAdmin, Project } from "@/context/AdminContext";
 
-function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetails: (p: Project) => void }) {
+const restingRotations = [
+  { rotateX: 4, rotateY: -6, rotateZ: 1.5 },
+  { rotateX: -3, rotateY: 5, rotateZ: -1 },
+  { rotateX: 5, rotateY: 3, rotateZ: 2 },
+  { rotateX: -4, rotateY: -4, rotateZ: -1.5 },
+  { rotateX: 3, rotateY: -5, rotateZ: 1 },
+  { rotateX: -5, rotateY: 4, rotateZ: -2 },
+  { rotateX: 4, rotateY: 6, rotateZ: 1.5 },
+  { rotateX: -4, rotateY: -5, rotateZ: -1 },
+];
+
+const parallaxSpeeds = [-60, 40, -30, 80, -45, 60, -20, 50];
+
+function ProjectCard({ 
+  project, 
+  index, 
+  onOpenDetails 
+}: { 
+  project: Project; 
+  index: number; 
+  onOpenDetails: (p: Project) => void 
+}) {
   const cardRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
+
+  const resting = restingRotations[index % restingRotations.length];
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (card) {
+      gsap.set(card, {
+        rotateX: resting.rotateX,
+        rotateY: resting.rotateY,
+        rotateZ: resting.rotateZ,
+        scale: 1,
+        transformPerspective: 1200,
+      });
+    }
+  }, [resting]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const card = cardRef.current;
@@ -49,28 +85,29 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
     // 3D Tilt calculation on the ENTIRE card
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 10; // Max 10 degrees tilt
-    const rotateY = ((x - centerX) / centerX) * -10; // Inverted for natural look
+    const rotateX = ((centerY - y) / centerY) * 15; // Max 15 degrees tilt
+    const rotateY = ((x - centerX) / centerX) * -15; // Inverted for natural look
 
     gsap.to(card, {
       rotateX: rotateX,
       rotateY: rotateY,
+      rotateZ: 0, // Flatten rotateZ when hovered
       transformPerspective: 1200,
-      scale: 1.025,
-      borderColor: "rgba(197, 168, 128, 0.3)",
-      boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.12)",
-      duration: 0.25,
+      scale: 1.05, // Subtle scale
+      borderColor: "rgba(197, 168, 128, 0.35)",
+      boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.15)",
+      duration: 0.35,
       ease: "power2.out",
     });
 
     // Sub-parallax element shift inside the card
     if (img) {
-      const px = ((x - centerX) / centerX) * -12;
-      const py = ((y - centerY) / centerY) * -12;
+      const px = ((x - centerX) / centerX) * -15;
+      const py = ((y - centerY) / centerY) * -15;
       gsap.to(img, {
         x: px,
         y: py,
-        duration: 0.25,
+        duration: 0.35,
         ease: "power2.out",
       });
     }
@@ -105,11 +142,12 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
     const cursor = cursorRef.current;
     const sheen = sheenRef.current;
 
-    // Reset 3D Tilt
+    // Reset 3D Tilt to resting float position
     if (card) {
       gsap.to(card, {
-        rotateX: 0,
-        rotateY: 0,
+        rotateX: resting.rotateX,
+        rotateY: resting.rotateY,
+        rotateZ: resting.rotateZ,
         scale: 1,
         borderColor: "rgba(255, 255, 255, 0.05)",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3), 0 0 0px rgba(0,0,0,0)",
@@ -155,7 +193,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpenDetails(project)}
-      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 transition-all duration-500 transform-gpu select-none group project-card-container"
+      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 select-none group project-card-container"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Interactive Card Image Container */}
@@ -204,7 +242,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
         {/* Custom Follow Cursor */}
         <div
           ref={cursorRef}
-          className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#c5a880]/50 bg-black/40 backdrop-blur-[3px] z-40 flex items-center justify-center pointer-events-none opacity-0 scale-0 transition-transform duration-300"
+          className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#c5a880]/50 bg-black/40 backdrop-blur-[3px] z-40 flex items-center justify-center pointer-events-none opacity-0 scale-0"
           style={{ transform: "translateZ(60px)" }}
         >
           <span className="font-outfit text-[8px] font-bold tracking-[0.2em] text-[#c5a880] uppercase">VIEW</span>
@@ -322,6 +360,7 @@ export default function WorksSection() {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
+    // Fade-in trigger on mount/filter
     const cards = gsap.utils.toArray(".project-card-container") as HTMLElement[];
     cards.forEach((card) => {
       gsap.fromTo(card,
@@ -341,21 +380,42 @@ export default function WorksSection() {
       );
     });
 
+    // Parallax scroll speed logic
+    const parallaxWrappers = gsap.utils.toArray(".parallax-wrapper") as HTMLElement[];
+    parallaxWrappers.forEach((wrapper) => {
+      const speed = parseFloat(wrapper.getAttribute("data-speed") || "0");
+      if (speed === 0) return;
+
+      gsap.fromTo(wrapper,
+        { y: -speed },
+        {
+          y: speed,
+          ease: "none",
+          scrollTrigger: {
+            trigger: wrapper,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          }
+        }
+      );
+    });
+
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, [activeCategory, filteredProjects.length]);
 
-  // Card layouts configuration to match the staggered asymmetrical grid in screenshot
+  // Card layouts configuration to match the staggered asymmetrical grid
   const cardLayoutClasses = [
-    "md:col-span-7 md:justify-self-start",             // 01 Aura Configurator
-    "md:col-span-5 md:mt-28 md:justify-self-end",      // 02 Omnis Interactive
-    "md:col-span-5 md:-mt-16 md:justify-self-start",   // 03 Neo-City Digital Twin
-    "md:col-span-7 md:mt-12 md:justify-self-end",      // 04 Ether Editorial
-    "md:col-span-7 md:mt-[-40px] md:justify-self-start", // 05 Chronos VR
-    "md:col-span-5 md:mt-24 md:justify-self-end",      // 06 Synapse AI Studio
-    "md:col-span-5 md:-mt-20 md:justify-self-start",   // 07 Vortex Fluidics
-    "md:col-span-7 md:mt-8 md:justify-self-end",       // 08 Custom Software System
+    "lg:col-span-7 lg:justify-self-start",             // 01 Aura Configurator
+    "lg:col-span-5 lg:mt-28 lg:justify-self-end",      // 02 Omnis Interactive
+    "lg:col-span-5 lg:mt-[-40px] lg:justify-self-start", // 03 Neo-City Digital Twin
+    "lg:col-span-7 lg:mt-12 lg:justify-self-end",      // 04 Ether Editorial
+    "lg:col-span-7 lg:mt-[-30px] lg:justify-self-start", // 05 Chronos VR
+    "lg:col-span-5 lg:mt-24 lg:justify-self-end",      // 06 Synapse AI Studio
+    "lg:col-span-5 lg:mt-[-50px] lg:justify-self-start", // 07 Vortex Fluidics
+    "lg:col-span-7 lg:mt-8 lg:justify-self-end",       // 08 Custom Software System
   ];
 
   return (
@@ -371,85 +431,197 @@ export default function WorksSection() {
       </div>
 
       <ScrollAnimatedWrapper enableY={false} enableScale={false} className="h-full flex flex-col justify-between">
-        <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full justify-between">
-        
-        {/* Header Row: Title & Category Navigation */}
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-8 mb-12 md:mb-16 shrink-0">
-          <div className="flex flex-col gap-2">
-            <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-[#c5a880] uppercase">
-              SELECTED WORKS
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-[0.08em] text-white uppercase">
-              CASE STUDIES
-            </h2>
+        <div className="max-w-7xl mx-auto w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          
+          {/* Left Column - Sticky Info panel */}
+          <div className="lg:col-span-4 lg:sticky lg:top-28 h-fit flex flex-col gap-8 self-start z-20">
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-[#c5a880] uppercase font-bold">
+                SELECTED WORKS
+              </span>
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-[0.08em] text-white uppercase">
+                CASE STUDIES
+              </h2>
+              <p className="text-xs text-[#9999aa] leading-relaxed mt-2 font-sans">
+                Explore our selected works displaying interactive, real-time creations. Hover to inspect depth and dynamics, and click to view detailed case briefs.
+              </p>
+            </div>
+
+            {/* Structured Guide / Specs Box */}
+            <div className="border border-white/5 bg-[#09090d]/60 backdrop-blur-md rounded-xl p-5 md:p-6 flex flex-col gap-5">
+              {/* Section 1 */}
+              <div className="flex flex-col gap-2">
+                <h4 className="font-mono text-[9px] tracking-[0.2em] text-[#c5a880] uppercase font-bold">
+                  REQUIREMENTS
+                </h4>
+                <ul className="flex flex-col gap-1.5 font-mono text-[10px] text-white/75">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Cards tilt & rotate towards cursor</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Smooth natural movement & spring easing</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>3D perspective field layout</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Subtle scale & interactive sheen response</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Section 2 */}
+              <div className="flex flex-col gap-2 border-t border-white/5 pt-4">
+                <h4 className="font-mono text-[9px] tracking-[0.2em] text-[#c5a880] uppercase font-bold">
+                  TECH & STYLE
+                </h4>
+                <ul className="flex flex-col gap-1.5 font-mono text-[10px] text-white/75">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>High-performance GSAP engine logic</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>3D perspective transformations (1200px)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Optimized hardware acceleration (GPU transforms)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Curated minimal dark-theme aesthetic</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Section 3 */}
+              <div className="flex flex-col gap-2 border-t border-white/5 pt-4">
+                <h4 className="font-mono text-[9px] tracking-[0.2em] text-[#c5a880] uppercase font-bold">
+                  BEHAVIOR
+                </h4>
+                <ul className="flex flex-col gap-1.5 font-mono text-[10px] text-white/75">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>X/Y rotation adjusts dynamically on move</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Staggered Scroll Parallax translates Y-axis</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#c5a880] mt-0.5 font-bold">•</span>
+                    <span>Resting angles restore floating state on leave</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Suggested Tech Stack pill badges */}
+            <div className="flex flex-col gap-3">
+              <h4 className="font-mono text-[9px] tracking-[0.2em] text-[#c5a880] uppercase font-bold">
+                SUGGESTED TECH STACK
+              </h4>
+              <div className="flex flex-wrap gap-2.5 font-mono text-[9px] tracking-[0.15em] font-bold text-white">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#c5a880]/30 bg-[#c5a880]/5 hover:bg-[#c5a880]/10 hover:border-[#c5a880]/50 transition-all duration-300 shadow-[0_0_10px_rgba(197,168,128,0.05)] cursor-default select-none">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] shadow-[0_0_6px_#c5a880]" />
+                  <span>GSAP</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 cursor-default select-none">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#9999aa]" />
+                  <span>LENIS</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 cursor-default select-none">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#9999aa]" />
+                  <span>VANILLA JS</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Category Filter Buttons */}
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6 md:mt-0 font-mono text-[9px] md:text-[10px] tracking-[0.2em] font-medium text-white/40">
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => handleCategoryChange(cat)}
-                  className={`relative py-1.5 cursor-pointer transition-colors duration-300 ${
-                    isActive ? "text-[#c5a880] font-semibold" : "hover:text-white"
-                  }`}
-                >
-                  <span>{cat}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeCategoryUnderline"
-                      className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#c5a880]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Asymmetrical Staggered Grid Container */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-y-32 md:gap-x-16 py-8">
-          {!isLoaded ? (
-            Array.from({ length: 4 }).map((_, index) => {
-              const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
-              return (
-                <ProjectCardSkeleton 
-                  key={`skeleton-${index}`} 
-                  className={`w-full max-w-[580px] ${layoutClass}`} 
-                />
-              );
-            })
-          ) : (
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project, index) => {
-                const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
+          {/* Right Column - Interactive 3D playground */}
+          <div className="lg:col-span-8 flex flex-col gap-10 relative">
+            {/* Category Filter Buttons - Floats at the top */}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 font-mono text-[9px] md:text-[10px] tracking-[0.2em] font-medium text-white/40 pb-4 border-b border-white/5 w-full">
+              {categories.map((cat) => {
+                const isActive = activeCategory === cat;
                 return (
-                  <motion.div
-                    key={project.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4 }}
-                    className={`w-full max-w-[580px] ${layoutClass}`}
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryChange(cat)}
+                    className={`relative py-1.5 cursor-pointer transition-colors duration-300 ${
+                      isActive ? "text-[#c5a880] font-semibold" : "hover:text-white"
+                    }`}
                   >
-                    <ProjectCard 
-                      project={project} 
-                      onOpenDetails={(p) => {
-                        setSelectedProject(p);
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (window as any).lenis?.stop();
-                      }}
-                    />
-                  </motion.div>
+                    <span>{cat}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeCategoryUnderline"
+                        className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#c5a880]"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </button>
                 );
               })}
-            </AnimatePresence>
-          )}
-        </div>
+            </div>
+
+            {/* Asymmetrical Staggered Cards Field */}
+            <div 
+              className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-y-24 md:gap-x-12 py-4"
+              style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
+            >
+              {!isLoaded ? (
+                Array.from({ length: 4 }).map((_, index) => {
+                  const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
+                  const speed = parallaxSpeeds[index % parallaxSpeeds.length];
+                  return (
+                    <div 
+                      key={`skeleton-${index}`} 
+                      className={`w-full max-w-[580px] ${layoutClass} parallax-wrapper`}
+                      data-speed={speed}
+                    >
+                      <ProjectCardSkeleton className="w-full" />
+                    </div>
+                  );
+                })
+              ) : (
+                <AnimatePresence mode="popLayout">
+                  {filteredProjects.map((project, index) => {
+                    const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
+                    const speed = parallaxSpeeds[index % parallaxSpeeds.length];
+                    return (
+                      <motion.div
+                        key={project.id}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.4 }}
+                        className={`w-full max-w-[580px] ${layoutClass}`}
+                      >
+                        <div className="parallax-wrapper w-full" data-speed={speed}>
+                          <ProjectCard 
+                            project={project} 
+                            index={index}
+                            onOpenDetails={(p) => {
+                              setSelectedProject(p);
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              (window as any).lenis?.stop();
+                            }}
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
 
         </div>
       </ScrollAnimatedWrapper>
