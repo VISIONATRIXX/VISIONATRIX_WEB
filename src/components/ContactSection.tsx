@@ -8,6 +8,7 @@ import confetti from "canvas-confetti";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
+import { useAdmin } from "@/context/AdminContext";
 
 interface FormData {
   fullName: string;
@@ -18,6 +19,7 @@ interface FormData {
 }
 
 export default function ContactSection() {
+  const { addProposal } = useAdmin();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>();
   const [budgetTier, setBudgetTier] = useState<string>("$15K - $40K");
   const [fileName, setFileName] = useState<string | null>(null);
@@ -188,6 +190,17 @@ export default function ContactSection() {
   const onSubmit = (data: FormData) => {
     setIsSubmitting(true);
     
+    // Ingest the proposal into the global state layer
+    addProposal({
+      fullName: data.fullName,
+      email: data.email,
+      organization: data.organization || "",
+      service: data.service,
+      details: data.details,
+      budget: budgetTier,
+      fileName: fileName
+    });
+
     // Construct formatted text message summary
     const textMessage = `Hello Visionatrix Studio!
 

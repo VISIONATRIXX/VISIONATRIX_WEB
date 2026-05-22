@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   description: "Sensory Architecture, CGI Advertising, VFX simulations and Premium Digital Environments.",
 };
 
+import { AdminProvider } from "@/context/AdminContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,7 +43,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0b0b0f] text-white">
         <div className="noise-overlay" />
-        {children}
+        <AdminProvider>{children}</AdminProvider>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Activity } from "lucide-react";
+import { useAdmin } from "@/context/AdminContext";
 
 interface ServiceItem {
   id: string;
@@ -658,168 +659,30 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
 
-  const services: ServiceItem[] = [
-    {
-      id: "01",
-      title: "VIDEO EDITING",
-      description: "We structure cinematic narratives, high-impact brand commercials, and director's cut releases utilizing tailored framing rhythms that command digital presence.",
-      icon: <Film className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ PRODUCTION HUD ]",
-      hudItems: [
-        { label: "FOCUS", value: "Cinematic Narrative" },
-        { label: "OUTPUT", value: "4K / 8K Master Deliveries" },
-        { label: "COLOR", value: "Bespoke Color Gradients" },
-        { label: "TECH", value: "DaVinci Resolve / Premiere" }
-      ],
-      bullets: [
-        "// Soundscapes Synthesis",
-        "// Rhythmic Staccato Edits",
-        "// Haute Couture Commercials"
-      ],
-      tools: ["DaVinci Resolve", "Premiere Pro", "After Effects", "Avid Link"],
-      canvasType: "video"
-    },
-    {
-      id: "02",
-      title: "VFX SIMULATIONS",
-      description: "We simulate and composite hyper-realistic environmental phenomena, particle streams, and digital cosmetics tailored for cinema and high-fashion advertising campaigns.",
-      icon: <Sparkles className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ COMPOSITING HUD ]",
-      hudItems: [
-        { label: "FOCUS", value: "Photoreal FX" },
-        { label: "OUTPUT", value: "DeepEXR Sequences" },
-        { label: "GRAIN", value: "Camera-matched Noise" },
-        { label: "TECH", value: "Nuke / Houdini" }
-      ],
-      bullets: [
-        "// Fluid Dynamics Simulations",
-        "// Photorealistic Compositing",
-        "// Deep Compositing Workflows"
-      ],
-      tools: ["Nuke", "Houdini", "PFTrack", "Syntheyes"],
-      canvasType: "vfx"
-    },
-    {
-      id: "03",
-      title: "CGI ADVERTISING",
-      description: "We construct cinematic luxury product renders, automotive concept visualizations, and bespoke promotional sequences engineered to bridge commercial luxury with futuristic aesthetics.",
-      icon: <Box className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ RENDER SPECS ]",
-      hudItems: [
-        { label: "PIPELINE", value: "Sub-pixel Raytracing" },
-        { label: "MATERIALS", value: "Physically Based Shading" },
-        { label: "RESOLUTIONS", value: "8K Master Projections" },
-        { label: "AUDIENCE", value: "Luxury B2B Focus" }
-      ],
-      bullets: [
-        "// 3D Raytraced Metamorphs",
-        "// Physically Accurate Textures",
-        "// Luxury Architectural Shaders"
-      ],
-      tools: ["Blender 3D", "Cinema 4D", "Redshift", "Octane Render"],
-      canvasType: "cgi"
-    },
-    {
-      id: "04",
-      title: "ENVIRONMENT CREATION",
-      description: "We build sprawling virtual landscapes, digital twin showrooms, and interactive sensory environments rendered in real-time utilizing state-of-the-art geometry pipelines.",
-      icon: <Layers className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ SPATIAL DIAGNOSTICS ]",
-      hudItems: [
-        { label: "GEOMETRY", value: "Bespoke Megascans" },
-        { label: "LIGHTING", value: "Lumen / Path Tracer" },
-        { label: "DETAIL", value: "Sub-millimeter Micro-mesh" },
-        { label: "TECH", value: "Unreal Engine 5.5" }
-      ],
-      bullets: [
-        "// Realtime Virtual Sets",
-        "// Procedural Terrain Generation",
-        "// High-fidelity Digital Twins"
-      ],
-      tools: ["Unreal Engine 5", "SpeedTree", "Quixel Bridge", "Substance Painter"],
-      canvasType: "env"
-    },
-    {
-      id: "05",
-      title: "WEBGL WEB CODE",
-      description: "We write bespoke WebGL shaders, fluid simulation portals, and 3D websites that load in milliseconds and deliver silky-smooth interactions on any device.",
-      icon: <Cpu className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ RENDER CORE ]",
-      hudItems: [
-        { label: "ENGINE", value: "Three.js / WebGL" },
-        { label: "PERFORMANCE", value: "60 FPS Locked" },
-        { label: "SHADERS", value: "Custom GLSL Noise" },
-        { label: "TECH", value: "React Three Fiber" }
-      ],
-      bullets: [
-        "// Custom GLSL Shader Art",
-        "// Interactive Physics Systems",
-        "// Headless WebGL Engines"
-      ],
-      tools: ["Three.js", "GLSL", "React Three Fiber", "Vite"],
-      canvasType: "webgl"
-    },
-    {
-      id: "06",
-      title: "APP ARCHITECTURES",
-      description: "We design enterprise-grade mobile interfaces and robust cloud platforms optimized for extreme speed, security, and complex spatial UI interactions.",
-      icon: <Smartphone className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ SYSTEMS METRICS ]",
-      hudItems: [
-        { label: "FRAMEWORK", value: "Next.js / React Native" },
-        { label: "STATE", value: "Zustand / Redux" },
-        { label: "DATABASE", value: "Supabase / PostgreSQL" },
-        { label: "TECH", value: "Vercel Edge API" }
-      ],
-      bullets: [
-        "// Edge API Handlers",
-        "// Micro-frontend Schemes",
-        "// Realtime Database Sync"
-      ],
-      tools: ["Next.js", "React Native", "Supabase", "Tailwind CSS"],
-      canvasType: "app"
-    },
-    {
-      id: "07",
-      title: "AI PRODUCTION SHOOTS",
-      description: "We direct AI-driven commercial productions and campaign photography, combining traditional cinematography guidelines with state-of-the-art latent models.",
-      icon: <ScanFace className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ LATENT HUD ]",
-      hudItems: [
-        { label: "SAMPLING", value: "Flux / SDXL" },
-        { label: "UPSCALE", value: "4K Magnific AI" },
-        { label: "CONSISTENCY", value: "IP-Adapter / ControlNet" },
-        { label: "TECH", value: "ComfyUI Nodes" }
-      ],
-      bullets: [
-        "// Latent Temporal Consistency",
-        "// Hyper-premium Character Design",
-        "// ControlNet Directed Framing"
-      ],
-      tools: ["ComfyUI", "Stable Diffusion", "Midjourney", "Photoshop AI"],
-      canvasType: "ai"
-    },
-    {
-      id: "08",
-      title: "VR & SPATIAL XR",
-      description: "We code fully immersive volumetric environments, spatial computed applications, and hand-tracked simulations pushing the boundaries of human presence.",
-      icon: <Eye className="w-5 h-5 text-[#c5a880]" />,
-      hudTitle: "[ OPTICAL TELEMETRY ]",
-      hudItems: [
-        { label: "TARGET", value: "Vision Pro / Quest" },
-        { label: "TRACKING", value: "6DoF Hand Tracking" },
-        { label: "VOLUMETRIC", value: "Gaussian Splatting" },
-        { label: "TECH", value: "Unity / WebXR" }
-      ],
-      bullets: [
-        "// Spatial UI/UX Architecture",
-        "// 3D Gaussian Splat Ingestion",
-        "// Low Latency Spatial Feeds"
-      ],
-      tools: ["Unity 3D", "WebXR", "OpenXR", "Swift / VisionOS"],
-      canvasType: "xr"
-    }
-  ];
+  const { services: rawServices } = useAdmin();
+
+  const iconMap: Record<string, React.ReactNode> = {
+    Film: <Film className="w-5 h-5 text-[#c5a880]" />,
+    Sparkles: <Sparkles className="w-5 h-5 text-[#c5a880]" />,
+    Box: <Box className="w-5 h-5 text-[#c5a880]" />,
+    Layers: <Layers className="w-5 h-5 text-[#c5a880]" />,
+    Cpu: <Cpu className="w-5 h-5 text-[#c5a880]" />,
+    Smartphone: <Smartphone className="w-5 h-5 text-[#c5a880]" />,
+    ScanFace: <ScanFace className="w-5 h-5 text-[#c5a880]" />,
+    Eye: <Eye className="w-5 h-5 text-[#c5a880]" />
+  };
+
+  const services: ServiceItem[] = rawServices.map((s) => ({
+    id: s.id,
+    title: s.title,
+    description: s.description,
+    icon: iconMap[s.iconName] || <Eye className="w-5 h-5 text-[#c5a880]" />,
+    hudTitle: s.hudTitle,
+    hudItems: s.hudItems,
+    bullets: s.bullets,
+    tools: s.tools,
+    canvasType: s.canvasType
+  }));
 
   // Card rect caching and window resize updates
   const rectRef = useRef<DOMRect | null>(null);

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
+import { useAdmin } from "@/context/AdminContext";
 
 interface Testimonial {
   quote: string;
@@ -15,30 +16,8 @@ interface Testimonial {
 
 export default function FeedbackSection() {
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const testimonials: Testimonial[] = [
-    {
-      quote: "The spatial environment crafted by Visionatrix redefined how luxury buyers interact with our brand. An absolute benchmark of creative technology.",
-      author: "MARCUS VANE",
-      role: "HEAD OF DIGITAL CREATIVE",
-      company: "LEICA CAMERA AG CONCEPT",
-      rating: 5
-    },
-    {
-      quote: "Their mathematical approach to shader art and VFX resulted in an automotive spec showcase that exceeded our absolute highest aesthetic standards.",
-      author: "ELENA ROSTOVA",
-      role: "VP OF INNOVATION MARKETING",
-      company: "MERCEDES BENZ DESIGN",
-      rating: 5
-    },
-    {
-      quote: "Bespoke engineering from start to finish. They built a custom WebGL portal that runs at a locked 60fps while displaying millions of active data nodes.",
-      author: "DR. ARIS THORNE",
-      role: "CHIEF ARCHITECT",
-      company: "NEURAL NETWORK CO.",
-      rating: 5
-    }
-  ];
+  const { testimonials: rawTestimonials } = useAdmin();
+  const testimonials = rawTestimonials.filter(t => t.isActive);
 
   const clientLogos = [
     "MERCEDES BENZ",
@@ -56,14 +35,21 @@ export default function FeedbackSection() {
   ];
 
   const TESTIMONIAL_COUNT = testimonials.length;
+  const activeTestimonial = testimonials[activeIndex] || {
+    quote: "No active testimonials.",
+    author: "SYSTEM",
+    role: "CONSOLE",
+    company: "VISIONATRIX",
+    rating: 5
+  };
 
   useEffect(() => {
+    if (TESTIMONIAL_COUNT <= 1) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev === TESTIMONIAL_COUNT - 1 ? 0 : prev + 1));
     }, 6000);
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [TESTIMONIAL_COUNT]);
 
   return (
     <section 
@@ -106,23 +92,23 @@ export default function FeedbackSection() {
                 >
                   {/* Rating Stars */}
                   <div className="flex items-center gap-1">
-                    {[...Array(testimonials[activeIndex].rating)].map((_, i) => (
+                    {[...Array(activeTestimonial.rating)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 fill-[#c5a880] text-[#c5a880]" />
                     ))}
                   </div>
 
                   {/* Big Quote */}
                   <p className="font-sans text-xl sm:text-2xl md:text-3xl italic font-medium leading-relaxed text-white tracking-wide max-w-4xl">
-                    &ldquo;{testimonials[activeIndex].quote}&rdquo;
+                    &ldquo;{activeTestimonial.quote}&rdquo;
                   </p>
 
                   {/* Author Info */}
                   <div className="flex flex-col gap-1 border-l-2 border-[#c5a880] pl-4 mt-2">
                     <span className="font-outfit text-xs font-bold tracking-[0.2em] text-white uppercase">
-                      {testimonials[activeIndex].author}
+                      {activeTestimonial.author}
                     </span>
                     <span className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280]">
-                      {testimonials[activeIndex].role}{" // "}{testimonials[activeIndex].company}
+                      {activeTestimonial.role}{" // "}{activeTestimonial.company}
                     </span>
                   </div>
                 </motion.div>
