@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, Michroma, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import CustomCursor from "@/components/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -42,7 +41,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0b0b0f] text-white">
         <div className="noise-overlay" />
-        <CustomCursor />
         {children}
       </body>
     </html>

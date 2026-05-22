@@ -12,33 +12,34 @@ interface TimelineStep {
   description: string;
 }
 
+const steps: TimelineStep[] = [
+  {
+    id: "01",
+    category: "DISCOVERY & SCOPING",
+    title: "Tactile Metrics Mapping",
+    description: "Collaborating closely with luxury design teams to isolate physical textiles parameters, atmospheric indices, and creative requirements.",
+  },
+  {
+    id: "02",
+    category: "CONCEPT ARCHITECTURE",
+    title: "Mathematical Speculation",
+    description: "Formulating conceptual digital layouts, fluid vector current flow diagrams, and abstract lighting trajectories prior to drafting code sheets.",
+  },
+  {
+    id: "03",
+    category: "DEVELOPMENT & PRODUCTION",
+    title: "Glassmorphic Sculpting",
+    description: "Constructing dark, volumetric user interfaces, tailored typography hierarchies, and highly responsive micro-bezel elements.",
+  },
+  {
+    id: "04",
+    category: "TELEMETRIC INTEGRATION",
+    title: "System Integration",
+    description: "Executing frame rate stress tests, asset optimization cycles, loading latency checks, and strict visual fidelity audits before final delivery.",
+  }
+];
+
 export default function ProcessSection() {
-  const steps: TimelineStep[] = [
-    {
-      id: "01",
-      category: "DISCOVERY & SCOPING",
-      title: "Tactile Metrics Mapping",
-      description: "Collaborating closely with luxury design teams to isolate physical textiles parameters, atmospheric indices, and creative requirements.",
-    },
-    {
-      id: "02",
-      category: "CONCEPT ARCHITECTURE",
-      title: "Mathematical Speculation",
-      description: "Formulating conceptual digital layouts, fluid vector current flow diagrams, and abstract lighting trajectories prior to drafting code sheets.",
-    },
-    {
-      id: "03",
-      category: "DEVELOPMENT & PRODUCTION",
-      title: "Glassmorphic Sculpting",
-      description: "Constructing dark, volumetric user interfaces, tailored typography hierarchies, and highly responsive micro-bezel elements.",
-    },
-    {
-      id: "04",
-      category: "TELEMETRIC INTEGRATION",
-      title: "System Integration",
-      description: "Executing frame rate stress tests, asset optimization cycles, loading latency checks, and strict visual fidelity audits before final delivery.",
-    }
-  ];
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

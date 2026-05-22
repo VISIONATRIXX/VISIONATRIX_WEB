@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 
 export default function CustomCursor() {
-  const [mounted, setMounted] = useState(false);
   const [tooltipText, setTooltipText] = useState("");
   const cursorRef = useRef<HTMLDivElement>(null);
   const cursorOuterRef = useRef<HTMLDivElement>(null);
@@ -11,12 +10,6 @@ export default function CustomCursor() {
   const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
     // Enable custom cursor styles across the page
     document.body.classList.add("custom-cursor-active");
 
@@ -26,10 +19,10 @@ export default function CustomCursor() {
     const glow = cursorGlowRef.current;
     if (!cursor || !outer || !inner || !glow) return;
 
-    let mouseCoords = { x: -100, y: -100 };
-    let outerCoords = { x: -100, y: -100 };
-    let innerCoords = { x: -100, y: -100 };
-    let glowCoords = { x: -100, y: -100 };
+    const mouseCoords = { x: -100, y: -100 };
+    const outerCoords = { x: -100, y: -100 };
+    const innerCoords = { x: -100, y: -100 };
+    const glowCoords = { x: -100, y: -100 };
     let isVisible = false;
 
     const moveCursor = (e: MouseEvent) => {
@@ -146,9 +139,7 @@ export default function CustomCursor() {
       document.removeEventListener("mouseenter", handleMouseEnter);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [mounted]);
-
-  if (!mounted) return null;
+  }, []);
 
   return (
     <div

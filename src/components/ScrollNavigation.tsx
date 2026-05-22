@@ -22,7 +22,7 @@ export default function ScrollNavigation({ activeSection, onDotClick }: ScrollNa
 
   return (
     <div className="fixed right-6 md:right-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col gap-5 items-center">
-      {sections.map((sec, idx) => {
+      {sections.map((sec) => {
         const isActive = activeSection === sec.id;
         return (
           <button

@@ -113,7 +113,7 @@ export default function FeedbackSection() {
 
                   {/* Big Quote */}
                   <p className="font-sans text-xl sm:text-2xl md:text-3xl italic font-medium leading-relaxed text-white tracking-wide max-w-4xl">
-                    "{testimonials[activeIndex].quote}"
+                    &ldquo;{testimonials[activeIndex].quote}&rdquo;
                   </p>
 
                   {/* Author Info */}
@@ -122,7 +122,7 @@ export default function FeedbackSection() {
                       {testimonials[activeIndex].author}
                     </span>
                     <span className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280]">
-                      {testimonials[activeIndex].role} // {testimonials[activeIndex].company}
+                      {testimonials[activeIndex].role}{" // "}{testimonials[activeIndex].company}
                     </span>
                   </div>
                 </motion.div>

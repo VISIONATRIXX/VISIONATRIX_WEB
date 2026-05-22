@@ -15,9 +15,15 @@ import FeedbackSection from "@/components/FeedbackSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import type Lenis from "lenis";
+
+// Declare global or other type definitions if needed here
 
 // Load Three.js 3D backdrop client-side only
 const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
+
+// Load CustomCursor client-side only
+const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
@@ -72,14 +78,14 @@ export default function Home() {
     if (showIntro) return;
 
     // Dynamically load Lenis to avoid Server-Side Rendering issues
-    let lenisInstance: any;
+    let lenisInstance: Lenis | null = null;
     let rafId: number;
     let isDestroyed = false;
     
-    import("lenis").then(({ default: Lenis }) => {
+    import("lenis").then(({ default: LenisClass }) => {
       if (isDestroyed) return; // Guard against race condition if component unmounts during import
       
-      lenisInstance = new Lenis({
+      lenisInstance = new LenisClass({
         duration: 1.4,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
@@ -96,12 +102,13 @@ export default function Home() {
       });
 
       const raf = (time: number) => {
-        if (isDestroyed) return;
+        if (isDestroyed || !lenisInstance) return;
         lenisInstance.raf(time);
         rafId = requestAnimationFrame(raf);
       };
 
       rafId = requestAnimationFrame(raf);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).lenis = lenisInstance;
     });
 
@@ -113,7 +120,9 @@ export default function Home() {
       if (lenisInstance) {
         lenisInstance.destroy();
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((window as any).lenis === lenisInstance) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         delete (window as any).lenis;
       }
     };
@@ -133,8 +142,9 @@ export default function Home() {
   const scrollToSection = (sectionId: string) => {
     const target = document.getElementById(sectionId);
     if (target) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const lenis = (window as any).lenis;
-      if (lenis) {
+      if (lenis && typeof lenis.scrollTo === "function") {
         lenis.scrollTo(target, {
           duration: 1.6,
           offset: 0,
@@ -149,6 +159,7 @@ export default function Home() {
 
   return (
     <>
+      <CustomCursor />
       {/* Intro Loader screen overlay */}
       {showIntro && (
         <IntroLoader 

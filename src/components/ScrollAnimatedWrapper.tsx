@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, MotionStyle } from "framer-motion";
 
 interface ScrollAnimatedWrapperProps {
   children: React.ReactNode;
@@ -42,7 +42,7 @@ export default function ScrollAnimatedWrapper({
   const yVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [40, 0, 0, -40]);
 
   // Decoupled custom styling
-  const style: any = {};
+  const style: MotionStyle = {};
   if (enableOpacity) style.opacity = opacityVal;
   if (enableScale) style.scale = scaleVal;
   if (enableY) style.y = yVal;

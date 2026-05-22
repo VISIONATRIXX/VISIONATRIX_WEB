@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -13,7 +13,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
   const [isDismissed, setIsDismissed] = useState(false);
   const dismissedRef = useRef(false);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     if (dismissedRef.current) return;
     dismissedRef.current = true;
     setIsDismissed(true);
@@ -27,7 +27,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
     setTimeout(() => {
       onComplete();
     }, 1200);
-  };
+  }, [onComplete, onStartDismiss]);
 
   useEffect(() => {
     // 1. Cinematic auto-dismiss after 4.0 seconds (allows full appreciation of logo-first sequence)
@@ -48,7 +48,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
       clearTimeout(timer);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleDismiss]);
 
   const textLetters = Array.from("VISIONATRIX");
 

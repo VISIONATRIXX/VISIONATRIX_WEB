@@ -92,7 +92,7 @@ export default function Footer({ onLinkClick }: FooterProps) {
             </div>
             {subscribed && (
               <span className="text-[#c5a880] font-mono text-[9px] tracking-wide mt-1 animate-pulse">
-                // Transmission secure. System registry updated.
+                {"// Transmission secure. System registry updated."}
               </span>
             )}
           </form>
@@ -154,7 +154,7 @@ export default function Footer({ onLinkClick }: FooterProps) {
         {/* Live IST clock inside brackets */}
         <div className="font-mono text-[9px] text-[#555566] tracking-[0.15em] uppercase flex items-center gap-1">
           <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
-          <span>[ CLOCKS: BENGALURU: {timeStr || "00:00:00"} // MUMBAI: {timeStr || "00:00:00"} // DELHI: {timeStr || "00:00:00"} ]</span>
+          <span>[ CLOCKS: BENGALURU: {timeStr || "00:00:00"}{" // "}MUMBAI: {timeStr || "00:00:00"}{" // "}DELHI: {timeStr || "00:00:00"} ]</span>
         </div>
       </div>
 

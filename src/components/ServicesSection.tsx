@@ -123,7 +123,7 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           vx: (Math.random() - 0.5) * (type === "vfx" ? 1.6 : 0.8),
           vy: (Math.random() - 0.5) * (type === "vfx" ? 1.6 : 0.8),
           radius: Math.random() * (type === "vfx" ? 2.5 : 1.8) + 1,
-          alpha: Math.random() * 0.35 + 0.15
+          alpha: Math.random() * 0.45 + 0.35
         });
       }
     }
@@ -149,9 +149,9 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     const render = () => {
       time += 0.012;
       
-      // Fluid accumulation tails for VFX/AI fields, clearRect for others
+      // Fluid accumulation tails for VFX/AI fields (using transparent black for pristine screen-blend), clearRect for others
       if (type === "vfx" || type === "ai") {
-        ctx.fillStyle = "rgba(9, 9, 12, 0.08)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
         ctx.fillRect(0, 0, width, height);
       } else {
         ctx.clearRect(0, 0, width, height);
@@ -162,7 +162,7 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
       
       if (type === "video") {
         // Video timeline display
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.04)";
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.12)";
         ctx.lineWidth = 1;
         const tickSpacing = 24;
         for (let x = 0; x < width; x += tickSpacing) {
@@ -172,48 +172,60 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           ctx.stroke();
         }
         
-        // Render audio waveform bands
-        const barWidth = 3.5;
-        const gap = 2.5;
+        // Render audio waveform bands - highly visible, larger amplitude
+        const barWidth = 4;
+        const gap = 3;
         const barCount = Math.floor(width / (barWidth + gap));
         const startX = (width - barCount * (barWidth + gap)) / 2;
         
-        ctx.fillStyle = "rgba(197, 168, 128, 0.12)";
+        ctx.fillStyle = "rgba(197, 168, 128, 0.48)";
         for (let i = 0; i < barCount; i++) {
           const x = startX + i * (barWidth + gap);
           const distToCenter = Math.abs(x - width / 2) / (width / 2);
-          const baseHeight = Math.sin(i * 0.18 + time * 3.5) * 30 + 40;
-          const finalHeight = baseHeight * (1 - distToCenter * 0.45) * (0.35 + Math.sin(time * 0.6) * 0.15);
+          const baseHeight = Math.sin(i * 0.16 + time * 4.2) * 50 + 65;
+          const finalHeight = baseHeight * (1 - distToCenter * 0.4) * (0.55 + Math.sin(time * 0.7) * 0.25);
           
-          ctx.fillRect(x, height * 0.55 - finalHeight / 2, barWidth, finalHeight);
+          ctx.fillRect(x, height * 0.5 - finalHeight / 2, barWidth, finalHeight);
         }
         
-        // Gold sweeping playhead line
-        const playheadX = (time * 75) % width;
-        ctx.strokeStyle = "#c5a880";
-        ctx.lineWidth = 1.5;
-        ctx.shadowColor = "#c5a880";
-        ctx.shadowBlur = 5;
+        // Continuous peak waveform thread line running through the card
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.85)";
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.moveTo(playheadX, height * 0.15);
-        ctx.lineTo(playheadX, height * 0.85);
+        for (let i = 0; i < width; i += 2) {
+          const distToCenter = Math.abs(i - width / 2) / (width / 2);
+          const y = height * 0.5 + Math.sin(i * 0.015 - time * 2.8) * Math.cos(i * 0.005 + time * 1.4) * 60 * (1 - distToCenter * 0.35);
+          if (i === 0) ctx.moveTo(i, y);
+          else ctx.lineTo(i, y);
+        }
+        ctx.stroke();
+        
+        // Gold sweeping playhead line
+        const playheadX = (time * 85) % width;
+        ctx.strokeStyle = "#c5a880";
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "#c5a880";
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.moveTo(playheadX, height * 0.1);
+        ctx.lineTo(playheadX, height * 0.9);
         ctx.stroke();
         ctx.shadowBlur = 0;
         
         // Custom sweeping playhead dial top
         ctx.fillStyle = "#c5a880";
         ctx.beginPath();
-        ctx.moveTo(playheadX, height * 0.15 - 5);
-        ctx.lineTo(playheadX - 5, height * 0.15);
-        ctx.lineTo(playheadX, height * 0.15 + 5);
-        ctx.lineTo(playheadX + 5, height * 0.15);
+        ctx.moveTo(playheadX, height * 0.1 - 5);
+        ctx.lineTo(playheadX - 5, height * 0.1);
+        ctx.lineTo(playheadX, height * 0.1 + 5);
+        ctx.lineTo(playheadX + 5, height * 0.1);
         ctx.closePath();
         ctx.fill();
         
       } else if (type === "vfx") {
-        // VFX Gravity Particle physics
-        const targetX = isHovered ? mouseRelativeX : width / 2;
-        const targetY = isHovered ? mouseRelativeY : height / 2;
+        // VFX Gravity Particle physics - Elegant elliptical orbit when idle, tracks cursor on hover
+        const targetX = isHovered ? mouseRelativeX : width / 2 + Math.cos(time * 1.8) * 130;
+        const targetY = isHovered ? mouseRelativeY : height / 2 + Math.sin(time * 1.8) * 70;
         
         particles.forEach((p) => {
           const dx = targetX - p.x;
@@ -225,8 +237,8 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
             p.vx += (dx / dist) * force;
             p.vy += (dy / dist) * force;
           } else {
-            p.vx += (dx / (dist || 1)) * 0.015;
-            p.vy += (dy / (dist || 1)) * 0.015;
+            p.vx += (dx / (dist || 1)) * 0.018;
+            p.vy += (dy / (dist || 1)) * 0.018;
           }
           
           // Terminal speed cap
@@ -247,84 +259,121 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
         });
         
       } else if (type === "cgi") {
-        // Projection matrices for rotating wireframe cylinder/cube
-        const scale = Math.min(width, height) * 0.24;
+        // Projection matrices for rotating dual-nested wireframe cubes (Tesseract effect)
+        const scaleOuter = Math.min(width, height) * 0.28;
+        const scaleInner = scaleOuter * 0.48;
         const centerX = width / 2;
         const centerY = height / 2;
         
-        const rotX = time * 0.45 + (isHovered ? (mouseRelativeY - centerY) * 0.0025 : 0);
-        const rotY = time * 0.65 + (isHovered ? (mouseRelativeX - centerX) * 0.0025 : 0);
+        const rotXOuter = time * 0.45 + (isHovered ? (mouseRelativeY - centerY) * 0.0025 : 0);
+        const rotYOuter = time * 0.65 + (isHovered ? (mouseRelativeX - centerX) * 0.0025 : 0);
         
-        const projected = vertices.map((v) => {
-           // X rotation
-           const y1 = v.y * Math.cos(rotX) - v.z * Math.sin(rotX);
-           const z1 = v.y * Math.sin(rotX) + v.z * Math.cos(rotX);
-           
-           // Y rotation
-           const x2 = v.x * Math.cos(rotY) - z1 * Math.sin(rotY);
-           const z2 = v.x * Math.sin(rotY) + z1 * Math.cos(rotY);
+        const rotXInner = -time * 0.55;
+        const rotYInner = -time * 0.75;
+        
+        const project = (v: typeof vertices[0], rx: number, ry: number, scale: number) => {
+          // X rotation
+          const y1 = v.y * Math.cos(rx) - v.z * Math.sin(rx);
+          const z1 = v.y * Math.sin(rx) + v.z * Math.cos(rx);
           
-          const fov = 3.2;
+          // Y rotation
+          const x2 = v.x * Math.cos(ry) - z1 * Math.sin(ry);
+          const z2 = v.x * Math.sin(ry) + z1 * Math.cos(ry);
+          
+          const fov = 3.5;
           const perspective = fov / (fov + z2);
           
           return {
             x: centerX + x2 * scale * perspective,
-            y: centerY + y1 * scale * perspective,
-            z: z2
+            y: centerY + y1 * scale * perspective
           };
-        });
+        };
         
-        // Render 3D edges
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.16)";
-        ctx.lineWidth = 1;
+        const projectedOuter = vertices.map(v => project(v, rotXOuter, rotYOuter, scaleOuter));
+        const projectedInner = vertices.map(v => project(v, rotXInner, rotYInner, scaleInner));
+        
+        // Render 3D edges Outer
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.52)";
+        ctx.lineWidth = 1.2;
         edges.forEach(([u, v]) => {
           ctx.beginPath();
-          ctx.moveTo(projected[u].x, projected[u].y);
-          ctx.lineTo(projected[v].x, projected[v].y);
+          ctx.moveTo(projectedOuter[u].x, projectedOuter[u].y);
+          ctx.lineTo(projectedOuter[v].x, projectedOuter[v].y);
           ctx.stroke();
         });
         
-        // Render glowing corner nodes
-        projected.forEach((p) => {
+        // Render 3D edges Inner
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
+        ctx.lineWidth = 0.8;
+        edges.forEach(([u, v]) => {
+          ctx.beginPath();
+          ctx.moveTo(projectedInner[u].x, projectedInner[u].y);
+          ctx.lineTo(projectedInner[v].x, projectedInner[v].y);
+          ctx.stroke();
+        });
+        
+        // Outer glowing corner nodes
+        projectedOuter.forEach((p) => {
           ctx.fillStyle = "#c5a880";
           ctx.shadowColor = "#c5a880";
-          ctx.shadowBlur = 3;
+          ctx.shadowBlur = 5;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
           ctx.fill();
           ctx.shadowBlur = 0;
         });
         
       } else if (type === "env") {
-        // Landscape topographic scrolling grid waves
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.07)";
+        // Landscape topographic scrolling grid waves - full 3D wireframe mesh grid
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.48)";
         ctx.lineWidth = 1;
         
-        const linesCount = 7;
-        const pointsCount = 35;
+        const linesCount = 8;
+        const pointsCount = 30;
+        const gridPoints: { x: number; y: number }[][] = [];
         
         for (let j = 0; j < linesCount; j++) {
-          const lineY = height * 0.32 + (j / (linesCount - 1)) * height * 0.42;
-          ctx.beginPath();
+          const lineY = height * 0.26 + (j / (linesCount - 1)) * height * 0.52;
+          const currentLine: { x: number; y: number }[] = [];
           
           for (let i = 0; i < pointsCount; i++) {
             const px = (i / (pointsCount - 1)) * width;
-            const noise = Math.sin(i * 0.28 - time * 1.8) * Math.cos(j * 0.45 + i * 0.12) * 16;
+            const noise = Math.sin(i * 0.24 - time * 2) * Math.cos(j * 0.38 + i * 0.08) * 20;
             
             let mouseDeform = 0;
             if (isHovered) {
               const dx = px - mouseRelativeX;
               const dy = lineY - mouseRelativeY;
               const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 110) {
-                mouseDeform = (110 - dist) * 0.24 * Math.sin(time * 4.5);
+              if (dist < 130) {
+                mouseDeform = (130 - dist) * 0.28 * Math.sin(time * 5);
               }
             }
             
             const py = lineY - Math.abs(noise) - mouseDeform;
-            
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
+            currentLine.push({ x: px, y: py });
+          }
+          gridPoints.push(currentLine);
+        }
+        
+        // Draw horizontal grid lines
+        gridPoints.forEach((line) => {
+          ctx.beginPath();
+          line.forEach((p, idx) => {
+            if (idx === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+          });
+          ctx.stroke();
+        });
+        
+        // Draw vertical connecting grid lines with lower opacity
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.18)";
+        ctx.lineWidth = 0.8;
+        for (let i = 0; i < pointsCount; i++) {
+          ctx.beginPath();
+          for (let j = 0; j < linesCount; j++) {
+            if (j === 0) ctx.moveTo(gridPoints[j][i].x, gridPoints[j][i].y);
+            else ctx.lineTo(gridPoints[j][i].x, gridPoints[j][i].y);
           }
           ctx.stroke();
         }
@@ -338,15 +387,15 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           if (p.x < 0 || p.x > width) p.vx *= -1;
           if (p.y < 0 || p.y > height) p.vy *= -1;
           
-          ctx.fillStyle = "rgba(197, 168, 128, 0.25)";
+          ctx.fillStyle = "rgba(197, 168, 128, 0.65)";
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fill();
         });
         
         // Node lines
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.05)";
-        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
+        ctx.lineWidth = 0.9;
         for (let i = 0; i < particles.length; i++) {
           for (let j = i + 1; j < particles.length; j++) {
             const dx = particles[i].x - particles[j].x;
@@ -368,30 +417,42 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
             const dist = Math.sqrt(dx * dx + dy * dy);
             
             if (dist < 140) {
-              ctx.strokeStyle = `rgba(197, 168, 128, ${0.18 * (1 - dist / 140)})`;
+              ctx.strokeStyle = `rgba(197, 168, 128, ${0.62 * (1 - dist / 140)})`;
               ctx.beginPath();
               ctx.moveTo(particles[i].x, particles[i].y);
               ctx.lineTo(mouseRelativeX, mouseRelativeY);
+              ctx.stroke();
+              
+              // Draw a tiny ring around the connected node
+              ctx.strokeStyle = `rgba(197, 168, 128, ${0.45 * (1 - dist / 140)})`;
+              ctx.beginPath();
+              ctx.arc(particles[i].x, particles[i].y, particles[i].radius * 2.8, 0, Math.PI * 2);
               ctx.stroke();
             }
           }
         }
         
       } else if (type === "app") {
-        // Micro-frontend architecture data flows
+        // Micro-frontend architecture data flows - Advanced Routing diagram
         const nodes = [
-          { x: width * 0.28, y: height * 0.38, label: "EDGE" },
-          { x: width * 0.72, y: height * 0.38, label: "DB" },
-          { x: width * 0.5, y: height * 0.68, label: "GATE" },
+          { x: width * 0.25, y: height * 0.35, label: "EDGE" },
+          { x: width * 0.75, y: height * 0.35, label: "DB" },
+          { x: width * 0.5, y: height * 0.7, label: "GATE" },
+          { x: width * 0.5, y: height * 0.2, label: "CORE" },
         ];
         
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.06)";
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.32)";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
+        // Ring route
         ctx.moveTo(nodes[0].x, nodes[0].y);
-        ctx.lineTo(nodes[2].x, nodes[2].y);
+        ctx.lineTo(nodes[3].x, nodes[3].y);
         ctx.lineTo(nodes[1].x, nodes[1].y);
+        ctx.lineTo(nodes[2].x, nodes[2].y);
         ctx.lineTo(nodes[0].x, nodes[0].y);
+        // Direct linkages
+        ctx.moveTo(nodes[3].x, nodes[3].y);
+        ctx.lineTo(nodes[2].x, nodes[2].y);
         ctx.stroke();
         
         const drawSignalPulse = (n1: typeof nodes[0], n2: typeof nodes[0], speed = 1.0) => {
@@ -400,25 +461,27 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           const py = n1.y + (n2.y - n1.y) * t;
           ctx.fillStyle = "#c5a880";
           ctx.shadowColor = "#c5a880";
-          ctx.shadowBlur = 4;
-          ctx.fillRect(px - 2.5, py - 2.5, 5, 5);
+          ctx.shadowBlur = 5;
+          ctx.fillRect(px - 3, py - 3, 6, 6);
           ctx.shadowBlur = 0;
         };
         
-        drawSignalPulse(nodes[0], nodes[2], 1.1);
-        drawSignalPulse(nodes[2], nodes[1], 0.9);
-        drawSignalPulse(nodes[1], nodes[0], 1.3);
+        drawSignalPulse(nodes[0], nodes[3], 1.1);
+        drawSignalPulse(nodes[3], nodes[1], 0.9);
+        drawSignalPulse(nodes[1], nodes[2], 1.2);
+        drawSignalPulse(nodes[2], nodes[0], 0.8);
+        drawSignalPulse(nodes[3], nodes[2], 1.4);
         
         nodes.forEach((node) => {
           ctx.fillStyle = "#09090c";
           ctx.strokeStyle = "#c5a880";
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 1.2;
           
-          ctx.fillRect(node.x - 26, node.y - 13, 52, 26);
-          ctx.strokeRect(node.x - 26, node.y - 13, 52, 26);
+          ctx.fillRect(node.x - 28, node.y - 14, 56, 28);
+          ctx.strokeRect(node.x - 28, node.y - 14, 56, 28);
           
-          ctx.fillStyle = "rgba(197, 168, 128, 0.8)";
-          ctx.font = "bold 8.5px monospace";
+          ctx.fillStyle = "rgba(197, 168, 128, 0.95)";
+          ctx.font = "bold 9px monospace";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(node.label, node.x, node.y);
@@ -426,19 +489,19 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           if ((Math.floor(time * 3.5) % 2) === 0) {
             ctx.fillStyle = "#10b981";
             ctx.beginPath();
-            ctx.arc(node.x + 19, node.y - 7, 1.8, 0, Math.PI * 2);
+            ctx.arc(node.x + 20, node.y - 8, 2.2, 0, Math.PI * 2);
             ctx.fill();
           }
         });
         
-        ctx.fillStyle = "rgba(197, 168, 128, 0.16)";
-        ctx.font = "8px monospace";
+        ctx.fillStyle = "rgba(197, 168, 128, 0.65)";
+        ctx.font = "8.5px monospace";
         ctx.textAlign = "left";
         ctx.fillText(`[ SYNC: SECURED ] [ PORT: 443 ]`, width * 0.08, height * 0.88);
         ctx.fillText(`[ SPEED: ${Math.floor(Math.sin(time) * 2 + 10)}ms ]`, width * 0.64, height * 0.88);
         
       } else if (type === "ai") {
-        // AI Dynamic Fluid flow fields
+        // AI Dynamic Fluid flow fields - Highly visible vectors
         const targetX = isHovered ? mouseRelativeX : width / 2;
         const targetY = isHovered ? mouseRelativeY : height / 2;
         
@@ -452,8 +515,8 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           const pullX = -dx / dist;
           const pullY = -dy / dist;
           
-          p.vx = p.vx * 0.94 + (vxTarget * 1.4 + pullX * 0.35) * 0.06;
-          p.vy = p.vy * 0.94 + (vyTarget * 1.4 + pullY * 0.35) * 0.06;
+          p.vx = p.vx * 0.94 + (vxTarget * 1.5 + pullX * 0.35) * 0.06;
+          p.vy = p.vy * 0.94 + (vyTarget * 1.5 + pullY * 0.35) * 0.06;
           
           p.x += p.vx;
           p.y += p.vy;
@@ -463,56 +526,93 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
           if (p.y < -15) p.y = height + 15;
           if (p.y > height + 15) p.y = -15;
           
-          ctx.strokeStyle = `rgba(197, 168, 128, ${p.alpha * 0.75})`;
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(197, 168, 128, ${p.alpha * 0.95})`;
+          ctx.lineWidth = 1.2;
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p.x - p.vx * 2.2, p.y - p.vy * 2.2);
+          ctx.lineTo(p.x - p.vx * 2.5, p.y - p.vy * 2.5);
           ctx.stroke();
         });
         
       } else if (type === "xr") {
-        // Spatial XR tracking HUD vectors
+        // Spatial XR tracking HUD vectors - Dashed rotating dials
         const centerX = width / 2;
         const centerY = height / 2;
         const targetX = isHovered ? mouseRelativeX : centerX;
         const targetY = isHovered ? mouseRelativeY : centerY;
         
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.12)";
-        ctx.lineWidth = 1;
+        // Outer Solid Tracking Circle
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.42)";
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 65, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, 70, 0, Math.PI * 2);
         ctx.stroke();
         
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
+        // Dash Dial Overlay rotating slowly
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.18)";
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.arc(targetX, targetY, 18, 0, Math.PI * 2);
+        ctx.setLineDash([4, 6]);
+        ctx.arc(centerX, centerY, 95, time * 0.2, time * 0.2 + Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Reticle Target Ring
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.85)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(targetX, targetY, 20, 0, Math.PI * 2);
         ctx.stroke();
         
+        // Crosshair reticle
         ctx.beginPath();
-        ctx.moveTo(targetX - 25, targetY);
+        ctx.moveTo(targetX - 28, targetY);
         ctx.lineTo(targetX - 8, targetY);
         ctx.moveTo(targetX + 8, targetY);
-        ctx.lineTo(targetX + 25, targetY);
-        ctx.moveTo(targetX, targetY - 25);
+        ctx.lineTo(targetX + 28, targetY);
+        ctx.moveTo(targetX, targetY - 28);
         ctx.lineTo(targetX, targetY - 8);
         ctx.moveTo(targetX, targetY + 8);
-        ctx.lineTo(targetX, targetY + 25);
+        ctx.lineTo(targetX, targetY + 28);
         ctx.stroke();
         
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.06)";
+        // Elastic link thread
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.22)";
         ctx.beginPath();
-        ctx.arc(centerX, centerY, 110, time * 0.12, time * 0.12 + Math.PI * 1.6);
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(targetX, targetY);
         ctx.stroke();
         
-        ctx.fillStyle = "rgba(197, 168, 128, 0.35)";
-        ctx.font = "8.5px monospace";
-        ctx.textAlign = "left";
-        ctx.fillText(`6DoF X: ${Math.floor(targetX - centerX)}`, centerX - 55, centerY + 85);
-        ctx.fillText(`6DoF Y: ${Math.floor(centerY - targetY)}`, centerX + 15, centerY + 85);
+        // Static bounds markings
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.28)";
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY - 85);
+        ctx.lineTo(centerX, centerY - 70);
+        ctx.moveTo(centerX, centerY + 70);
+        ctx.lineTo(centerX, centerY + 85);
+        ctx.moveTo(centerX - 85, centerY);
+        ctx.lineTo(centerX - 70, centerY);
+        ctx.moveTo(centerX + 70, centerY);
+        ctx.lineTo(centerX + 85, centerY);
+        ctx.stroke();
         
-        ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
-        ctx.font = "7.5px monospace";
+        // Corner HUD markers
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
+        ctx.beginPath();
+        ctx.moveTo(centerX - 90, centerY - 90);
+        ctx.lineTo(centerX - 90, centerY - 75);
+        ctx.lineTo(centerX - 75, centerY - 90);
+        ctx.closePath();
+        ctx.stroke();
+        
+        ctx.fillStyle = "rgba(197, 168, 128, 0.85)";
+        ctx.font = "9px monospace";
+        ctx.textAlign = "left";
+        ctx.fillText(`6DoF X: ${Math.floor(targetX - centerX)}`, centerX - 55, centerY + 95);
+        ctx.fillText(`6DoF Y: ${Math.floor(centerY - targetY)}`, centerX + 15, centerY + 95);
+        
+        ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.font = "8px monospace";
         ctx.fillText(`XR_BOUNDS: ACTIVE`, width * 0.08, height * 0.14);
       }
       
@@ -530,7 +630,9 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
   return (
     <canvas 
       ref={canvasRef} 
-      className="absolute inset-0 w-full h-full pointer-events-none mix-blend-screen select-none opacity-[0.14] z-0"
+      className={`absolute inset-0 w-full h-full pointer-events-none mix-blend-screen select-none transition-opacity duration-500 z-20 ${
+        isHovered ? "opacity-[0.48]" : "opacity-[0.22]"
+      }`}
     />
   );
 }
