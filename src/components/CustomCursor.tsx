@@ -28,7 +28,7 @@ export default function CustomCursor() {
     const moveCursor = (e: MouseEvent) => {
       mouseCoords.x = e.clientX;
       mouseCoords.y = e.clientY;
-      
+
       if (!isVisible) {
         cursor.style.opacity = "1";
         isVisible = true;
@@ -68,7 +68,7 @@ export default function CustomCursor() {
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target) return;
-      
+
       // Look for elements requesting a specific custom cursor label (e.g. data-cursor="view")
       const hoveredCursorElement = target.closest("[data-cursor]") as HTMLElement;
       if (hoveredCursorElement) {
@@ -81,7 +81,7 @@ export default function CustomCursor() {
       }
 
       // Check standard interactive nodes
-      const isInteractive = 
+      const isInteractive =
         target.tagName === "A" ||
         target.tagName === "BUTTON" ||
         target.closest("a") ||
@@ -107,16 +107,16 @@ export default function CustomCursor() {
     const handleMouseDown = () => {
       cursor.classList.add("cursor-clicked");
     };
-    
+
     const handleMouseUp = () => {
       cursor.classList.remove("cursor-clicked");
     };
-    
+
     const handleMouseLeave = () => {
       cursor.style.opacity = "0";
       isVisible = false;
     };
-    
+
     const handleMouseEnter = () => {
       cursor.style.opacity = "1";
       isVisible = true;
@@ -141,6 +141,7 @@ export default function CustomCursor() {
     };
   }, []);
 
+
   return (
     <div
       ref={cursorRef}
@@ -156,10 +157,10 @@ export default function CustomCursor() {
         }}
       />
 
-      {/* Outer Ring */}
+      {/* Outer Ring — Glassmorphic Blur */}
       <div
         ref={cursorOuterRef}
-        className="absolute rounded-full border border-[#c5a880]/60 w-7 h-7 transition-[width,height,border-color,background,box-shadow,opacity] duration-150 ease-out cursor-outer flex items-center justify-center"
+        className="absolute rounded-full border border-[#c5a880]/60 w-7 h-7 transition-[width,height,border-color,background,box-shadow,opacity] duration-150 ease-out cursor-outer flex items-center justify-center backdrop-blur-[1px] bg-[#c5a880]/[0.06]"
         style={{
           transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
           willChange: "transform",
@@ -172,7 +173,7 @@ export default function CustomCursor() {
           </div>
         )}
       </div>
-      
+
       {/* Inner Dot */}
       <div
         ref={cursorInnerRef}

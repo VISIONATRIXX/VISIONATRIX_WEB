@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring, MotionStyle } from "framer-motion";
 
 interface ScrollAnimatedWrapperProps {
@@ -41,11 +41,23 @@ export default function ScrollAnimatedWrapper({
   const scaleVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [0.94, 1, 1, 0.94]);
   const yVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [40, 0, 0, -40]);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
   // Decoupled custom styling
   const style: MotionStyle = {};
-  if (enableOpacity) style.opacity = opacityVal;
-  if (enableScale) style.scale = scaleVal;
-  if (enableY) style.y = yVal;
+  if (!isMobile) {
+    if (enableOpacity) style.opacity = opacityVal;
+    if (enableScale) style.scale = scaleVal;
+    if (enableY) style.y = yVal;
+  }
 
   return (
     <motion.div

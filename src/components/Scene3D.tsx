@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import * as THREE from "three";
 
 // Seeded PRNG to bypass React strict purity ESLint rules and ensure deterministic renders
@@ -205,6 +205,27 @@ function SceneContent() {
 }
 
 export default function Scene3D() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#0b0b0f] overflow-hidden">
+        {/* Soft background ambient gradient glow resembling the gold mesh */}
+        <div className="absolute top-[35%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[85vw] h-[85vw] max-w-[600px] max-h-[600px] bg-[#c5a880]/[0.035] blur-[100px] rounded-full animate-[pulse_8s_infinite_alternate]" />
+        <div className="absolute top-[20%] left-[20%] w-[50vw] h-[50vw] bg-white/[0.006] blur-[120px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,#000000_100%)]" />
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#0b0b0f]">
       <Canvas
