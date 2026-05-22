@@ -36,6 +36,22 @@ function ProjectCard({
   const cursorRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
 
+  // Reusable quickTo tween functions — created once, called on every mousemove without allocating new tweens
+  const quickTweens = useRef<{
+    cursorX: ReturnType<typeof gsap.quickTo> | null;
+    cursorY: ReturnType<typeof gsap.quickTo> | null;
+    cardRotateX: ReturnType<typeof gsap.quickTo> | null;
+    cardRotateY: ReturnType<typeof gsap.quickTo> | null;
+    cardRotateZ: ReturnType<typeof gsap.quickTo> | null;
+    cardScale: ReturnType<typeof gsap.quickTo> | null;
+    imgX: ReturnType<typeof gsap.quickTo> | null;
+    imgY: ReturnType<typeof gsap.quickTo> | null;
+  }>({
+    cursorX: null, cursorY: null,
+    cardRotateX: null, cardRotateY: null, cardRotateZ: null, cardScale: null,
+    imgX: null, imgY: null,
+  });
+
   const resting = restingRotations[index % restingRotations.length];
 
   useEffect(() => {
@@ -51,94 +67,93 @@ function ProjectCard({
     }
   }, [resting]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  // Initialize quickTo tweens once after mount
+  useEffect(() => {
     const card = cardRef.current;
     const img = imgRef.current;
-    const sheen = sheenRef.current;
     const cursor = cursorRef.current;
+
+    if (cursor) {
+      quickTweens.current.cursorX = gsap.quickTo(cursor, "x", { duration: 0.05, ease: "none" });
+      quickTweens.current.cursorY = gsap.quickTo(cursor, "y", { duration: 0.05, ease: "none" });
+    }
+    if (card) {
+      quickTweens.current.cardRotateX = gsap.quickTo(card, "rotateX", { duration: 0.35, ease: "power2.out" });
+      quickTweens.current.cardRotateY = gsap.quickTo(card, "rotateY", { duration: 0.35, ease: "power2.out" });
+      quickTweens.current.cardRotateZ = gsap.quickTo(card, "rotateZ", { duration: 0.35, ease: "power2.out" });
+      quickTweens.current.cardScale = gsap.quickTo(card, "scale", { duration: 0.35, ease: "power2.out" });
+    }
+    if (img) {
+      quickTweens.current.imgX = gsap.quickTo(img, "x", { duration: 0.4, ease: "power2.out" });
+      quickTweens.current.imgY = gsap.quickTo(img, "y", { duration: 0.4, ease: "power2.out" });
+    }
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const card = cardRef.current;
+    const sheen = sheenRef.current;
     if (!card) return;
 
     const rect = rectRef.current || card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Move custom cursor with zero delay
-    if (cursor) {
-      gsap.to(cursor, {
-        x: x,
-        y: y,
-        duration: 0,
-      });
-    }
+    // Move custom cursor instantly via quickTo
+    quickTweens.current.cursorX?.(x);
+    quickTweens.current.cursorY?.(y);
 
-    // Sheen reflection calculation
+    // Sheen reflection — direct style write (no GSAP tween overhead for gradient strings)
     if (sheen) {
       const pctX = (x / rect.width) * 100;
       const pctY = (y / rect.height) * 100;
-      gsap.to(sheen, {
-        background: `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%)`,
-        duration: 0.1,
-        ease: "power2.out",
-      });
+      sheen.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%)`;
     }
 
-    // 3D Tilt calculation on the ENTIRE card
+    // 3D Tilt via quickTo — reuses existing tween, no allocation
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 15; // Max 15 degrees tilt
-    const rotateY = ((x - centerX) / centerX) * -15; // Inverted for natural look
+    const rotateX = ((centerY - y) / centerY) * 15;
+    const rotateY = ((x - centerX) / centerX) * -15;
 
-    gsap.to(card, {
-      rotateX: rotateX,
-      rotateY: rotateY,
-      rotateZ: 0, // Flatten rotateZ when hovered
-      transformPerspective: 1200,
-      scale: 1.05, // Subtle scale
-      borderColor: "rgba(197, 168, 128, 0.35)",
-      boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.15)",
-      duration: 0.35,
-      ease: "power2.out",
-    });
+    quickTweens.current.cardRotateX?.(rotateX);
+    quickTweens.current.cardRotateY?.(rotateY);
+    quickTweens.current.cardRotateZ?.(0);
+    quickTweens.current.cardScale?.(1.05);
 
-    // Sub-parallax element shift inside the card
-    if (img) {
-      const px = ((x - centerX) / centerX) * -15;
-      const py = ((y - centerY) / centerY) * -15;
-      gsap.to(img, {
-        x: px,
-        y: py,
-        duration: 0.35,
-        ease: "power2.out",
-      });
-    }
+    // Sub-parallax element shift via quickTo
+    const px = ((x - centerX) / centerX) * -15;
+    const py = ((y - centerY) / centerY) * -15;
+    quickTweens.current.imgX?.(px);
+    quickTweens.current.imgY?.(py);
   };
 
   const handleMouseEnter = () => {
     if (cardRef.current) {
       rectRef.current = cardRef.current.getBoundingClientRect();
     }
+    const card = cardRef.current;
     const cursor = cursorRef.current;
     const sheen = sheenRef.current;
-    if (cursor) {
-      gsap.to(cursor, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.25,
+
+    if (card) {
+      gsap.to(card, {
+        borderColor: "rgba(197, 168, 128, 0.35)",
+        boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.15)",
+        transformPerspective: 1200,
+        duration: 0.35,
         ease: "power2.out",
       });
     }
+    if (cursor) {
+      gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" });
+    }
     if (sheen) {
-      gsap.to(sheen, {
-        opacity: 1,
-        duration: 0.25,
-        ease: "power2.out",
-      });
+      gsap.to(sheen, { opacity: 1, duration: 0.25, ease: "power2.out" });
     }
   };
 
   const handleMouseLeave = () => {
     const card = cardRef.current;
-    const img = imgRef.current;
     const cursor = cursorRef.current;
     const sheen = sheenRef.current;
 
@@ -156,33 +171,18 @@ function ProjectCard({
       });
     }
 
-    // Reset Parallax
-    if (img) {
-      gsap.to(img, {
-        x: 0,
-        y: 0,
-        duration: 0.6,
-        ease: "power2.out",
-      });
-    }
+    // Reset Parallax via quickTo (smooth return)
+    quickTweens.current.imgX?.(0);
+    quickTweens.current.imgY?.(0);
 
     // Hide follow cursor
     if (cursor) {
-      gsap.to(cursor, {
-        opacity: 0,
-        scale: 0,
-        duration: 0.25,
-        ease: "power2.out",
-      });
+      gsap.to(cursor, { opacity: 0, scale: 0, duration: 0.25, ease: "power2.out" });
     }
 
     // Hide sheen
     if (sheen) {
-      gsap.to(sheen, {
-        opacity: 0,
-        duration: 0.6,
-        ease: "power2.out",
-      });
+      gsap.to(sheen, { opacity: 0, duration: 0.6, ease: "power2.out" });
     }
   };
 
