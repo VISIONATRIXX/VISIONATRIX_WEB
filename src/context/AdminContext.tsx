@@ -99,186 +99,146 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 const initialProjects: Project[] = [
   {
     id: "01",
-    title: "AURA CONFIGURATOR",
-    category: "CGI & Volumetric Design",
-    categories: ["CGI", "VR"],
-    subtitle: "01 / MERCEDES-BENZ CONCEPT",
+    title: "AETHERIA INTERACTIVE",
+    category: "WebGL & Creative Tech",
+    categories: ["WEB DEV", "VFX", "CGI"],
+    subtitle: "01 / AETHERIA METAVERSE",
     year: "2026",
     image: "/work_aura_configurator.png",
-    tagline: "Formulating custom high-fidelity configuration environments with real-time path-traced material shaders.",
-    description: "An immersive digital showroom designed for Mercedes-Benz concept vehicles. Built with path-traced shaders to simulate realistic carbon fiber weave patterns, active aerodynamic mechanics, and high-frequency light reflections in real time.",
+    tagline: "Engineering physically accurate WebGL simulations and fluid dynamics rendering at 90 FPS.",
+    description: "An interactive real-time spatial portal built for Aetheria. Simulates gravity fields, aerodynamic drag, and complex raytraced light-refractions directly in standard browser environments.",
     bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
     details: {
-      client: "Mercedes Benz Spec",
+      role: "Creative Developer",
+      client: "Aetheria Studio",
+      engine: "Three.js / WebGL / React Fiber",
       timeline: "Q1 2026",
-      role: "CGI Lead & Interactive Dev",
-      engine: "Octane Render / GLSL Shaders"
+      videoUrl: null
     },
     metrics: [
-      { label: "RESOLUTION", value: "8K Projections" },
-      { label: "RENDER TIME", value: "1,420 Node Hours" },
-      { label: "POLY COUNT", value: "18.4 Million" }
+      { label: "FPS METRICS", value: "90 FPS Locked" },
+      { label: "LIGHT SAMPLES", value: "2048 Samples" },
+      { label: "INTERACTION LATENCY", value: "< 8ms" }
     ]
   },
   {
     id: "02",
-    title: "OMNIS INTERACTIVE",
-    category: "Holographic UI & Code",
-    categories: ["VR", "WEB DEV", "APPS"],
-    subtitle: "02 / LEICA OPTICS",
-    year: "2025",
+    title: "LUMINA CINEMATIC",
+    category: "VFX & Automotive CGI",
+    categories: ["CGI", "VIDEO", "VFX"],
+    subtitle: "02 / LUMINA ELECTRIC GT",
+    year: "2026",
     image: "/work_omnis_interactive.png",
-    tagline: "Crafting sub-pixel accurate smartwatch interfaces, glass refraction shaders, and micro-bezel mechanics.",
-    description: "A luxury smartwatch design explorer mapping physical light refraction, mechanical gear rotations, and high-performance WebGL state management for customized watch faces.",
+    tagline: "Crafting photo-realistic carbon fiber weaves, micro-bezel lighting, and fluid dynamics.",
+    description: "A hyper-detailed digital showroom and promotional film showcasing the aerodynamic profiles of Lumina's new electric vehicle. Rendered with custom lighting rigs and simulated dust particles.",
     bgGradient: "from-zinc-900 via-[#1c1212] to-[#050507]",
     details: {
-      client: "Leica Concept Spec",
-      timeline: "Q2 2025",
-      role: "UI Design & Shader Engineer",
-      engine: "Three.js / React Fiber"
+      role: "CGI Director & Simulation Lead",
+      client: "Lumina Motors",
+      engine: "Octane Render / Houdini / Resolve",
+      timeline: "Q2 2026",
+      videoUrl: null
     },
     metrics: [
-      { label: "SUB-PIXEL SAMPLING", value: "1024 Samples" },
-      { label: "FPS TARGET", value: "60 FPS Locked" },
-      { label: "GLASS SHADERS", value: "Physically Accurate" }
+      { label: "RENDER QUALITY", value: "8K Projections" },
+      { label: "SIMULATION PARTICLES", value: "3.5 Million" },
+      { label: "GRID COMPILATION", value: "120 FPS Capture" }
     ]
   },
   {
     id: "03",
-    title: "NEO-CITY DIGITAL TWIN",
-    category: "Spatial & VR Mapping",
-    categories: ["VR", "CGI"],
-    subtitle: "03 / TOKYO SMART GRID",
-    year: "2026",
+    title: "KINETIC GRID",
+    category: "Procedural Spatial Digital Twin",
+    categories: ["VR", "CGI", "WEB DEV"],
+    subtitle: "03 / TOKYO URBAN PLAN",
+    year: "2025",
     image: "/work_aura_configurator.png",
-    tagline: "Creating real-time geospatial digital twins utilizing procedural layout math and dynamic lighting.",
-    description: "A dense procedural mapping interface reproducing Tokyo's skyscraper networks. Merges live municipal API signals with custom geometry shaders to reflect active traffic volumes and power loads visually.",
+    tagline: "Procedural mapping interfaces connecting municipal energy signals with real-time WebGL layout grids.",
+    description: "A high-frequency digital twin mapping regional power grids and municipal traffic networks. Integrates real-time API telemetry to dynamically color-code traffic loads and grid efficiency.",
     bgGradient: "from-blue-950 via-slate-900 to-[#050507]",
     details: {
-      client: "Tokyo Municipal Spec",
-      timeline: "Q1 2026",
-      role: "Spatial Architect & Developer",
-      engine: "Unreal Engine / WebGL Map"
+      role: "Spatial Systems Architect",
+      client: "Tokyo Smart Urban Systems",
+      engine: "Unreal Engine 5 / WebGL Maps",
+      timeline: "Q4 2025",
+      videoUrl: null
     },
     metrics: [
-      { label: "CITY TILES", value: "128 Custom Nodes" },
-      { label: "GEOMETRY COUNT", value: "45 Million Polys" },
-      { label: "LIVE FEED DELAY", value: "45 Milliseconds" }
+      { label: "MAPPED NODES", value: "45,000 Realtime" },
+      { label: "LATENCY TARGET", value: "<12ms Stream" },
+      { label: "GEOMETRY COUNT", value: "15 Million Polys" }
     ]
   },
   {
     id: "04",
-    title: "ETHER EDITORIAL",
-    category: "Cinema & VFX Production",
-    categories: ["VIDEO", "VFX"],
-    subtitle: "04 / SAINT LAURENT PARIS",
-    year: "2025",
+    title: "HOROLOGIST VR",
+    category: "Spatial XR Horology",
+    categories: ["VR", "VFX", "APPS"],
+    subtitle: "04 / AP HOROLOGY VOLUMETRIC",
+    year: "2026",
     image: "/work_omnis_interactive.png",
-    tagline: "High-fashion commercial editorial demonstrating interactive fabric simulations and raytraced dust.",
-    description: "A luxury editorial speculative promotion featuring active dynamic fabric physics. Simulates the micro-textures of cashmere and velvet flowing through turbulent fields with real-time dust volume rays.",
-    bgGradient: "from-purple-950 via-[#1a1221] to-[#050507]",
+    tagline: "Bespoke mechanical timepiece disassembly and interaction simulator built for spatial headsets.",
+    description: "An immersive Horology simulation platform that allows watch enthusiasts to inspect and disassemble complex luxury watch movements in high-fidelity volumetric environments.",
+    bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
     details: {
-      client: "YSL speculative spec",
-      timeline: "Q4 2025",
-      role: "VFX Lead & Simulation Dev",
-      engine: "Houdini / Karma Render"
+      role: "Lead XR Developer",
+      client: "Audemars Piguet Spec",
+      engine: "Unity / OpenXR / HDRP",
+      timeline: "Q1 2026",
+      videoUrl: null
     },
     metrics: [
-      { label: "FABRIC PARTICLES", value: "2.4 Million Nodes" },
-      { label: "DYNAMICS FREQ", value: "120 FPS Capture" },
-      { label: "RESOLVED LIGHTS", value: "Physically Correct" }
+      { label: "TRACKING ACCURACY", value: "0.1mm Precision" },
+      { label: "RENDER RESOLUTION", value: "4K Per Eye" },
+      { label: "INTERACTIVE PARTS", value: "180 Components" }
     ]
   },
   {
     id: "05",
-    title: "CHRONOS VR",
-    category: "Volumetric VR Space",
-    categories: ["VR", "VFX"],
-    subtitle: "05 / AUDEMARS PIGUET",
+    title: "SYNAPSE CREATIVE LAB",
+    category: "AI Production & Storyboarding",
+    categories: ["AI SHOOTS", "VIDEO"],
+    subtitle: "05 / SYNAPSE STORYBOARD",
     year: "2026",
     image: "/work_aura_configurator.png",
-    tagline: "Volumetric horology portal enabling physical scale mechanical watch disassembly in VR space.",
-    description: "A hyper-detailed watch mechanic environment for spatial headsets. Users physically pull gears, dials, and escapes of a luxury chronograph clock apart, mapping mechanical equations directly in full 3D.",
-    bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
+    tagline: "AI-assisted commercial storyboard rendering and neural prompt-engineering workflows.",
+    description: "An automated design-delivery studio mapping agency concepts into high-resolution cinematic storyboards without human facial drift or temporal inconsistencies.",
+    bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
     details: {
-      client: "AP speculator Spec",
-      timeline: "Q1 2026",
-      role: "Volumetric UI & Dev",
-      engine: "Unity / OpenXR / HDRP"
+      role: "Prompt Engineer & Workflow Dev",
+      client: "Synapse Creative Group",
+      engine: "ComfyUI / Stable Diffusion / Flux",
+      timeline: "Q2 2026",
+      videoUrl: null
     },
     metrics: [
-      { label: "MECHANICAL PIECES", value: "312 Separate Parts" },
-      { label: "COLLIDER SENS", value: "0.2mm Precision" },
-      { label: "SPATIAL RESOLUTION", value: "4K Per Eye" }
+      { label: "GENERATION SPEED", value: "8s / Frame" },
+      { label: "UPSCALER NODES", value: "Magnific 4K Custom" },
+      { label: "TEMPORAL STABILIZATION", value: "IP-Adapter Lora" }
     ]
   },
   {
     id: "06",
-    title: "SYNAPSE AI STUDIO",
-    category: "AI Production",
-    categories: ["AI SHOOTS", "VIDEO"],
-    subtitle: "06 / MIND LAB",
-    year: "2026",
-    image: "/work_omnis_interactive.png",
-    tagline: "Expanding creative storytelling utilizing ComfyUI batch rendering pipelines and upscale nodes.",
-    description: "An AI-powered storyboard studio utilizing customized generative neural weights. Built to batch process luxury concepts for agencies, scaling outputs to gorgeous 4K volumes without human facial drift.",
-    bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
-    details: {
-      client: "Mind Lab Creative",
-      timeline: "Q2 2026",
-      role: "Lead Prompt & Comfy Dev",
-      engine: "Stable Diffusion / Flux"
-    },
-    metrics: [
-      { label: "LATENT LAYERS", value: "Flux Custom Lora" },
-      { label: "GENERATION TIME", value: "12s Per Image" },
-      { label: "UPSCALING FREQ", value: "High Fidelity" }
-    ]
-  },
-  {
-    id: "07",
-    title: "VORTEX FLUIDICS",
-    category: "Physics VFX & Sound",
+    title: "VORTEX SOUND LAB",
+    category: "Acoustic VFX Fluid Simulator",
     categories: ["VFX", "WEB DEV"],
-    subtitle: "07 / NYX MUSIC",
+    subtitle: "06 / NYX ACOUSTIC PORTAL",
     year: "2025",
-    image: "/work_aura_configurator.png",
-    tagline: "Sound-responsive dynamic WebGL fluid wave simulating physical acoustics on the browser.",
-    description: "An interactive digital companion representing sound signals as dynamic fluid waves. Hooked into standard micro-frequencies of music to bend vector trajectories in locked 60 frames per second.",
+    image: "/work_omnis_interactive.png",
+    tagline: "Generating interactive, sound-responsive WebGL liquid streams representing audio frequencies.",
+    description: "An audiovisual exploration portal mapping client audio signals directly into custom GLSL Navier-Stokes fluid equations. Tracks 256 acoustic frequencies for realtime animation.",
     bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
     details: {
-      client: "Nyx Sound Lab",
+      role: "Fluid Shader Engineer",
+      client: "NYX Sound Lab",
+      engine: "GLSL / React Three Fiber",
       timeline: "Q3 2025",
-      role: "Fluid Shader Designer",
-      engine: "GLSL / React Three Fiber"
+      videoUrl: null
     },
     metrics: [
-      { label: "FLUID SOLVER", value: "Navier-Stokes Shader" },
-      { label: "AURAL BINS", value: "256 Tracked Bands" },
-      { label: "GRID DENSITY", value: "512 x 512 Sim" }
-    ]
-  },
-  {
-    id: "08",
-    title: "CUSTOM SOFTWARE SYSTEM",
-    category: "Custom Software Systems",
-    categories: ["WEB DEV", "APPS"],
-    subtitle: "08 / SPACEX SYSTEM",
-    year: "2025",
-    image: "/work_omnis_interactive.png",
-    tagline: "Complex SpaceX specs mapping high-frequency rocket coordinates on clean, responsive frames.",
-    description: "A secure diagnostic platform tracking spec payloads and rocket coordinate signals. Developed to simplify telemetry diagnostics for test pilots and mission logs in high stakes spaces.",
-    bgGradient: "from-cyan-950 via-slate-950 to-[#050507]",
-    details: {
-      client: "SpaceXspecspec",
-      timeline: "Q4 2025",
-      role: "Dashboard Architect & Developer",
-      engine: "Next.js / WebSocket System"
-    },
-    metrics: [
-      { label: "DATA POINTS", value: "10,000 / Second" },
-      { label: "LATENCY TARGET", value: "<15 Milliseconds" },
-      { label: "SECURITY PROTOCOL", value: "End-to-End Encrypted" }
+      { label: "AURAL BINS", value: "256 Frequencies" },
+      { label: "SIMULATION RESOLUTION", value: "512x512 Grid" },
+      { label: "GLSL SAMPLERS", value: "Dynamic Noise" }
     ]
   }
 ];
@@ -449,28 +409,28 @@ const initialServices: ServiceItem[] = [
 const initialTestimonials: Testimonial[] = [
   {
     id: "01",
-    quote: "The spatial environment crafted by Visionatrix redefined how luxury buyers interact with our brand. An absolute benchmark of creative technology.",
+    quote: "The interactive fluid simulation portal designed by Visionatrix redefined how buyers explore our soundscapes. Absolute peak of creative engineering.",
     author: "MARCUS VANE",
-    role: "HEAD OF DIGITAL CREATIVE",
-    company: "LEICA CAMERA AG CONCEPT",
+    role: "HEAD OF DIGITAL EXPERIENCE",
+    company: "NYX MUSIC INC.",
     rating: 5,
     isActive: true
   },
   {
     id: "02",
-    quote: "Their mathematical approach to shader art and VFX resulted in an automotive spec showcase that exceeded our absolute highest aesthetic standards.",
+    quote: "Their mathematical approach to shader physics and dynamic materials resulted in an automotive spec that blew our design team away.",
     author: "ELENA ROSTOVA",
-    role: "VP OF INNOVATION MARKETING",
-    company: "MERCEDES BENZ DESIGN",
+    role: "VP OF CREATIVE STRATEGY",
+    company: "LUMINA MOTORS CO.",
     rating: 5,
     isActive: true
   },
   {
     id: "03",
-    quote: "Bespoke engineering from start to finish. They built a custom WebGL portal that runs at a locked 60fps while displaying millions of active data nodes.",
+    quote: "Bespoke software architecture from start to finish. They built an immersive 3D digital twin of our municipal grid that runs locked at 60fps.",
     author: "DR. ARIS THORNE",
-    role: "CHIEF ARCHITECT",
-    company: "NEURAL NETWORK CO.",
+    role: "CHIEF INFRASTRUCTURE ARCHITECT",
+    company: "TOKYO URBAN GRID SYSTEMS",
     rating: 5,
     isActive: true
   }
@@ -480,11 +440,11 @@ const initialTestimonials: Testimonial[] = [
 const initialProposals: Proposal[] = [
   {
     id: "prop-01",
-    fullName: "Arthur Pendelton",
-    email: "a.pendelton@apex-systems.io",
-    organization: "Apex Racing Group",
-    service: "CGI ADVERTISING",
-    details: "Staging a high-fidelity visual simulator for our formula concept team. Need volumetric tracks and real-time reflection overlays on composite frames.",
+    fullName: "Charlotte Laurent",
+    email: "c.laurent@aetheria-meta.com",
+    organization: "Aetheria Metaverse Portal",
+    service: "WEBGL WEB CODE",
+    details: "Staging a high-performance WebGL browser portal with real-time particle refraction shaders. Need cross-platform locking at 60 FPS.",
     budget: "$40K - $100K",
     timestamp: "2026-05-22T12:30:00.000Z",
     status: "Pending"
@@ -492,10 +452,10 @@ const initialProposals: Proposal[] = [
   {
     id: "prop-02",
     fullName: "Sarah Jenkins",
-    email: "s.jenkins@leica-photo.de",
-    organization: "Leica Camera Spec Team",
+    email: "s.jenkins@ap-watches.de",
+    organization: "AP Horology Spec",
     service: "VR & SPATIAL XR",
-    details: "Creating a Gaussian Splatting gallery app in spatial environments. Looking to represent raw vintage focal lens structures accurately.",
+    details: "Designing a spatial watch movement assembly simulation featuring 6DoF finger-tracking and photoreal volumetric light maps.",
     budget: "$100K+",
     timestamp: "2026-05-21T18:15:00.000Z",
     status: "In-Review"
