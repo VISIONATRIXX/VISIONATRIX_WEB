@@ -254,13 +254,28 @@ const getVideoEmbedUrl = (url: string) => {
   return url;
 };
 
+function ProjectCardSkeleton({ className }: { className: string }) {
+  return (
+    <div className={`flex flex-col gap-5 w-full rounded-2xl bg-[#09090d]/60 border border-white/5 p-4 md:p-6 animate-pulse select-none ${className}`}>
+      <div className="relative aspect-[16/10] w-full rounded-xl bg-white/[0.02] border border-white/5" />
+      <div className="flex flex-col gap-3 px-1">
+        <div className="flex justify-between items-center">
+          <div className="h-2 w-24 bg-white/10 rounded-full" />
+          <div className="h-2 w-8 bg-white/10 rounded-full" />
+        </div>
+        <div className="h-4.5 w-40 bg-white/10 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
 export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const { projects } = useAdmin();
+  const { projects, isLoaded } = useAdmin();
 
   const categories = [
     "ALL",
@@ -397,31 +412,43 @@ export default function WorksSection() {
 
         {/* Asymmetrical Staggered Grid Container */}
         <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-y-32 md:gap-x-16 py-8">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, index) => {
+          {!isLoaded ? (
+            Array.from({ length: 4 }).map((_, index) => {
               const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
               return (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
-                  className={`w-full max-w-[580px] ${layoutClass}`}
-                >
-                  <ProjectCard 
-                    project={project} 
-                    onOpenDetails={(p) => {
-                      setSelectedProject(p);
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (window as any).lenis?.stop();
-                    }}
-                  />
-                </motion.div>
+                <ProjectCardSkeleton 
+                  key={`skeleton-${index}`} 
+                  className={`w-full max-w-[580px] ${layoutClass}`} 
+                />
               );
-            })}
-          </AnimatePresence>
+            })
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((project, index) => {
+                const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
+                return (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4 }}
+                    className={`w-full max-w-[580px] ${layoutClass}`}
+                  >
+                    <ProjectCard 
+                      project={project} 
+                      onOpenDetails={(p) => {
+                        setSelectedProject(p);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (window as any).lenis?.stop();
+                      }}
+                    />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          )}
         </div>
 
         </div>

@@ -70,6 +70,7 @@ interface AdminContextType {
   services: ServiceItem[];
   testimonials: Testimonial[];
   proposals: Proposal[];
+  isLoaded: boolean;
   
   // Projects CRUD
   addProject: (p: Omit<Project, "id">) => void;
@@ -826,6 +827,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         services,
         testimonials,
         proposals,
+        isLoaded,
         addProject,
         updateProject,
         deleteProject,
