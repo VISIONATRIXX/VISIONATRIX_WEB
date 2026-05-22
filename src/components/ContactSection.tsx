@@ -37,16 +37,17 @@ export default function ContactSection() {
 
     const button = buttonRef.current;
     if (button) {
-      let rect = button.getBoundingClientRect();
+      let rect: DOMRect | null = null;
 
       const updateRect = () => {
         rect = button.getBoundingClientRect();
       };
 
-      window.addEventListener("scroll", updateRect, { passive: true });
-      window.addEventListener("resize", updateRect);
+      // Measure once on init
+      updateRect();
 
       const handleMouseMove = (e: MouseEvent) => {
+        if (!rect) return;
         const btnX = rect.left + rect.width / 2;
         const btnY = rect.top + rect.height / 2;
         
@@ -89,13 +90,15 @@ export default function ContactSection() {
         });
       };
 
-      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
+      window.addEventListener("scroll", updateRect, { passive: true });
+      window.addEventListener("resize", updateRect, { passive: true });
       button.addEventListener("mouseleave", handleMouseLeave);
 
       return () => {
+        window.removeEventListener("mousemove", handleMouseMove);
         window.removeEventListener("scroll", updateRect);
         window.removeEventListener("resize", updateRect);
-        window.removeEventListener("mousemove", handleMouseMove);
         button.removeEventListener("mouseleave", handleMouseLeave);
       };
     }
@@ -451,9 +454,9 @@ A new Project Proposal has been submitted:
             <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
             <span>CLOCKS: </span>
             <span className="text-white/80 font-medium">BENGALURU: {timeStr || "00:00:00"}</span>
-            <span>{" // "}</span>
+            <span> {"//"} </span>
             <span className="text-white/80 font-medium">MUMBAI: {timeStr || "00:00:00"}</span>
-            <span>{" // "}</span>
+            <span> {"//"} </span>
             <span className="text-white/80 font-medium">DELHI: {timeStr || "00:00:00"}</span>
           </div>
         </div>

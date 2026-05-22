@@ -1,8 +1,17 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import * as THREE from "three";
+
+// Seeded PRNG to bypass React strict purity ESLint rules and ensure deterministic renders
+function createRandomGenerator(seed = 12345) {
+  let s = seed;
+  return () => {
+    s = (s * 1664525 + 1013904223) % 4294967296;
+    return s / 4294967296;
+  };
+}
 
 function SceneContent() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -11,14 +20,38 @@ function SceneContent() {
   const particlesRef = useRef<THREE.Points>(null);
   const groupRef = useRef<THREE.Group>(null);
 
+  const scrollYRef = useRef(0);
+  const maxScrollRef = useRef(1);
+
+  // Passive listeners to cache scroll metrics and avoid layout thrashing in Three.js frame loops
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleScroll = () => {
+      scrollYRef.current = window.scrollY;
+      maxScrollRef.current = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+
   // Generate particle positions statically inside useMemo
   const positions = useMemo(() => {
+    const nextRandom = createRandomGenerator(42);
     const count = 700;
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      const r = 2.0 + Math.random() * 2.5;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
+      const r = 2.0 + nextRandom() * 2.5;
+      const theta = nextRandom() * Math.PI * 2;
+      const phi = Math.acos(nextRandom() * 2 - 1);
       arr[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       arr[i * 3 + 2] = r * Math.cos(phi);
@@ -27,8 +60,8 @@ function SceneContent() {
   }, []);
 
   useFrame((state) => {
-    const scrollY = typeof window !== "undefined" ? window.scrollY : 0;
-    const maxScroll = typeof document !== "undefined" ? (document.documentElement.scrollHeight - window.innerHeight) || 1 : 1;
+    const scrollY = scrollYRef.current;
+    const maxScroll = maxScrollRef.current;
     const progress = Math.max(0, Math.min(1, scrollY / maxScroll));
 
     const t = state.clock.getElapsedTime();

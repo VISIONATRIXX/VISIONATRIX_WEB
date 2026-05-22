@@ -35,17 +35,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
   const imgRef = useRef<HTMLImageElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const cardRectRef = useRef<DOMRect | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      cardRectRef.current = null;
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const rectRef = useRef<DOMRect | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const card = cardRef.current;
@@ -54,10 +44,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
     const cursor = cursorRef.current;
     if (!card) return;
 
-    if (!cardRectRef.current) {
-      cardRectRef.current = card.getBoundingClientRect();
-    }
-    const rect = cardRectRef.current;
+    const rect = rectRef.current || card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
@@ -112,12 +99,11 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
   };
 
   const handleMouseEnter = () => {
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
     const cursor = cursorRef.current;
     const sheen = sheenRef.current;
-    const card = cardRef.current;
-    if (card) {
-      cardRectRef.current = card.getBoundingClientRect();
-    }
     if (cursor) {
       gsap.to(cursor, {
         opacity: 1,
@@ -140,8 +126,6 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
     const img = imgRef.current;
     const cursor = cursorRef.current;
     const sheen = sheenRef.current;
-
-    cardRectRef.current = null;
 
     // Reset 3D Tilt
     if (card) {
@@ -193,7 +177,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpenDetails(project)}
-      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 transition-[border-color,background-color] duration-500 transform-gpu select-none group project-card-container"
+      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 transition-all duration-500 transform-gpu select-none group project-card-container"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Interactive Card Image Container */}
