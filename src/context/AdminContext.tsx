@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { supabase } from "@/utils/supabase";
 
 // -------------------------------------------------------------
 // Interfaces
@@ -502,6 +503,107 @@ const initialProposals: Proposal[] = [
 // -------------------------------------------------------------
 // Provider
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// Database Mappers
+// -------------------------------------------------------------
+const mapProjectFromDb = (dbProj: any): Project => ({
+  id: dbProj.id,
+  title: dbProj.title,
+  category: dbProj.category,
+  categories: dbProj.categories || [],
+  subtitle: dbProj.subtitle || "",
+  year: dbProj.year || "2026",
+  image: dbProj.image || "/work_aura_configurator.png",
+  tagline: dbProj.tagline || "",
+  description: dbProj.description || "",
+  bgGradient: dbProj.bg_gradient || "from-slate-900 via-sky-950 to-[#050507]",
+  details: dbProj.details || { client: "", timeline: "", role: "", engine: "" },
+  metrics: dbProj.metrics || []
+});
+
+const mapProjectToDb = (proj: any) => ({
+  title: proj.title,
+  category: proj.category,
+  categories: proj.categories || [],
+  subtitle: proj.subtitle,
+  year: proj.year,
+  image: proj.image,
+  tagline: proj.tagline,
+  description: proj.description,
+  bg_gradient: proj.bgGradient,
+  details: proj.details,
+  metrics: proj.metrics
+});
+
+const mapServiceFromDb = (dbService: any): ServiceItem => ({
+  id: dbService.id,
+  title: dbService.title,
+  description: dbService.description,
+  iconName: dbService.icon_name,
+  hudTitle: dbService.hud_title,
+  hudItems: dbService.hud_items || [],
+  bullets: dbService.bullets || [],
+  tools: dbService.tools || [],
+  canvasType: dbService.canvas_type
+});
+
+const mapServiceToDb = (service: ServiceItem) => ({
+  title: service.title,
+  description: service.description,
+  icon_name: service.iconName,
+  hud_title: service.hudTitle,
+  hud_items: service.hudItems,
+  bullets: service.bullets || [],
+  tools: service.tools || [],
+  canvas_type: service.canvasType
+});
+
+const mapTestimonialFromDb = (dbTest: any): Testimonial => ({
+  id: dbTest.id,
+  quote: dbTest.quote,
+  author: dbTest.author,
+  role: dbTest.role,
+  company: dbTest.company,
+  rating: dbTest.rating,
+  isActive: dbTest.is_active
+});
+
+const mapTestimonialToDb = (test: any) => ({
+  quote: test.quote,
+  author: test.author,
+  role: test.role,
+  company: test.company,
+  rating: test.rating,
+  is_active: test.isActive
+});
+
+const mapProposalFromDb = (dbProp: any): Proposal => ({
+  id: dbProp.id,
+  fullName: dbProp.full_name,
+  email: dbProp.email,
+  organization: dbProp.organization || "",
+  service: dbProp.service,
+  details: dbProp.details || "",
+  budget: dbProp.budget,
+  fileName: dbProp.file_name,
+  timestamp: dbProp.timestamp,
+  status: dbProp.status
+});
+
+const mapProposalToDb = (prop: any) => ({
+  full_name: prop.fullName,
+  email: prop.email,
+  organization: prop.organization || null,
+  service: prop.service,
+  details: prop.details || null,
+  budget: prop.budget,
+  file_name: prop.fileName || null,
+  status: prop.status || 'Pending'
+});
+
+// -------------------------------------------------------------
+// Provider
+// -------------------------------------------------------------
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [services, setServices] = useState<ServiceItem[]>(initialServices);
@@ -509,134 +611,203 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Hydrate states from localStorage
+  // Hydrate states from Supabase
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    async function fetchData() {
+      try {
+        const [projRes, servRes, testRes, propRes] = await Promise.all([
+          supabase.from("projects").select("*").order("id", { ascending: true }),
+          supabase.from("services").select("*").order("id", { ascending: true }),
+          supabase.from("testimonials").select("*").order("id", { ascending: true }),
+          supabase.from("proposals").select("*").order("timestamp", { ascending: false })
+        ]);
 
-    const storedProjects = localStorage.getItem("visionatrix_projects");
-    const storedServices = localStorage.getItem("visionatrix_services");
-    const storedTestimonials = localStorage.getItem("visionatrix_testimonials");
-    const storedProposals = localStorage.getItem("visionatrix_proposals");
+        if (projRes.error) throw projRes.error;
+        if (servRes.error) throw servRes.error;
+        if (testRes.error) throw testRes.error;
+        if (propRes.error) throw propRes.error;
 
-    if (storedProjects) setProjects(JSON.parse(storedProjects));
-    else {
-      setProjects(initialProjects);
-      localStorage.setItem("visionatrix_projects", JSON.stringify(initialProjects));
+        setProjects((projRes.data || []).map(mapProjectFromDb));
+        setServices((servRes.data || []).map(mapServiceFromDb));
+        setTestimonials((testRes.data || []).map(mapTestimonialFromDb));
+        setProposals((propRes.data || []).map(mapProposalFromDb));
+      } catch (error) {
+        console.error("Error hydrating data from Supabase:", error);
+      } finally {
+        setIsLoaded(true);
+      }
     }
-
-    if (storedServices) setServices(JSON.parse(storedServices));
-    else {
-      setServices(initialServices);
-      localStorage.setItem("visionatrix_services", JSON.stringify(initialServices));
-    }
-
-    if (storedTestimonials) setTestimonials(JSON.parse(storedTestimonials));
-    else {
-      setTestimonials(initialTestimonials);
-      localStorage.setItem("visionatrix_testimonials", JSON.stringify(initialTestimonials));
-    }
-
-    if (storedProposals) setProposals(JSON.parse(storedProposals));
-    else {
-      setProposals(initialProposals);
-      localStorage.setItem("visionatrix_proposals", JSON.stringify(initialProposals));
-    }
-
-    setIsLoaded(true);
+    fetchData();
   }, []);
-
-  // Update localStorage when values change
-  const saveToStorage = (key: string, data: any) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-  };
 
   // -------------------------------------------------------------
   // Projects CRUD
   // -------------------------------------------------------------
-  const addProject = (p: Omit<Project, "id">) => {
-    const newId = (Math.max(...projects.map(item => parseInt(item.id) || 0), 0) + 1)
-      .toString()
-      .padStart(2, "0");
-    const newProject: Project = { ...p, id: newId };
-    const updated = [...projects, newProject];
-    setProjects(updated);
-    saveToStorage("visionatrix_projects", updated);
+  const addProject = async (p: Omit<Project, "id">) => {
+    try {
+      const dbProj = mapProjectToDb(p);
+      const { data, error } = await supabase
+        .from("projects")
+        .insert([dbProj])
+        .select();
+
+      if (error) throw error;
+      if (data && data[0]) {
+        const newProj = mapProjectFromDb(data[0]);
+        setProjects(prev => [...prev, newProj]);
+      }
+    } catch (error) {
+      console.error("Failed to add project to Supabase:", error);
+    }
   };
 
-  const updateProject = (id: string, p: Project) => {
-    const updated = projects.map(item => (item.id === id ? p : item));
-    setProjects(updated);
-    saveToStorage("visionatrix_projects", updated);
+  const updateProject = async (id: string, p: Project) => {
+    try {
+      const dbProj = mapProjectToDb(p);
+      const { error } = await supabase
+        .from("projects")
+        .update(dbProj)
+        .eq("id", id);
+
+      if (error) throw error;
+      setProjects(prev => prev.map(item => (item.id === id ? p : item)));
+    } catch (error) {
+      console.error("Failed to update project in Supabase:", error);
+    }
   };
 
-  const deleteProject = (id: string) => {
-    const updated = projects.filter(item => item.id !== id);
-    setProjects(updated);
-    saveToStorage("visionatrix_projects", updated);
+  const deleteProject = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("projects")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setProjects(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete project from Supabase:", error);
+    }
   };
 
   // -------------------------------------------------------------
   // Services CRUD
   // -------------------------------------------------------------
-  const updateService = (id: string, s: ServiceItem) => {
-    const updated = services.map(item => (item.id === id ? s : item));
-    setServices(updated);
-    saveToStorage("visionatrix_services", updated);
+  const updateService = async (id: string, s: ServiceItem) => {
+    try {
+      const dbService = mapServiceToDb(s);
+      const { error } = await supabase
+        .from("services")
+        .update(dbService)
+        .eq("id", id);
+
+      if (error) throw error;
+      setServices(prev => prev.map(item => (item.id === id ? s : item)));
+    } catch (error) {
+      console.error("Failed to update service in Supabase:", error);
+    }
   };
 
   // -------------------------------------------------------------
   // Testimonials CRUD
   // -------------------------------------------------------------
-  const addTestimonial = (t: Omit<Testimonial, "id">) => {
-    const newId = (Math.max(...testimonials.map(item => parseInt(item.id) || 0), 0) + 1)
-      .toString()
-      .padStart(2, "0");
-    const newTestimonial: Testimonial = { ...t, id: newId };
-    const updated = [...testimonials, newTestimonial];
-    setTestimonials(updated);
-    saveToStorage("visionatrix_testimonials", updated);
+  const addTestimonial = async (t: Omit<Testimonial, "id">) => {
+    try {
+      const dbTest = mapTestimonialToDb(t);
+      const { data, error } = await supabase
+        .from("testimonials")
+        .insert([dbTest])
+        .select();
+
+      if (error) throw error;
+      if (data && data[0]) {
+        const newTest = mapTestimonialFromDb(data[0]);
+        setTestimonials(prev => [...prev, newTest]);
+      }
+    } catch (error) {
+      console.error("Failed to add testimonial to Supabase:", error);
+    }
   };
 
-  const updateTestimonial = (id: string, t: Testimonial) => {
-    const updated = testimonials.map(item => (item.id === id ? t : item));
-    setTestimonials(updated);
-    saveToStorage("visionatrix_testimonials", updated);
+  const updateTestimonial = async (id: string, t: Testimonial) => {
+    try {
+      const dbTest = mapTestimonialToDb(t);
+      const { error } = await supabase
+        .from("testimonials")
+        .update(dbTest)
+        .eq("id", id);
+
+      if (error) throw error;
+      setTestimonials(prev => prev.map(item => (item.id === id ? t : item)));
+    } catch (error) {
+      console.error("Failed to update testimonial in Supabase:", error);
+    }
   };
 
-  const deleteTestimonial = (id: string) => {
-    const updated = testimonials.filter(item => item.id !== id);
-    setTestimonials(updated);
-    saveToStorage("visionatrix_testimonials", updated);
+  const deleteTestimonial = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("testimonials")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setTestimonials(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete testimonial from Supabase:", error);
+    }
   };
 
   // -------------------------------------------------------------
   // Proposals CRM CRUD
   // -------------------------------------------------------------
-  const addProposal = (p: Omit<Proposal, "id" | "timestamp" | "status"> & { fileName?: string | null }) => {
-    const newId = `prop-${Date.now()}`;
-    const newProposal: Proposal = {
-      ...p,
-      id: newId,
-      timestamp: new Date().toISOString(),
-      status: "Pending"
-    };
-    const updated = [newProposal, ...proposals];
-    setProposals(updated);
-    saveToStorage("visionatrix_proposals", updated);
+  const addProposal = async (p: Omit<Proposal, "id" | "timestamp" | "status"> & { fileName?: string | null }) => {
+    try {
+      const dbProp = mapProposalToDb({
+        ...p,
+        status: "Pending"
+      });
+      const { data, error } = await supabase
+        .from("proposals")
+        .insert([dbProp])
+        .select();
+
+      if (error) throw error;
+      if (data && data[0]) {
+        const newProp = mapProposalFromDb(data[0]);
+        setProposals(prev => [newProp, ...prev]);
+      }
+    } catch (error) {
+      console.error("Failed to add proposal to Supabase:", error);
+    }
   };
 
-  const updateProposalStatus = (id: string, status: Proposal["status"]) => {
-    const updated = proposals.map(item => (item.id === id ? { ...item, status } : item));
-    setProposals(updated);
-    saveToStorage("visionatrix_proposals", updated);
+  const updateProposalStatus = async (id: string, status: Proposal["status"]) => {
+    try {
+      const { error } = await supabase
+        .from("proposals")
+        .update({ status })
+        .eq("id", id);
+
+      if (error) throw error;
+      setProposals(prev => prev.map(item => (item.id === id ? { ...item, status } : item)));
+    } catch (error) {
+      console.error("Failed to update proposal status in Supabase:", error);
+    }
   };
 
-  const deleteProposal = (id: string) => {
-    const updated = proposals.filter(item => item.id !== id);
-    setProposals(updated);
-    saveToStorage("visionatrix_proposals", updated);
+  const deleteProposal = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("proposals")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setProposals(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete proposal from Supabase:", error);
+    }
   };
 
 
