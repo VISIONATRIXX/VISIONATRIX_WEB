@@ -31,13 +31,15 @@ interface Project {
 }
 
 function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetails: (p: Project) => void }) {
-  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const sheenRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    const card = imageContainerRef.current;
+    const card = cardRef.current;
     const img = imgRef.current;
+    const sheen = sheenRef.current;
     const cursor = cursorRef.current;
     if (!card) return;
 
@@ -54,30 +56,42 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
       });
     }
 
-    // 3D Tilt calculation
+    // Sheen reflection calculation
+    if (sheen) {
+      const pctX = (x / rect.width) * 100;
+      const pctY = (y / rect.height) * 100;
+      gsap.to(sheen, {
+        background: `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%)`,
+        duration: 0.1,
+        ease: "power2.out",
+      });
+    }
+
+    // 3D Tilt calculation on the ENTIRE card
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const rotateX = ((centerY - y) / centerY) * 10; // Max 10 degrees tilt
-    const rotateY = ((x - centerX) / centerX) * 10;
+    const rotateY = ((x - centerX) / centerX) * -10; // Inverted for natural look
 
     gsap.to(card, {
       rotateX: rotateX,
       rotateY: rotateY,
-      transformPerspective: 1000,
+      transformPerspective: 1200,
       scale: 1.025,
-      boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 30px rgba(197, 168, 128, 0.1)",
-      duration: 0.2,
+      borderColor: "rgba(197, 168, 128, 0.3)",
+      boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.12)",
+      duration: 0.25,
       ease: "power2.out",
     });
 
     // Sub-parallax element shift inside the card
     if (img) {
-      const px = ((x - centerX) / centerX) * -10;
-      const py = ((y - centerY) / centerY) * -10;
+      const px = ((x - centerX) / centerX) * -12;
+      const py = ((y - centerY) / centerY) * -12;
       gsap.to(img, {
         x: px,
         y: py,
-        duration: 0.2,
+        duration: 0.25,
         ease: "power2.out",
       });
     }
@@ -85,20 +99,29 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
 
   const handleMouseEnter = () => {
     const cursor = cursorRef.current;
+    const sheen = sheenRef.current;
     if (cursor) {
       gsap.to(cursor, {
         opacity: 1,
         scale: 1,
-        duration: 0.2,
+        duration: 0.25,
+        ease: "power2.out",
+      });
+    }
+    if (sheen) {
+      gsap.to(sheen, {
+        opacity: 1,
+        duration: 0.25,
         ease: "power2.out",
       });
     }
   };
 
   const handleMouseLeave = () => {
-    const card = imageContainerRef.current;
+    const card = cardRef.current;
     const img = imgRef.current;
     const cursor = cursorRef.current;
+    const sheen = sheenRef.current;
 
     // Reset 3D Tilt
     if (card) {
@@ -106,8 +129,9 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
         rotateX: 0,
         rotateY: 0,
         scale: 1,
+        borderColor: "rgba(255, 255, 255, 0.05)",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3), 0 0 0px rgba(0,0,0,0)",
-        duration: 0.5,
+        duration: 0.6,
         ease: "power2.out",
       });
     }
@@ -117,7 +141,7 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
       gsap.to(img, {
         x: 0,
         y: 0,
-        duration: 0.5,
+        duration: 0.6,
         ease: "power2.out",
       });
     }
@@ -127,40 +151,70 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
       gsap.to(cursor, {
         opacity: 0,
         scale: 0,
-        duration: 0.2,
+        duration: 0.25,
+        ease: "power2.out",
+      });
+    }
+
+    // Hide sheen
+    if (sheen) {
+      gsap.to(sheen, {
+        opacity: 0,
+        duration: 0.6,
         ease: "power2.out",
       });
     }
   };
 
   return (
-    <div className="flex flex-col gap-4 w-[280px] sm:w-[350px] md:w-[480px] shrink-0 snap-center select-none">
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => onOpenDetails(project)}
+      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 transition-all duration-500 transform-gpu select-none group project-card-container"
+      style={{ transformStyle: "preserve-3d" }}
+    >
       {/* 3D Interactive Card Image Container */}
       <div
-        ref={imageContainerRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={() => onOpenDetails(project)}
-        className="relative aspect-[16/10] w-full rounded-xl overflow-hidden cursor-none bg-zinc-950 border border-white/5 shadow-2xl transition-all duration-300 transform-gpu"
-        style={{ transformStyle: "preserve-3d" }}
+        className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#050507]"
+        style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}
       >
-        {/* Hover Background overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-tr ${project.bgGradient} opacity-0 hover:opacity-[0.15] transition-opacity duration-500 pointer-events-none z-10`} />
-
-        {/* Project Image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          ref={imgRef}
-          src={project.image}
-          alt={project.title}
-          className="absolute inset-0 w-[110%] h-[110%] -left-[5%] -top-[5%] object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
+        {/* Iridescent / Sheen Overlay */}
+        <div
+          ref={sheenRef}
+          className="absolute inset-0 pointer-events-none mix-blend-color-dodge opacity-0 z-20 transition-opacity duration-300"
+          style={{ transform: "translateZ(10px)" }}
         />
 
-        {/* Category Pill Tag (top-left) */}
-        <div className="absolute top-4 left-4 z-20 bg-[#0b0b0f]/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] animate-pulse" />
-          <span className="font-mono text-[9px] text-[#c5a880] font-bold tracking-wider uppercase">
+        {/* Hover Background overlay */}
+        <div 
+          className={`absolute inset-0 bg-gradient-to-tr ${project.bgGradient} opacity-0 group-hover:opacity-[0.25] transition-opacity duration-700 pointer-events-none z-10`} 
+          style={{ transform: "translateZ(5px)" }}
+        />
+
+        {/* Project Image Container with translateZ */}
+        <div 
+          className="absolute inset-0 w-[112%] h-[112%] -left-[6%] -top-[6%] overflow-hidden"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={imgRef}
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover opacity-75 group-hover:opacity-95 transition-opacity duration-700 scale-100"
+          />
+        </div>
+
+        {/* Category Pill Tag (top-left) - translates higher */}
+        <div 
+          className="absolute top-4 left-4 z-30 bg-[#07070a]/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 flex items-center gap-2 shadow-lg"
+          style={{ transform: "translateZ(55px)" }}
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] shadow-[0_0_8px_#c5a880]" />
+          <span className="font-mono text-[9px] text-white font-bold tracking-[0.2em] uppercase">
             {project.category}
           </span>
         </div>
@@ -168,24 +222,27 @@ function ProjectCard({ project, onOpenDetails }: { project: Project; onOpenDetai
         {/* Custom Follow Cursor */}
         <div
           ref={cursorRef}
-          className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/40 bg-black/10 backdrop-blur-[2px] z-30 flex items-center justify-center pointer-events-none opacity-0 scale-0 transform-gpu"
+          className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#c5a880]/50 bg-black/40 backdrop-blur-[3px] z-40 flex items-center justify-center pointer-events-none opacity-0 scale-0 transition-transform duration-300"
+          style={{ transform: "translateZ(60px)" }}
         >
-          <div className="w-3.5 h-3.5 rounded-full bg-white shadow-lg" />
+          <span className="font-outfit text-[8px] font-bold tracking-[0.2em] text-[#c5a880] uppercase">VIEW</span>
         </div>
       </div>
 
-      {/* Description / Metadata Labels (below image) */}
-      <div className="flex flex-col gap-2 px-1">
+      {/* Description / Metadata Labels (below image) - Floats in 3D */}
+      <div 
+        className="flex flex-col gap-2 px-1"
+        style={{ transform: "translateZ(45px)", transformStyle: "preserve-3d" }}
+      >
         {/* Top meta details line */}
-        <div className="flex justify-between items-center text-[#555566] font-mono text-[9px] tracking-wider uppercase">
+        <div className="flex justify-between items-center text-[#666677] font-mono text-[9px] tracking-[0.25em] uppercase">
           <span>{project.subtitle}</span>
           <span>{project.year}</span>
         </div>
 
         {/* Big Bold Title */}
         <h3 
-          onClick={() => onOpenDetails(project)}
-          className="font-outfit text-lg sm:text-xl font-bold tracking-[0.05em] text-white uppercase hover:text-[#c5a880] transition-colors duration-300 cursor-pointer"
+          className="font-outfit text-xl sm:text-2xl font-bold tracking-[0.08em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300 cursor-pointer w-fit"
         >
           {project.title}
         </h3>
@@ -199,7 +256,6 @@ export default function WorksSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const sectionRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     "ALL",
@@ -261,68 +317,140 @@ export default function WorksSection() {
     },
     {
       id: "03",
-      title: "SAINT LAURENT // SPATIAL SHOWROOM",
-      category: "Spatial Commerce & VFX",
-      categories: ["VFX", "VR"],
-      subtitle: "03 / ATELIER VIRTUAL",
-      year: "2025",
-      image: "/work_omnis_interactive.png",
-      tagline: "Volumetric spatial commerce portal featuring clothing simulation and 3D Gaussian Splatting.",
-      description: "An immersive virtual showroom designed for spatial headsets. Using 3D Gaussian Splatting and high-density volumetric captures, users can observe the microscopic weave patterns of Saint Laurent luxury fabrics, walking through a digital twin of their flagship atelier.",
-      bgGradient: "from-stone-900 via-neutral-950 to-[#050507]",
+      title: "NEO-CITY DIGITAL TWIN",
+      category: "Spatial & VR Mapping",
+      categories: ["VR", "CGI"],
+      subtitle: "03 / TOKYO SMART GRID",
+      year: "2026",
+      image: "/work_aura_configurator.png",
+      tagline: "Creating real-time geospatial digital twins utilizing procedural layout math and dynamic lighting.",
+      description: "A dense procedural mapping interface reproducing Tokyo's skyscraper networks. Merges live municipal API signals with custom geometry shaders to reflect active traffic volumes and power loads visually.",
+      bgGradient: "from-blue-950 via-slate-900 to-[#050507]",
       details: {
-        client: "Saint Laurent Spec",
-        timeline: "Q4 2025",
-        role: "Volumetric Captures & Spatial UI/UX",
-        engine: "Unity / OpenXR / SplatTool"
+        client: "Tokyo Municipal Spec",
+        timeline: "Q1 2026",
+        role: "Spatial Architect & Developer",
+        engine: "Unreal Engine / WebGL Map"
       },
       metrics: [
-        { label: "TARGET HW", value: "Vision Pro / Quest 3" },
-        { label: "GAUSSIAN CLOUD", value: "8.5 Million Splats" }
+        { label: "CITY TILES", value: "128 Custom Nodes" },
+        { label: "GEOMETRY COUNT", value: "45 Million Polys" },
+        { label: "LIVE FEED DELAY", value: "45 Milliseconds" }
       ]
     },
     {
       id: "04",
-      title: "APEX RACING TELEMETRY",
-      category: "WebGL Shaders & Dashboard",
-      categories: ["WEB DEV", "VFX"],
-      subtitle: "04 / APEX SYSTEMS",
+      title: "ETHER EDITORIAL",
+      category: "Cinema & VFX Production",
+      categories: ["VIDEO", "VFX"],
+      subtitle: "04 / SAINT LAURENT PARIS",
       year: "2025",
-      image: "/work_aura_configurator.png",
-      tagline: "Interactive WebGL racing interface tracking engine metrics in real time with custom vertex shaders.",
-      description: "A fast-loading interactive web portal implementing WebGL vertex shaders to visualize real-time physics parameters and engine telemetry. Fusing physics equations directly with GPU shaders to produce fluid, responsive sound and visual spikes.",
-      bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
+      image: "/work_omnis_interactive.png",
+      tagline: "High-fashion commercial editorial demonstrating interactive fabric simulations and raytraced dust.",
+      description: "A luxury editorial speculative promotion featuring active dynamic fabric physics. Simulates the micro-textures of cashmere and velvet flowing through turbulent fields with real-time dust volume rays.",
+      bgGradient: "from-purple-950 via-[#1a1221] to-[#050507]",
       details: {
-        client: "Apex Racing Team",
-        timeline: "Q3 2025",
-        role: "WebGL Dev & GLSL Shader Design",
-        engine: "Three.js / React Three Fiber"
+        client: "YSL speculative spec",
+        timeline: "Q4 2025",
+        role: "VFX Lead & Simulation Dev",
+        engine: "Houdini / Karma Render"
       },
       metrics: [
-        { label: "LOAD TIME", value: "1.2 Seconds" },
-        { label: "SHADER CODE", value: "Custom GLSL" }
+        { label: "FABRIC PARTICLES", value: "2.4 Million Nodes" },
+        { label: "DYNAMICS FREQ", value: "120 FPS Capture" },
+        { label: "RESOLVED LIGHTS", value: "Physically Correct" }
       ]
     },
     {
       id: "05",
-      title: "LUMINANCE CAMPAIGN",
-      category: "Video Production & AI Shoots",
-      categories: ["VIDEO", "AI SHOOTS"],
-      subtitle: "05 / LUMINANCE COSMETICS",
+      title: "CHRONOS VR",
+      category: "Volumetric VR Space",
+      categories: ["VR", "VFX"],
+      subtitle: "05 / AUDEMARS PIGUET",
       year: "2026",
       image: "/work_aura_configurator.png",
-      tagline: "High-impact commercial blending ComfyUI latent nodes with raw 35mm film shoots.",
-      description: "A luxury skincare commercial blending cinematic 35mm camera shoots with generative AI latent model expansions. Utilized custom ControlNet architectures to preserve actor consistency across surreal transitions.",
-      bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
+      tagline: "Volumetric horology portal enabling physical scale mechanical watch disassembly in VR space.",
+      description: "A hyper-detailed watch mechanic environment for spatial headsets. Users physically pull gears, dials, and escapes of a luxury chronograph clock apart, mapping mechanical equations directly in full 3D.",
+      bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
       details: {
-        client: "Luminance Cosmetics",
+        client: "AP speculator Spec",
         timeline: "Q1 2026",
-        role: "Co-Direction & AI Generation Nodes",
-        engine: "ComfyUI / SDXL"
+        role: "Volumetric UI & Dev",
+        engine: "Unity / OpenXR / HDRP"
       },
       metrics: [
-        { label: "LATENT STEPS", value: "Flux Dev" },
-        { label: "UPSCALING", value: "4K Magnific AI" }
+        { label: "MECHANICAL PIECES", value: "312 Separate Parts" },
+        { label: "COLLIDER SENS", value: "0.2mm Precision" },
+        { label: "SPATIAL RESOLUTION", value: "4K Per Eye" }
+      ]
+    },
+    {
+      id: "06",
+      title: "SYNAPSE AI STUDIO",
+      category: "AI Production",
+      categories: ["AI SHOOTS", "VIDEO"],
+      subtitle: "06 / MIND LAB",
+      year: "2026",
+      image: "/work_omnis_interactive.png",
+      tagline: "Expanding creative storytelling utilizing ComfyUI batch rendering pipelines and upscale nodes.",
+      description: "An AI-powered storyboard studio utilizing customized generative neural weights. Built to batch process luxury concepts for agencies, scaling outputs to gorgeous 4K volumes without human facial drift.",
+      bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
+      details: {
+        client: "Mind Lab Creative",
+        timeline: "Q2 2026",
+        role: "Lead Prompt & Comfy Dev",
+        engine: "Stable Diffusion / Flux"
+      },
+      metrics: [
+        { label: "LATENT LAYERS", value: "Flux Custom Lora" },
+        { label: "GENERATION TIME", value: "12s Per Image" },
+        { label: "UPSCALING FREQ", value: "High Fidelity" }
+      ]
+    },
+    {
+      id: "07",
+      title: "VORTEX FLUIDICS",
+      category: "Physics VFX & Sound",
+      categories: ["VFX", "WEB DEV"],
+      subtitle: "07 / NYX MUSIC",
+      year: "2025",
+      image: "/work_aura_configurator.png",
+      tagline: "Sound-responsive dynamic WebGL fluid wave simulating physical acoustics on the browser.",
+      description: "An interactive digital companion representing sound signals as dynamic fluid waves. Hooked into standard micro-frequencies of music to bend vector trajectories in locked 60 frames per second.",
+      bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
+      details: {
+        client: "Nyx Sound Lab",
+        timeline: "Q3 2025",
+        role: "Fluid Shader Designer",
+        engine: "GLSL / React Three Fiber"
+      },
+      metrics: [
+        { label: "FLUID SOLVER", value: "Navier-Stokes Shader" },
+        { label: "AURAL BINS", value: "256 Tracked Bands" },
+        { label: "GRID DENSITY", value: "512 x 512 Sim" }
+      ]
+    },
+    {
+      id: "08",
+      title: "CUSTOM SOFTWARE SYSTEM",
+      category: "Custom Software Systems",
+      categories: ["WEB DEV", "APPS"],
+      subtitle: "08 / SPACEX SYSTEM",
+      year: "2025",
+      image: "/work_omnis_interactive.png",
+      tagline: "Complex SpaceX specs mapping high-frequency rocket coordinates on clean, responsive frames.",
+      description: "A secure diagnostic platform tracking spec payloads and rocket coordinate signals. Developed to simplify telemetry diagnostics for test pilots and mission logs in high stakes spaces.",
+      bgGradient: "from-cyan-950 via-slate-950 to-[#050507]",
+      details: {
+        client: "SpaceXspecspec",
+        timeline: "Q4 2025",
+        role: "Dashboard Architect & Developer",
+        engine: "Next.js / WebSocket System"
+      },
+      metrics: [
+        { label: "DATA POINTS", value: "10,000 / Second" },
+        { label: "LATENCY TARGET", value: "<15 Milliseconds" },
+        { label: "SECURITY PROTOCOL", value: "End-to-End Encrypted" }
       ]
     }
   ];
@@ -332,11 +460,12 @@ export default function WorksSection() {
     : projects.filter(p => p.categories.includes(activeCategory));
 
   const handleCategoryChange = (cat: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lenis = (window as any).lenis;
     const section = sectionRef.current;
     if (section) {
       const rect = section.getBoundingClientRect();
-      const targetScroll = window.scrollY + rect.top;
+      const targetScroll = window.scrollY + rect.top - 60; // offset for sticky header
       
       if (lenis) {
         lenis.scrollTo(targetScroll, {
@@ -344,18 +473,12 @@ export default function WorksSection() {
           easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
           onComplete: () => {
             setActiveCategory(cat);
-            if (trackRef.current) {
-              gsap.set(trackRef.current, { x: 0 });
-            }
           }
         });
       } else {
         window.scrollTo({ top: targetScroll, behavior: "smooth" });
         setTimeout(() => {
           setActiveCategory(cat);
-          if (trackRef.current) {
-            gsap.set(trackRef.current, { x: 0 });
-          }
         }, 500);
       }
     } else {
@@ -367,70 +490,64 @@ export default function WorksSection() {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
-    const track = trackRef.current;
-    const section = sectionRef.current;
-    if (!track || !section) return;
-
-    // Recalculate dimensions on category filter update
-    const getScrollWidth = () => {
-      return track.scrollWidth - track.clientWidth;
-    };
-
-    let scrollTween: gsap.core.Tween;
-    let mm = gsap.matchMedia();
-
-    // Delay initialization slightly to let DOM sizes settle
-    const timer = setTimeout(() => {
-      mm.add("(min-width: 768px)", () => {
-        const scrollWidth = getScrollWidth();
-        if (scrollWidth <= 0) return;
-
-        scrollTween = gsap.to(track, {
-          x: -scrollWidth,
-          ease: "none",
+    const cards = gsap.utils.toArray(".project-card-container") as HTMLElement[];
+    cards.forEach((card) => {
+      gsap.fromTo(card,
+        { opacity: 0, y: 60, rotateX: -6 },
+        {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          duration: 0.8,
+          ease: "power2.out",
           scrollTrigger: {
-            trigger: section,
-            pin: true,
-            start: "top top",
-            end: () => `+=${scrollWidth * 1.1}`,
-            scrub: 1,
-            invalidateOnRefresh: true,
+            trigger: card,
+            start: "top 88%",
+            toggleActions: "play none none none",
           }
-        });
-      });
-    }, 150);
+        }
+      );
+    });
 
     return () => {
-      clearTimeout(timer);
-      mm.revert();
-      if (scrollTween) {
-        scrollTween.scrollTrigger?.kill();
-        scrollTween.kill();
-      }
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, [activeCategory, filteredProjects.length]);
+
+  // Card layouts configuration to match the staggered asymmetrical grid in screenshot
+  const cardLayoutClasses = [
+    "md:col-span-7 md:justify-self-start",             // 01 Aura Configurator
+    "md:col-span-5 md:mt-28 md:justify-self-end",      // 02 Omnis Interactive
+    "md:col-span-5 md:-mt-16 md:justify-self-start",   // 03 Neo-City Digital Twin
+    "md:col-span-7 md:mt-12 md:justify-self-end",      // 04 Ether Editorial
+    "md:col-span-7 md:mt-[-40px] md:justify-self-start", // 05 Chronos VR
+    "md:col-span-5 md:mt-24 md:justify-self-end",      // 06 Synapse AI Studio
+    "md:col-span-5 md:-mt-20 md:justify-self-start",   // 07 Vortex Fluidics
+    "md:col-span-7 md:mt-8 md:justify-self-end",       // 08 Custom Software System
+  ];
 
   return (
     <section 
       ref={sectionRef}
       id="works" 
-      className="relative w-full min-h-screen md:h-screen bg-[#0b0b0f] overflow-hidden flex flex-col justify-center py-16 md:py-24 px-6 md:px-12 lg:px-24"
+      className="relative w-full bg-[#0b0b0f] overflow-hidden py-24 md:py-32 px-6 md:px-12 lg:px-24"
     >
-      {/* Background decoration */}
+      {/* Background ambient lighting decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute right-[5%] top-[10%] w-[35vw] h-[35vw] bg-[#c5a880]/[0.015] blur-[150px] rounded-full" />
+        <div className="absolute right-[5%] top-[10%] w-[35vw] h-[35vw] bg-[#c5a880]/[0.012] blur-[150px] rounded-full" />
+        <div className="absolute left-[5%] bottom-[15%] w-[40vw] h-[40vw] bg-[#c5a880]/[0.008] blur-[180px] rounded-full" />
       </div>
 
       <ScrollAnimatedWrapper enableY={false} enableScale={false} className="h-full flex flex-col justify-between">
         <div className="max-w-7xl mx-auto w-full z-10 flex flex-col h-full justify-between">
         
         {/* Header Row: Title & Category Navigation */}
-        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-6 mb-4 md:mb-8 shrink-0">
-          <div className="flex flex-col gap-1.5">
-            <span className="font-mono text-[9px] md:text-[10px] tracking-[0.25em] text-[#c5a880] uppercase">
+        <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/5 pb-8 mb-12 md:mb-16 shrink-0">
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-[#c5a880] uppercase">
               SELECTED WORKS
             </span>
-            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl font-bold tracking-[0.1em] text-white uppercase">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-[0.08em] text-white uppercase">
               CASE STUDIES
             </h2>
           </div>
@@ -461,34 +578,33 @@ export default function WorksSection() {
           </div>
         </div>
 
-        {/* Project Cards Scrolling Track */}
-        <div className="w-full overflow-hidden relative flex-grow flex items-center py-4 md:py-8">
-          <div 
-            ref={trackRef}
-            className="flex gap-8 md:gap-14 w-full md:w-max items-center overflow-x-auto md:overflow-x-visible no-scrollbar snap-x snap-mandatory md:snap-none px-2 md:px-0 md:pr-[20vw]"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((project) => (
+        {/* Asymmetrical Staggered Grid Container */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-y-32 md:gap-x-16 py-8">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, index) => {
+              const layoutClass = cardLayoutClasses[index % cardLayoutClasses.length];
+              return (
                 <motion.div
                   key={project.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.96 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
-                  className="shrink-0"
+                  className={`w-full max-w-[580px] ${layoutClass}`}
                 >
                   <ProjectCard 
                     project={project} 
                     onOpenDetails={(p) => {
                       setSelectedProject(p);
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       (window as any).lenis?.stop();
                     }}
                   />
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+              );
+            })}
+          </AnimatePresence>
         </div>
 
         </div>
@@ -501,96 +617,145 @@ export default function WorksSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 md:p-6"
+            className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 md:p-6"
           >
             {/* Modal Body */}
             <motion.div
-              initial={{ scale: 0.96, y: 15 }}
+              initial={{ scale: 0.95, y: 30 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 15 }}
-              transition={{ type: "spring", damping: 25, stiffness: 280 }}
-              className="w-full max-w-2xl bg-[#121217] border border-[#c5a880]/20 rounded-xl p-6 md:p-8 relative shadow-[0_0_60px_rgba(197,168,128,0.12)] flex flex-col gap-6 max-h-[90vh] overflow-y-auto modal-scrollbar"
+              exit={{ scale: 0.95, y: 30 }}
+              transition={{ type: "spring", damping: 30, stiffness: 240 }}
+              className="w-full max-w-4xl bg-[#0b0b0f]/90 border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden max-h-[90vh]"
             >
               {/* Close Button */}
               <button
                 onClick={() => {
                   setSelectedProject(null);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (window as any).lenis?.start();
                 }}
-                className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors duration-300 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center cursor-pointer"
+                className="absolute top-6 right-6 text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 w-9 h-9 rounded-full border border-white/10 flex items-center justify-center cursor-pointer z-50 shadow-lg backdrop-blur-md animate-pulse"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Title & Metadata */}
-              <div className="flex flex-col gap-1 pr-12">
-                <span className="font-mono text-[9px] tracking-[0.25em] text-[#c5a880] uppercase">
-                  {selectedProject.category}
-                </span>
-                <h3 className="font-outfit text-xl sm:text-2xl font-bold tracking-[0.05em] text-white">
-                  {selectedProject.title}
-                </h3>
-              </div>
+              {/* Left Side: Visual Section */}
+              <div className="relative col-span-5 min-h-[200px] md:min-h-[500px] h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center">
+                {/* Background ambient light */}
+                <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10" />
 
-              {/* Brief Information Row */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-white/5 py-4 my-2 text-xs">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">CLIENT</span>
-                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.client}</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">TIMELINE</span>
-                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.timeline}</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">ROLE</span>
-                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.role}</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[#555566] font-mono text-[9px] tracking-wider uppercase">ENGINE</span>
-                  <span className="text-white/90 font-mono font-medium">{selectedProject.details.engine}</span>
+                {/* Animated project image */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_infinite_alternate]"
+                  style={{ animationDuration: "12s" }}
+                />
+
+                {/* Floating overlay text on visual side */}
+                <div className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-2">
+                  <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
+                    CASE STUDY DETAILS
+                  </span>
+                  <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
+                    {selectedProject.title}
+                  </h4>
+                  <div className="w-12 h-1 bg-[#c5a880] rounded-full mt-2" />
                 </div>
               </div>
 
-              {/* Full Description */}
-              <div className="flex flex-col gap-2">
-                <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase">PROJECT OVERVIEW</span>
-                <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed">
-                  {selectedProject.description}
-                </p>
-              </div>
+              {/* Right Side: Editorial Content Section */}
+              <div className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto max-h-[65vh] md:max-h-[90vh] modal-scrollbar flex flex-col justify-between gap-8">
+                {/* Title and Tagline */}
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-[9px] tracking-[0.25em] text-[#c5a880] uppercase">
+                    {selectedProject.category}
+                  </span>
+                  <h3 className="font-outfit text-3xl md:text-4xl font-extrabold tracking-[0.05em] text-white uppercase leading-none">
+                    {selectedProject.title}
+                  </h3>
+                  <p className="font-mono text-[10px] sm:text-xs text-white/70 italic leading-relaxed border-l-2 border-[#c5a880] pl-3 py-1">
+                    &ldquo;{selectedProject.tagline}&rdquo;
+                  </p>
+                </div>
 
-              {/* Metrics Grid Section */}
-              <div className="flex flex-col gap-3">
-                <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase flex items-center gap-1.5">
-                  <BarChart3 className="w-4 h-4 text-[#c5a880]" />
-                  <span>QUANTITATIVE METRICS</span>
-                </span>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {selectedProject.metrics.map((metric, index) => (
-                    <div key={index} className="bg-white/[0.02] border border-white/5 rounded p-3 flex justify-between items-center">
-                      <span className="font-mono text-[9px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
-                      <span className="font-mono text-xs text-[#c5a880] font-semibold">{metric.value}</span>
-                    </div>
-                  ))}
+                {/* Editorial Metadata Grid */}
+                <div className="grid grid-cols-2 gap-y-5 gap-x-8 border-y border-white/5 py-6 text-xs">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase">CLIENT</span>
+                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.client}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase">TIMELINE</span>
+                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.timeline}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase">ROLE</span>
+                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.role}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase">ENGINE & DEV</span>
+                    <span className="text-[#c5a880] font-outfit text-sm font-bold tracking-wide">{selectedProject.details.engine}</span>
+                  </div>
+                </div>
+
+                {/* Narrative Overview */}
+                <div className="flex flex-col gap-3">
+                  <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase">PROJECT OVERVIEW</span>
+                  <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed">
+                    {selectedProject.description}
+                  </p>
+                </div>
+
+                {/* Animated Quantitative Metrics */}
+                <div className="flex flex-col gap-4">
+                  <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase flex items-center gap-2">
+                    <BarChart3 className="w-3.5 h-3.5 text-[#c5a880]" />
+                    <span>PERFORMANCE METRICS</span>
+                  </span>
+                  
+                  <div className="flex flex-col gap-3">
+                    {selectedProject.metrics.map((metric, index) => {
+                      const percentages = ["92%", "85%", "78%"];
+                      const percentage = percentages[index % percentages.length];
+                      return (
+                        <div key={index} className="bg-white/[0.01] border border-white/5 rounded-xl p-4 flex flex-col gap-2.5 shadow-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="font-mono text-[9px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
+                            <span className="font-mono text-xs text-[#c5a880] font-bold">{metric.value}</span>
+                          </div>
+                          {/* Animated gradient progress bar */}
+                          <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: percentage }}
+                              transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.15 }}
+                              className="h-full bg-gradient-to-r from-[#c5a880] to-[#e4ceaf] rounded-full shadow-[0_0_8px_rgba(197,168,128,0.3)]"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Close Button / Bottom CTA */}
+                <div className="flex justify-end mt-4 pt-6 border-t border-white/5">
+                  <button
+                    onClick={() => {
+                      setSelectedProject(null);
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (window as any).lenis?.start();
+                    }}
+                    className="px-8 py-3 bg-[#c5a880] hover:bg-[#b0926a] text-black font-outfit text-xs font-bold tracking-[0.2em] rounded-sm transition-all duration-300 shadow-md cursor-pointer hover:shadow-lg hover:shadow-[#c5a880]/10"
+                  >
+                    CLOSE BRIEFCASE
+                  </button>
                 </div>
               </div>
-
-              {/* Footer Button */}
-              <div className="flex justify-end mt-4 border-t border-white/5 pt-4">
-                <button
-                  onClick={() => {
-                    setSelectedProject(null);
-                    (window as any).lenis?.start();
-                  }}
-                  className="px-6 py-2.5 border border-[#c5a880] hover:bg-[#c5a880] hover:text-[#0b0b0f] bg-transparent text-white font-outfit text-xs tracking-[0.15em] rounded-sm transition-all duration-300 cursor-pointer"
-                >
-                  CLOSE METRICS
-                </button>
-              </div>
-
             </motion.div>
           </motion.div>
         )}
