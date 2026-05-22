@@ -75,6 +75,9 @@ export default function AdminPage() {
 
   // CRUD MODALS & EDITORS STATE
   const [projectModal, setProjectModal] = useState<{ isOpen: boolean; mode: "add" | "edit"; data?: Project }>({ isOpen: false, mode: "add" });
+  const [projectActiveTab, setProjectActiveTab] = useState<"general" | "media" | "specs">("general");
+  const [projectFormMode, setProjectFormMode] = useState<"basic" | "advanced">("basic");
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [testimonialModal, setTestimonialModal] = useState<{ isOpen: boolean; mode: "add" | "edit"; data?: Testimonial }>({ isOpen: false, mode: "add" });
   const [serviceEditor, setServiceEditor] = useState<ServiceItem | null>(null);
 
@@ -165,10 +168,16 @@ export default function AdminPage() {
   });
 
   const openProjectModal = (mode: "add" | "edit", data?: Project) => {
+    setProjectActiveTab("general");
+    setProjectFormMode("basic");
     setLocalTags([]);
     setCustomTagInput("");
     setUploadError("");
+    
+    const existingCats = Array.from(new Set(projects.map(p => p.category).filter(Boolean)));
     if (mode === "edit" && data) {
+      const isCustom = !existingCats.includes(data.category);
+      setIsCustomCategory(isCustom);
       setProjForm({ 
         ...data,
         details: {
@@ -180,6 +189,7 @@ export default function AdminPage() {
         }
       });
     } else {
+      setIsCustomCategory(false);
       setProjForm({
         title: "",
         category: "",
@@ -287,24 +297,37 @@ export default function AdminPage() {
       return;
     }
 
+    const defaultMetrics = [
+      { label: "FPS METRICS", value: "90 FPS Locked" },
+      { label: "RENDER ENGINE", value: "WebGL / Octane" },
+      { label: "DYNAMICS", value: "Realtime Physics" }
+    ];
+
+    const finalMetrics = projForm.metrics && projForm.metrics.length > 0 && projForm.metrics.some(m => m.label || m.value)
+      ? projForm.metrics.map(m => ({
+          label: (m.label || "SPEC").toUpperCase(),
+          value: m.value || "Dynamic"
+        }))
+      : defaultMetrics;
+
     const payload: Omit<Project, "id"> = {
       title: projForm.title.toUpperCase(),
       category: projForm.category,
       categories: projForm.categories || ["CGI"],
       tagline: projForm.tagline || "",
-      description: projForm.description || "",
+      description: projForm.description || projForm.tagline || "",
       image: projForm.image || "/work_aura_configurator.png",
-      subtitle: projForm.subtitle || `${projForm.title} Spec`,
+      subtitle: projForm.subtitle || `${projForm.title.toUpperCase()} Spec`,
       year: projForm.year || "2026",
       bgGradient: projForm.bgGradient || "from-slate-900 via-sky-950 to-[#050507]",
       details: {
-        client: projForm.details?.client || "Spec Project",
-        timeline: projForm.details?.timeline || "Q1 2026",
-        role: projForm.details?.role || "Digital Studio",
-        engine: projForm.details?.engine || "Octane Render",
+        client: projForm.details?.client || "Visionatrix Studio",
+        timeline: projForm.details?.timeline || projForm.year || "2026",
+        role: projForm.details?.role || "Digital Production",
+        engine: projForm.details?.engine || "Realtime WebGL / Octane",
         videoUrl: projForm.details?.videoUrl || null
       },
-      metrics: projForm.metrics || []
+      metrics: finalMetrics
     };
 
     if (projectModal.mode === "edit" && projectModal.data) {
@@ -1125,293 +1148,756 @@ export default function AdminPage() {
                 </button>
               </div>
 
+              {/* Dual-Mode Selector Toggle */}
+              <div className="px-6 pt-4 flex justify-between items-center bg-[#0b0b0f] select-none border-b border-white/5 pb-3">
+                <span className="text-[9px] font-mono text-white/40 tracking-wider uppercase">FORM ENTRY CONTEXT:</span>
+                <div className="flex bg-black/40 border border-white/10 rounded-md p-1">
+                  <button
+                    type="button"
+                    onClick={() => setProjectFormMode("basic")}
+                    className={`px-3 py-1 text-[9px] font-mono tracking-wider font-bold rounded transition-all uppercase cursor-pointer ${
+                      projectFormMode === "basic"
+                        ? "bg-[#c5a880] text-black shadow-md"
+                        : "text-white/40 hover:text-white/70"
+                    }`}
+                  >
+                    Basic Mode
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setProjectFormMode("advanced")}
+                    className={`px-3 py-1 text-[9px] font-mono tracking-wider font-bold rounded transition-all uppercase cursor-pointer ${
+                      projectFormMode === "advanced"
+                        ? "bg-[#c5a880] text-black shadow-md"
+                        : "text-white/40 hover:text-white/70"
+                    }`}
+                  >
+                    Advanced Specs
+                  </button>
+                </div>
+              </div>
+
+              {/* Tab Selector */}
+              {projectFormMode === "advanced" && (
+                <div className="px-6 pt-3 flex gap-2 border-b border-white/5 bg-[#0b0b0f] select-none">
+                  {(["general", "media", "specs"] as const).map((tab) => {
+                    const label = tab === "general" ? "1. GENERAL INFO" : tab === "media" ? "2. MEDIA & THEME" : "3. CREDENTIALS & METRICS";
+                    const active = projectActiveTab === tab;
+                    return (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setProjectActiveTab(tab)}
+                        className={`pb-2.5 px-3 text-[10px] font-mono tracking-wider transition-all duration-200 border-b-2 font-bold cursor-pointer uppercase ${
+                          active 
+                            ? "border-[#c5a880] text-white" 
+                            : "border-transparent text-white/40 hover:text-white/70"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
               <form onSubmit={handleProjectSubmit} className="p-6 flex flex-col gap-4.5 max-h-[500px] overflow-y-auto scrollbar-thin">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Title</label>
-                    <input 
-                      type="text" 
-                      value={projForm.title || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, title: e.target.value })} 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider font-semibold"
-                      placeholder="e.g. AURA CONFIGURATOR"
-                      required
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Primary Category Label</label>
-                    <input 
-                      type="text" 
-                      value={projForm.category || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, category: e.target.value })} 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                      placeholder="e.g. CGI & Cinematic Visuals"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Tag multi-select categories */}
-                <div className="flex flex-col gap-2 bg-[#121217] border border-white/5 p-4 rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">
-                      CASE STUDIES TAB FILTERS (MULTI-SELECT TAGS)
-                    </span>
-                    <span className="text-[8px] font-mono text-white/30 uppercase">
-                      SELECT ALL SECTIONS THAT APPLY
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2.5 mt-1 select-none">
-                    {Array.from(new Set([
-                      "VIDEO", "VFX", "CGI", "WEB DEV", "APPS", "AI SHOOTS", "VR",
-                      ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
-                      ...localTags
-                    ])).map((tag) => {
-                      const selected = (projForm.categories || []).includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => {
-                            const current = projForm.categories || [];
-                            const updated = current.includes(tag)
-                              ? current.filter(t => t !== tag)
-                              : [...current, tag];
-                            setProjForm({ ...projForm, categories: updated });
-                          }}
-                          className={`px-3.5 py-1.5 rounded-full border text-[9px] font-mono tracking-wider font-bold transition-all duration-200 active:scale-95 cursor-pointer uppercase ${
-                            selected 
-                              ? "bg-[#c5a880]/15 border-[#c5a880] text-white shadow-[0_0_12px_rgba(197,168,128,0.18)]" 
-                              : "border-white/10 bg-black/40 text-white/35 hover:text-white/70 hover:border-white/20"
-                          }`}
-                        >
-                          {tag}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
-                    <input 
-                      type="text" 
-                      value={customTagInput} 
-                      onChange={(e) => setCustomTagInput(e.target.value)} 
-                      placeholder="ADD CUSTOM SECTION/TAG..." 
-                      className="bg-black/35 border border-white/10 rounded px-2.5 py-1.5 text-[10px] text-white tracking-wider outline-none focus:border-[#c5a880]/40 flex-1 font-mono uppercase"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddCustomTag();
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddCustomTag}
-                      className="bg-[#c5a880]/10 border border-[#c5a880]/20 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3.5 py-1.5 rounded text-[10px] font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase"
-                    >
-                      + ADD TAG
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Promotional Tagline teaser</label>
-                  <input 
-                    type="text" 
-                    value={projForm.tagline || ""} 
-                    onChange={(e) => setProjForm({ ...projForm, tagline: e.target.value })} 
-                    className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                    placeholder="e.g. Relentless physics CGI automotive showcase brief."
-                  />
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Cinematic Detailed Description</label>
-                  <textarea 
-                    value={projForm.description || ""} 
-                    onChange={(e) => setProjForm({ ...projForm, description: e.target.value })} 
-                    rows={3}
-                    className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white/80 leading-relaxed font-sans font-light"
-                    placeholder="Detailed paragraph explaining creative methodologies..."
-                  />
-                </div>
-
-                {/* Project media files upload / configure card */}
-                <div className="border border-white/5 bg-[#121217] rounded-lg p-4 flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">
-                      PROJECT MEDIA ASSETS CONFIGURATION
-                    </span>
-                    {uploadError && (
-                      <span className="text-[9px] font-mono text-red-500 font-semibold uppercase tracking-wider animate-pulse">
-                        ⚠️ UPLOAD ERROR: {uploadError}
-                      </span>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Image Path / URL</label>
-                      <div className="flex gap-2">
+                
+                {projectFormMode === "basic" ? (
+                  <div className="flex flex-col gap-4">
+                    {/* Title & Year */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="sm:col-span-2 flex flex-col gap-1.5">
+                        <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Title</label>
                         <input 
                           type="text" 
-                          value={projForm.image || ""} 
-                          onChange={(e) => setProjForm({ ...projForm, image: e.target.value })} 
-                          className="flex-1 bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                          placeholder="e.g. /work_aura_configurator.png"
+                          value={projForm.title || ""} 
+                          onChange={(e) => setProjForm({ ...projForm, title: e.target.value })} 
+                          className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider font-semibold"
+                          placeholder="e.g. AETHERIA INTERACTIVE"
                           required
                         />
-                        <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/10 border border-[#c5a880]/30 hover:bg-[#c5a880]/20 hover:border-[#c5a880]/50 text-[#c5a880] hover:text-white px-3.5 rounded-md text-xs font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase">
-                          {isUploadingImage ? (
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Upload className="w-3.5 h-3.5" />
-                          )}
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
-                            onChange={(e) => handleFileUpload(e, "image")}
-                            disabled={isUploadingImage}
-                          />
-                        </label>
                       </div>
-                      {projForm.image && (projForm.image.startsWith("http") || projForm.image.includes("supabase")) && (
-                        <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
-                          <Check className="w-2.5 h-2.5" /> UPLOADED TO SUPABASE
-                        </span>
-                      )}
+
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Year</label>
+                        <input 
+                          type="text" 
+                          value={projForm.year || "2026"} 
+                          onChange={(e) => setProjForm({ ...projForm, year: e.target.value })} 
+                          className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                          placeholder="2026"
+                          required
+                        />
+                      </div>
                     </div>
 
+                    {/* Primary Category Selector */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Video Link / URL (Optional)</label>
-                      <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          value={projForm.details?.videoUrl || ""} 
-                          onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, videoUrl: e.target.value } })} 
-                          className="flex-1 bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                          placeholder="e.g. /my_video.mp4 or https://player.vimeo.com/video/..."
-                        />
-                        <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/10 border border-[#c5a880]/30 hover:bg-[#c5a880]/20 hover:border-[#c5a880]/50 text-[#c5a880] hover:text-white px-3.5 rounded-md text-xs font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase">
-                          {isUploadingVideo ? (
-                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Upload className="w-3.5 h-3.5" />
-                          )}
+                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Primary Category</label>
+                      {isCustomCategory ? (
+                        <div className="flex gap-2">
                           <input 
-                            type="file" 
-                            accept="video/*" 
-                            className="hidden" 
-                            onChange={(e) => handleFileUpload(e, "video")}
-                            disabled={isUploadingVideo}
+                            type="text" 
+                            value={projForm.category || ""} 
+                            onChange={(e) => setProjForm({ ...projForm, category: e.target.value })} 
+                            className="flex-1 bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                            placeholder="e.g. WebGL & Creative Tech"
+                            required
                           />
-                        </label>
-                      </div>
-                      {projForm.details?.videoUrl && (projForm.details.videoUrl.startsWith("http") || projForm.details.videoUrl.includes("supabase")) && (
-                        <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
-                          <Check className="w-2.5 h-2.5" /> UPLOADED TO SUPABASE
-                        </span>
+                          {Array.from(new Set(projects.map(p => p.category).filter(Boolean))).length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsCustomCategory(false);
+                                const cats = Array.from(new Set(projects.map(p => p.category).filter(Boolean)));
+                                setProjForm(prev => ({ ...prev, category: cats[0] || "" }));
+                              }}
+                              className="px-3.5 py-2 border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-md text-xs font-mono transition-all uppercase cursor-pointer shrink-0"
+                              title="Back to dropdown selector"
+                            >
+                              USE LIST
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <select
+                          value={projForm.category || ""}
+                          onChange={(e) => {
+                            if (e.target.value === "CREATE_NEW_CATEGORY") {
+                              setIsCustomCategory(true);
+                              setProjForm(prev => ({ ...prev, category: "" }));
+                            } else {
+                              setProjForm(prev => ({ ...prev, category: e.target.value }));
+                            }
+                          }}
+                          className="w-full bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white cursor-pointer"
+                          required
+                        >
+                          <option value="" disabled className="text-white/30">SELECT CATEGORY</option>
+                          {Array.from(new Set(projects.map(p => p.category).filter(Boolean))).map(cat => (
+                            <option key={cat} value={cat} className="bg-[#0b0b0f] text-white">{cat}</option>
+                          ))}
+                          <option value="CREATE_NEW_CATEGORY" className="bg-[#0b0b0f] text-[#c5a880] font-semibold">+ CREATE NEW CATEGORY...</option>
+                        </select>
                       )}
                     </div>
-                  </div>
-                  <span className="text-[8px] font-mono text-white/30 uppercase leading-normal">
-                    💡 Tip: Paste a raw .mp4 video path, or an external Vimeo/YouTube iframe embed URL to showcase high-fidelity motion. Or click the upload icon to upload a file directly.
-                  </span>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Tailwind BG Gradient classes</label>
-                    <input 
-                      type="text" 
-                      value={projForm.bgGradient || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, bgGradient: e.target.value })} 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                      placeholder="from-slate-900 via-sky-950 to-[#050507]"
-                    />
-                  </div>
+                    {/* Tagline / Teaser */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Promotional Tagline / Teaser</label>
+                      <textarea 
+                        value={projForm.tagline || ""} 
+                        onChange={(e) => setProjForm({ ...projForm, tagline: e.target.value })} 
+                        rows={2}
+                        className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white/80 leading-relaxed font-sans font-light resize-none"
+                        placeholder="e.g. Engineering physically accurate WebGL simulations and fluid dynamics rendering at 90 FPS."
+                        required
+                      />
+                    </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Year / Timeline</label>
-                    <input 
-                      type="text" 
-                      value={projForm.year || "2026"} 
-                      onChange={(e) => setProjForm({ ...projForm, year: e.target.value })} 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                      placeholder="2026"
-                    />
-                  </div>
-                </div>
+                    {/* Media Uploaders */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Image configuration */}
+                      <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Cover Image</label>
+                          {projForm.image && (projForm.image.startsWith("http") || projForm.image.includes("supabase")) && (
+                            <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                              <Check className="w-2.5 h-2.5" /> ONLINE
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            value={projForm.image || ""} 
+                            onChange={(e) => setProjForm({ ...projForm, image: e.target.value })} 
+                            className="flex-1 bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                            placeholder="e.g. /work_aura_configurator.png"
+                            required
+                          />
+                          <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3 rounded-md text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer">
+                            {isUploadingImage ? (
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Upload className="w-3.5 h-3.5" />
+                            )}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={(e) => handleFileUpload(e, "image")}
+                              disabled={isUploadingImage}
+                            />
+                          </label>
+                        </div>
 
-                <div className="border-t border-white/5 pt-4 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Spec sheets */}
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-white/40 tracking-wider uppercase mb-1">PROJECT CREDENTIALS</span>
-                    
-                    <input 
-                      type="text" 
-                      value={projForm.details?.client || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, client: e.target.value } })}
-                      placeholder="Client (e.g. Leica Camera)" 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                    />
-                    <input 
-                      type="text" 
-                      value={projForm.details?.timeline || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, timeline: e.target.value } })}
-                      placeholder="Timeline (e.g. Q1 2026)" 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                    />
-                    <input 
-                      type="text" 
-                      value={projForm.details?.role || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, role: e.target.value } })}
-                      placeholder="Role (e.g. Creative Direction)" 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                    />
-                    <input 
-                      type="text" 
-                      value={projForm.details?.engine || ""} 
-                      onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, engine: e.target.value } })}
-                      placeholder="Graphics Engine (e.g. GLSL / Unity)" 
-                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
-                    />
-                  </div>
-
-                  {/* Metrics */}
-                  <div className="flex flex-col gap-2">
-                    <span className="text-[9px] font-mono text-white/40 tracking-wider uppercase mb-1">SPECIFICATION METRICS</span>
-                    
-                    {[0, 1, 2].map((idx) => (
-                      <div key={idx} className="grid grid-cols-2 gap-2">
-                        <input 
-                          type="text" 
-                          value={projForm.metrics?.[idx]?.label || ""} 
-                          onChange={(e) => {
-                            const newMetrics = [...(projForm.metrics || [])];
-                            newMetrics[idx] = { ...newMetrics[idx], label: e.target.value.toUpperCase() };
-                            setProjForm({ ...projForm, metrics: newMetrics });
-                          }}
-                          placeholder={`Metric label ${idx + 1}`} 
-                          className="bg-black/45 border border-white/10 rounded-md py-1.5 px-2.5 focus:border-[#c5a880]/50 outline-none text-[10px] text-white"
-                        />
-                        <input 
-                          type="text" 
-                          value={projForm.metrics?.[idx]?.value || ""} 
-                          onChange={(e) => {
-                            const newMetrics = [...(projForm.metrics || [])];
-                            newMetrics[idx] = { ...newMetrics[idx], value: e.target.value };
-                            setProjForm({ ...projForm, metrics: newMetrics });
-                          }}
-                          placeholder={`Metric value ${idx + 1}`} 
-                          className="bg-black/45 border border-white/10 rounded-md py-1.5 px-2.5 focus:border-[#c5a880]/50 outline-none text-[10px] text-white"
-                        />
+                        {/* Image Preview */}
+                        <div className="border border-white/10 bg-black/60 rounded-md h-24 flex items-center justify-center overflow-hidden relative">
+                          {projForm.image ? (
+                            <img 
+                              src={projForm.image} 
+                              alt="Cover preview" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
+                              }}
+                            />
+                          ) : (
+                            <span className="text-[10px] font-mono text-white/20">NO IMAGE SELECTED</span>
+                          )}
+                        </div>
                       </div>
-                    ))}
+
+                      {/* Video configuration */}
+                      <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Video Link (Optional)</label>
+                          {projForm.details?.videoUrl && (projForm.details.videoUrl.startsWith("http") || projForm.details.videoUrl.includes("supabase")) && (
+                            <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                              <Check className="w-2.5 h-2.5" /> ONLINE
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <input 
+                            type="text" 
+                            value={projForm.details?.videoUrl || ""} 
+                            onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, videoUrl: e.target.value } })} 
+                            className="flex-1 bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                            placeholder="e.g. /my_video.mp4"
+                          />
+                          <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3 rounded-md text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer">
+                            {isUploadingVideo ? (
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Upload className="w-3.5 h-3.5" />
+                            )}
+                            <input 
+                              type="file" 
+                              accept="video/*" 
+                              className="hidden" 
+                              onChange={(e) => handleFileUpload(e, "video")}
+                              disabled={isUploadingVideo}
+                            />
+                          </label>
+                        </div>
+
+                        {/* Video preview */}
+                        <div className="border border-white/10 bg-black/60 rounded-md h-24 flex items-center justify-center overflow-hidden relative">
+                          {projForm.details?.videoUrl ? (
+                            projForm.details.videoUrl.includes("vimeo") || projForm.details.videoUrl.includes("youtube") ? (
+                              <div className="text-center flex flex-col items-center justify-center h-full">
+                                <ExternalLink className="w-4 h-4 text-[#c5a880]" />
+                                <span className="text-[8px] font-mono text-white/50 uppercase mt-0.5">External Player</span>
+                              </div>
+                            ) : (
+                              <video 
+                                src={projForm.details.videoUrl} 
+                                className="w-full h-full object-cover" 
+                                controls={false}
+                                muted
+                                autoPlay
+                                loop
+                                playsInline
+                              />
+                            )
+                          ) : (
+                            <span className="text-[10px] font-mono text-white/20">NO VIDEO ATTACHED</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Gradient Theme Grid */}
+                    <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                      <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Background Gradient</label>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                        {[
+                          { name: "Slate Nebula", value: "from-slate-900 via-sky-950 to-[#050507]", style: "bg-gradient-to-br from-slate-900 via-sky-950 to-neutral-950" },
+                          { name: "Crimson Eclipse", value: "from-zinc-900 via-[#1c1212] to-[#050507]", style: "bg-gradient-to-br from-zinc-900 via-[#1c1212] to-neutral-950" },
+                          { name: "Deep Cobalt", value: "from-blue-950 via-slate-900 to-[#050507]", style: "bg-gradient-to-br from-blue-950 via-slate-900 to-neutral-950" },
+                          { name: "Obsidian Stone", value: "from-stone-900 via-zinc-950 to-[#050507]", style: "bg-gradient-to-br from-stone-900 via-zinc-950 to-neutral-950" },
+                          { name: "Bronze Ember", value: "from-[#1b1712] via-neutral-900 to-[#050507]", style: "bg-gradient-to-br from-[#1b1712] via-neutral-900 to-neutral-950" },
+                          { name: "Emerald Abyss", value: "from-emerald-950 via-slate-950 to-[#050507]", style: "bg-gradient-to-br from-emerald-950 via-slate-950 to-neutral-950" }
+                        ].map((preset) => {
+                          const active = projForm.bgGradient === preset.value;
+                          return (
+                            <button
+                              key={preset.name}
+                              type="button"
+                              onClick={() => setProjForm({ ...projForm, bgGradient: preset.value })}
+                              className={`h-11 rounded-md ${preset.style} border relative flex flex-col justify-end p-1.5 transition-all active:scale-95 cursor-pointer ${
+                                active ? "border-[#c5a880] ring-1 ring-[#c5a880]/30 shadow-[0_0_8px_rgba(197,168,128,0.3)]" : "border-white/10 hover:border-white/30"
+                              }`}
+                            >
+                              <span className="text-[7.5px] font-mono font-bold text-white tracking-wide truncate max-w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
+                                {preset.name}
+                              </span>
+                              {active && (
+                                <div className="absolute top-1 right-1 bg-white text-black p-0.5 rounded-full">
+                                  <Check className="w-1.5 h-1.5" strokeWidth={3} />
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Category Filter Tags List */}
+                    <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-2">
+                      <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Case Study Filter Tags (Click to select)</label>
+                      <div className="flex flex-wrap gap-2 mt-1 select-none">
+                        {Array.from(new Set([
+                          "VIDEO", "VFX", "CGI", "WEB DEV", "APPS", "AI SHOOTS", "VR",
+                          ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
+                          ...localTags
+                        ])).map((tag) => {
+                          const selected = (projForm.categories || []).includes(tag);
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => {
+                                const current = projForm.categories || [];
+                                const updated = current.includes(tag)
+                                  ? current.filter(t => t !== tag)
+                                  : [...current, tag];
+                                setProjForm({ ...projForm, categories: updated });
+                              }}
+                              className={`px-3 py-1 rounded-full border text-[9px] font-mono tracking-wider font-bold transition-all duration-200 active:scale-95 cursor-pointer uppercase ${
+                                selected 
+                                  ? "bg-[#c5a880]/15 border-[#c5a880] text-white shadow-[0_0_12px_rgba(197,168,128,0.18)]" 
+                                  : "border-white/10 bg-black/40 text-white/35 hover:text-white/70 hover:border-white/20"
+                              }`}
+                            >
+                              {tag}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {projectActiveTab === "general" && (
+                      <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Title</label>
+                            <input 
+                              type="text" 
+                              value={projForm.title || ""} 
+                              onChange={(e) => setProjForm({ ...projForm, title: e.target.value })} 
+                              className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider font-semibold"
+                              placeholder="e.g. AETHERIA INTERACTIVE"
+                              required
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Primary Category Label</label>
+                            <input 
+                              type="text" 
+                              value={projForm.category || ""} 
+                              onChange={(e) => setProjForm({ ...projForm, category: e.target.value })} 
+                              className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                              placeholder="e.g. WebGL & Creative Tech"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Project Year / Timeline</label>
+                            <input 
+                              type="text" 
+                              value={projForm.year || "2026"} 
+                              onChange={(e) => setProjForm({ ...projForm, year: e.target.value })} 
+                              className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                              placeholder="2026"
+                            />
+                          </div>
+
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Subtitle / Project Order</label>
+                            <input 
+                              type="text" 
+                              value={projForm.subtitle || ""} 
+                              onChange={(e) => setProjForm({ ...projForm, subtitle: e.target.value })} 
+                              className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white uppercase tracking-wider font-semibold"
+                              placeholder="e.g. 01 / AETHERIA METAVERSE"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Promotional Tagline teaser</label>
+                          <input 
+                            type="text" 
+                            value={projForm.tagline || ""} 
+                            onChange={(e) => setProjForm({ ...projForm, tagline: e.target.value })} 
+                            className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white"
+                            placeholder="e.g. Engineering physically accurate WebGL simulations and fluid dynamics rendering at 90 FPS."
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">Cinematic Detailed Description</label>
+                          <textarea 
+                            value={projForm.description || ""} 
+                            onChange={(e) => setProjForm({ ...projForm, description: e.target.value })} 
+                            rows={4}
+                            className="bg-black/45 border border-white/10 rounded-md py-2 px-3 focus:border-[#c5a880]/50 focus:ring-1 focus:ring-[#c5a880]/15 outline-none text-xs text-white/80 leading-relaxed font-sans font-light resize-none"
+                            placeholder="Detailed paragraph explaining creative methodologies..."
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {projectActiveTab === "media" && (
+                      <div className="flex flex-col gap-4">
+                        {uploadError && (
+                          <span className="text-[9px] font-mono text-red-500 font-semibold uppercase tracking-wider animate-pulse">
+                            ⚠️ UPLOAD ERROR: {uploadError}
+                          </span>
+                        )}
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Cover Image</label>
+                              {projForm.image && (projForm.image.startsWith("http") || projForm.image.includes("supabase")) && (
+                                <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                                  <Check className="w-2.5 h-2.5" /> SUPABASE SYNCED
+                                </span>
+                              )}
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <input 
+                                type="text" 
+                                value={projForm.image || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, image: e.target.value })} 
+                                className="flex-1 bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                                placeholder="e.g. /work_aura_configurator.png"
+                                required
+                              />
+                              <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3 rounded-md text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer">
+                                {isUploadingImage ? (
+                                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <Upload className="w-3.5 h-3.5" />
+                                )}
+                                <input 
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="hidden" 
+                                  onChange={(e) => handleFileUpload(e, "image")}
+                                  disabled={isUploadingImage}
+                                />
+                              </label>
+                            </div>
+
+                            <div className="border border-white/10 bg-black/60 rounded-md h-32 flex items-center justify-center overflow-hidden relative group">
+                              {projForm.image ? (
+                                <img 
+                                  src={projForm.image} 
+                                  alt="Cover preview" 
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-[10px] font-mono text-white/20">NO IMAGE SELECTED</span>
+                              )}
+                              {projForm.image && (
+                                <div className="absolute bottom-1 right-1 bg-black/75 px-1.5 py-0.5 rounded text-[8px] font-mono text-white/50 border border-white/5">
+                                  PREVIEW
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                            <div className="flex items-center justify-between">
+                              <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Showcase Video (Optional)</label>
+                              {projForm.details?.videoUrl && (projForm.details.videoUrl.startsWith("http") || projForm.details.videoUrl.includes("supabase")) && (
+                                <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1">
+                                  <Check className="w-2.5 h-2.5" /> SUPABASE SYNCED
+                                </span>
+                              )}
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <input 
+                                type="text" 
+                                value={projForm.details?.videoUrl || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, videoUrl: e.target.value } })} 
+                                className="flex-1 bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                                placeholder="e.g. /my_video.mp4 or Vimeo link"
+                              />
+                              <label className="relative shrink-0 flex items-center justify-center bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3 rounded-md text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer">
+                                {isUploadingVideo ? (
+                                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                  <Upload className="w-3.5 h-3.5" />
+                                )}
+                                <input 
+                                  type="file" 
+                                  accept="video/*" 
+                                  className="hidden" 
+                                  onChange={(e) => handleFileUpload(e, "video")}
+                                  disabled={isUploadingVideo}
+                                />
+                              </label>
+                            </div>
+
+                            <div className="border border-white/10 bg-black/60 rounded-md h-32 flex flex-col items-center justify-center relative overflow-hidden p-3">
+                              {projForm.details?.videoUrl ? (
+                                projForm.details.videoUrl.includes("vimeo") || projForm.details.videoUrl.includes("youtube") ? (
+                                  <div className="text-center flex flex-col items-center gap-1">
+                                    <ExternalLink className="w-6 h-6 text-[#c5a880]" />
+                                    <span className="text-[10px] font-mono text-white/70 uppercase">Embedded External Player</span>
+                                    <span className="text-[8px] font-mono text-white/30 truncate max-w-[200px]">{projForm.details.videoUrl}</span>
+                                  </div>
+                                ) : (
+                                  <video 
+                                    src={projForm.details.videoUrl} 
+                                    className="w-full h-full object-cover" 
+                                    controls={false}
+                                    muted
+                                    autoPlay
+                                    loop
+                                    playsInline
+                                    onError={(e) => {
+                                      const target = e.target as HTMLVideoElement;
+                                      target.style.display = "none";
+                                    }}
+                                  />
+                                )
+                              ) : (
+                                <span className="text-[10px] font-mono text-white/20">NO VIDEO ATTACHED</span>
+                              )}
+                              {projForm.details?.videoUrl && (
+                                <div className="absolute bottom-1 right-1 bg-black/75 px-1.5 py-0.5 rounded text-[8px] font-mono text-white/50 border border-white/5">
+                                  VIDEO
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                          <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Background Gradient Theme</label>
+                          
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                            {[
+                              { name: "Slate Nebula", value: "from-slate-900 via-sky-950 to-[#050507]", style: "bg-gradient-to-br from-slate-900 via-sky-950 to-neutral-950" },
+                              { name: "Crimson Eclipse", value: "from-zinc-900 via-[#1c1212] to-[#050507]", style: "bg-gradient-to-br from-zinc-900 via-[#1c1212] to-neutral-950" },
+                              { name: "Deep Cobalt", value: "from-blue-950 via-slate-900 to-[#050507]", style: "bg-gradient-to-br from-blue-950 via-slate-900 to-neutral-950" },
+                              { name: "Obsidian Stone", value: "from-stone-900 via-zinc-950 to-[#050507]", style: "bg-gradient-to-br from-stone-900 via-zinc-950 to-neutral-950" },
+                              { name: "Bronze Ember", value: "from-[#1b1712] via-neutral-900 to-[#050507]", style: "bg-gradient-to-br from-[#1b1712] via-neutral-900 to-neutral-950" },
+                              { name: "Emerald Abyss", value: "from-emerald-950 via-slate-950 to-[#050507]", style: "bg-gradient-to-br from-emerald-950 via-slate-950 to-neutral-950" }
+                            ].map((preset) => {
+                              const active = projForm.bgGradient === preset.value;
+                              return (
+                                <button
+                                  key={preset.name}
+                                  type="button"
+                                  onClick={() => setProjForm({ ...projForm, bgGradient: preset.value })}
+                                  className={`h-11 rounded-md ${preset.style} border relative flex flex-col justify-end p-1.5 transition-all active:scale-95 cursor-pointer ${
+                                    active ? "border-[#c5a880] ring-1 ring-[#c5a880]/30 shadow-[0_0_8px_rgba(197,168,128,0.3)]" : "border-white/10 hover:border-white/30"
+                                  }`}
+                                >
+                                  <span className="text-[7.5px] font-mono font-bold text-white tracking-wide truncate max-w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
+                                    {preset.name}
+                                  </span>
+                                  {active && (
+                                    <div className="absolute top-1 right-1 bg-white text-black p-0.5 rounded-full">
+                                      <Check className="w-1.5 h-1.5" strokeWidth={3} />
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="flex flex-col gap-1 mt-2">
+                            <span className="text-[8px] font-mono text-white/30 uppercase">Custom Tailwind Gradient Classes (Advanced)</span>
+                            <input 
+                              type="text" 
+                              value={projForm.bgGradient || ""} 
+                              onChange={(e) => setProjForm({ ...projForm, bgGradient: e.target.value })} 
+                              className="bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                              placeholder="e.g. from-slate-900 via-sky-950 to-[#050507]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {projectActiveTab === "specs" && (
+                      <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="flex flex-col gap-2 bg-[#121217] border border-white/5 p-4 rounded-lg">
+                            <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase mb-1">PROJECT CREDENTIALS</span>
+                            
+                            <div className="flex flex-col gap-1">
+                              <label className="text-[8px] font-mono text-white/30 uppercase">Client</label>
+                              <input 
+                                type="text" 
+                                value={projForm.details?.client || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, client: e.target.value } })}
+                                placeholder="Client (e.g. Leica Camera)" 
+                                className="bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                              />
+                            </div>
+                            
+                            <div className="flex flex-col gap-1 mt-1">
+                              <label className="text-[8px] font-mono text-white/30 uppercase">Timeline</label>
+                              <input 
+                                type="text" 
+                                value={projForm.details?.timeline || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, timeline: e.target.value } })}
+                                placeholder="Timeline (e.g. Q1 2026)" 
+                                className="bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                              />
+                            </div>
+
+                            <div className="flex flex-col gap-1 mt-1">
+                              <label className="text-[8px] font-mono text-white/30 uppercase">Role</label>
+                              <input 
+                                type="text" 
+                                value={projForm.details?.role || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, role: e.target.value } })}
+                                placeholder="Role (e.g. Creative Direction)" 
+                                className="bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                              />
+                            </div>
+
+                            <div className="flex flex-col gap-1 mt-1">
+                              <label className="text-[8px] font-mono text-white/30 uppercase">Graphics Engine / Tech Stack</label>
+                              <input 
+                                type="text" 
+                                value={projForm.details?.engine || ""} 
+                                onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, engine: e.target.value } })}
+                                placeholder="Graphics Engine (e.g. GLSL / Unity)" 
+                                className="bg-black/45 border border-white/10 rounded-md py-1.5 px-3 focus:border-[#c5a880]/50 outline-none text-xs text-white"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2 bg-[#121217] border border-white/5 p-4 rounded-lg justify-between">
+                            <div>
+                              <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase mb-1">SPECIFICATION METRICS</span>
+                              <span className="block text-[8px] font-mono text-white/30 uppercase mb-3">Key metrics displayed on case study view</span>
+                            </div>
+                            
+                            <div className="flex flex-col gap-3">
+                              {[0, 1, 2].map((idx) => (
+                                <div key={idx} className="grid grid-cols-2 gap-2">
+                                  <input 
+                                    type="text" 
+                                    value={projForm.metrics?.[idx]?.label || ""} 
+                                    onChange={(e) => {
+                                      const newMetrics = [...(projForm.metrics || [])];
+                                      newMetrics[idx] = { ...newMetrics[idx], label: e.target.value.toUpperCase() };
+                                      setProjForm({ ...projForm, metrics: newMetrics });
+                                    }}
+                                    placeholder={`Metric label ${idx + 1}`} 
+                                    className="bg-black/45 border border-white/10 rounded-md py-1.5 px-2.5 focus:border-[#c5a880]/50 outline-none text-[10px] text-white"
+                                  />
+                                  <input 
+                                    type="text" 
+                                    value={projForm.metrics?.[idx]?.value || ""} 
+                                    onChange={(e) => {
+                                      const newMetrics = [...(projForm.metrics || [])];
+                                      newMetrics[idx] = { ...newMetrics[idx], value: e.target.value };
+                                      setProjForm({ ...projForm, metrics: newMetrics });
+                                    }}
+                                    placeholder={`Metric value ${idx + 1}`} 
+                                    className="bg-black/45 border border-white/10 rounded-md py-1.5 px-2.5 focus:border-[#c5a880]/50 outline-none text-[10px] text-white"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 bg-[#121217] border border-white/5 p-4 rounded-lg">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">
+                              CASE STUDIES TAB FILTERS (MULTI-SELECT TAGS)
+                            </span>
+                            <span className="text-[8px] font-mono text-white/30 uppercase">
+                              SELECT ALL SECTIONS THAT APPLY
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mt-1 select-none">
+                            {Array.from(new Set([
+                              "VIDEO", "VFX", "CGI", "WEB DEV", "APPS", "AI SHOOTS", "VR",
+                              ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
+                              ...localTags
+                            ])).map((tag) => {
+                              const selected = (projForm.categories || []).includes(tag);
+                              return (
+                                <button
+                                  key={tag}
+                                  type="button"
+                                  onClick={() => {
+                                    const current = projForm.categories || [];
+                                    const updated = current.includes(tag)
+                                      ? current.filter(t => t !== tag)
+                                      : [...current, tag];
+                                    setProjForm({ ...projForm, categories: updated });
+                                  }}
+                                  className={`px-3 py-1.5 rounded-full border text-[9px] font-mono tracking-wider font-bold transition-all duration-200 active:scale-95 cursor-pointer uppercase ${
+                                    selected 
+                                      ? "bg-[#c5a880]/15 border-[#c5a880] text-white shadow-[0_0_12px_rgba(197,168,128,0.18)]" 
+                                      : "border-white/10 bg-black/40 text-white/35 hover:text-white/70 hover:border-white/20"
+                                  }`}
+                                >
+                                  {tag}
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
+                            <input 
+                              type="text" 
+                              value={customTagInput} 
+                              onChange={(e) => setCustomTagInput(e.target.value)} 
+                              placeholder="ADD CUSTOM SECTION/TAG..." 
+                              className="bg-black/35 border border-white/10 rounded px-2.5 py-1.5 text-[10px] text-white tracking-wider outline-none focus:border-[#c5a880]/40 flex-1 font-mono uppercase"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleAddCustomTag();
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={handleAddCustomTag}
+                              className="bg-[#c5a880]/10 border border-[#c5a880]/20 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white px-3.5 py-1.5 rounded text-[10px] font-mono font-bold tracking-wider transition-all duration-200 active:scale-95 cursor-pointer uppercase"
+                            >
+                              + ADD TAG
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
 
                 <div className="border-t border-white/5 pt-4 flex gap-3 justify-end select-none">
                   <button

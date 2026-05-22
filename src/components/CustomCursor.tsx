@@ -144,7 +144,7 @@ export default function CustomCursor() {
   return (
     <div
       ref={cursorRef}
-      className="fixed top-0 left-0 pointer-events-none z-[9999] opacity-0 transition-opacity duration-300 w-full h-full"
+      className="fixed top-0 left-0 pointer-events-none z-[99999] opacity-0 transition-opacity duration-300 w-full h-full"
     >
       {/* Blur Spotlight Glow — large soft radial halo */}
       <div
