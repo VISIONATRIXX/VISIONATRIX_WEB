@@ -559,7 +559,7 @@ export default function WorksSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
               transition={{ type: "spring", damping: 30, stiffness: 240 }}
-              className="w-full max-w-4xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden max-h-[90vh]"
+              className="w-full max-w-4xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden h-[85vh] max-h-[85vh] md:h-[600px] lg:h-[700px] xl:h-[750px]"
               style={{ willChange: "transform, opacity" }}
             >
               {/* Close Button */}
@@ -576,7 +576,7 @@ export default function WorksSection() {
               </button>
 
               {/* Left Side: Visual Section */}
-              <div className="relative col-span-5 min-h-[200px] md:min-h-[500px] h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center">
+              <div className="relative col-span-5 w-full aspect-video md:aspect-auto md:h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center">
                 {/* Background ambient light */}
                 <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10" />
@@ -629,7 +629,7 @@ export default function WorksSection() {
               {/* Right Side: Editorial Content Section */}
               <div 
                 data-lenis-prevent
-                className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto max-h-[65vh] md:max-h-[90vh] modal-scrollbar flex flex-col justify-between gap-8"
+                className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto flex-1 min-h-0 modal-scrollbar flex flex-col justify-between gap-8"
               >
                 {/* Title and Tagline */}
                 <div className="flex flex-col gap-3">
