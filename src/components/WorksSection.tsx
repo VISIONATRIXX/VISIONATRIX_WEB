@@ -550,7 +550,8 @@ export default function WorksSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 md:p-6"
+            className="fixed inset-0 z-[12000] flex items-center justify-center bg-black/98 p-4 md:p-6"
+            style={{ willChange: "opacity" }}
           >
             {/* Modal Body */}
             <motion.div
@@ -558,7 +559,8 @@ export default function WorksSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
               transition={{ type: "spring", damping: 30, stiffness: 240 }}
-              className="w-full max-w-4xl bg-[#0b0b0f]/90 border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden max-h-[90vh]"
+              className="w-full max-w-4xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden max-h-[90vh]"
+              style={{ willChange: "transform, opacity" }}
             >
               {/* Close Button */}
               <button
