@@ -33,24 +33,6 @@ function ProjectCard({
   const cardRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const rectRef = useRef<DOMRect | null>(null);
-
-  // Reusable quickTo tween functions — created once, called on every mousemove without allocating new tweens
-  const quickTweens = useRef<{
-    cursorX: ReturnType<typeof gsap.quickTo> | null;
-    cursorY: ReturnType<typeof gsap.quickTo> | null;
-    cardRotateX: ReturnType<typeof gsap.quickTo> | null;
-    cardRotateY: ReturnType<typeof gsap.quickTo> | null;
-    cardRotateZ: ReturnType<typeof gsap.quickTo> | null;
-    cardScale: ReturnType<typeof gsap.quickTo> | null;
-    imgX: ReturnType<typeof gsap.quickTo> | null;
-    imgY: ReturnType<typeof gsap.quickTo> | null;
-  }>({
-    cursorX: null, cursorY: null,
-    cardRotateX: null, cardRotateY: null, cardRotateZ: null, cardScale: null,
-    imgX: null, imgY: null,
-  });
 
   const resting = restingRotations[index % restingRotations.length];
 
@@ -67,97 +49,42 @@ function ProjectCard({
     }
   }, [resting]);
 
-  // Initialize quickTo tweens once after mount
-  useEffect(() => {
+  const handleMouseEnter = () => {
     const card = cardRef.current;
     const img = imgRef.current;
-    const cursor = cursorRef.current;
-
-    if (cursor) {
-      quickTweens.current.cursorX = gsap.quickTo(cursor, "x", { duration: 0.05, ease: "none" });
-      quickTweens.current.cursorY = gsap.quickTo(cursor, "y", { duration: 0.05, ease: "none" });
-    }
-    if (card) {
-      quickTweens.current.cardRotateX = gsap.quickTo(card, "rotateX", { duration: 0.35, ease: "power2.out" });
-      quickTweens.current.cardRotateY = gsap.quickTo(card, "rotateY", { duration: 0.35, ease: "power2.out" });
-      quickTweens.current.cardRotateZ = gsap.quickTo(card, "rotateZ", { duration: 0.35, ease: "power2.out" });
-      quickTweens.current.cardScale = gsap.quickTo(card, "scale", { duration: 0.35, ease: "power2.out" });
-    }
-    if (img) {
-      quickTweens.current.imgX = gsap.quickTo(img, "x", { duration: 0.4, ease: "power2.out" });
-      quickTweens.current.imgY = gsap.quickTo(img, "y", { duration: 0.4, ease: "power2.out" });
-    }
-  }, []);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const card = cardRef.current;
-    const sheen = sheenRef.current;
-    if (!card) return;
-
-    const rect = rectRef.current || card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Move custom cursor instantly via quickTo
-    quickTweens.current.cursorX?.(x);
-    quickTweens.current.cursorY?.(y);
-
-    // Sheen reflection — direct style write (no GSAP tween overhead for gradient strings)
-    if (sheen) {
-      const pctX = (x / rect.width) * 100;
-      const pctY = (y / rect.height) * 100;
-      sheen.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%)`;
-    }
-
-    // 3D Tilt via quickTo — reuses existing tween, no allocation
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 15;
-    const rotateY = ((x - centerX) / centerX) * -15;
-
-    quickTweens.current.cardRotateX?.(rotateX);
-    quickTweens.current.cardRotateY?.(rotateY);
-    quickTweens.current.cardRotateZ?.(0);
-    quickTweens.current.cardScale?.(1.05);
-
-    // Sub-parallax element shift via quickTo
-    const px = ((x - centerX) / centerX) * -15;
-    const py = ((y - centerY) / centerY) * -15;
-    quickTweens.current.imgX?.(px);
-    quickTweens.current.imgY?.(py);
-  };
-
-  const handleMouseEnter = () => {
-    if (cardRef.current) {
-      rectRef.current = cardRef.current.getBoundingClientRect();
-    }
-    const card = cardRef.current;
-    const cursor = cursorRef.current;
     const sheen = sheenRef.current;
 
     if (card) {
       gsap.to(card, {
+        scale: 1.03,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
         borderColor: "rgba(197, 168, 128, 0.35)",
-        boxShadow: "0 35px 70px -15px rgba(0,0,0,0.85), 0 0 45px rgba(197, 168, 128, 0.15)",
+        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.8), 0 0 35px rgba(197, 168, 128, 0.12)",
         transformPerspective: 1200,
-        duration: 0.35,
+        duration: 0.4,
         ease: "power2.out",
       });
     }
-    if (cursor) {
-      gsap.to(cursor, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" });
+    if (img) {
+      gsap.to(img, {
+        scale: 1.06,
+        opacity: 0.9,
+        duration: 0.4,
+        ease: "power2.out",
+      });
     }
     if (sheen) {
-      gsap.to(sheen, { opacity: 1, duration: 0.25, ease: "power2.out" });
+      gsap.to(sheen, { opacity: 1, duration: 0.4, ease: "power2.out" });
     }
   };
 
   const handleMouseLeave = () => {
     const card = cardRef.current;
-    const cursor = cursorRef.current;
+    const img = imgRef.current;
     const sheen = sheenRef.current;
 
-    // Reset 3D Tilt to resting float position
     if (card) {
       gsap.to(card, {
         rotateX: resting.rotateX,
@@ -166,37 +93,33 @@ function ProjectCard({
         scale: 1,
         borderColor: "rgba(255, 255, 255, 0.05)",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3), 0 0 0px rgba(0,0,0,0)",
-        duration: 0.6,
+        duration: 0.5,
         ease: "power2.out",
       });
     }
-
-    // Reset Parallax via quickTo (smooth return)
-    quickTweens.current.imgX?.(0);
-    quickTweens.current.imgY?.(0);
-
-    // Hide follow cursor
-    if (cursor) {
-      gsap.to(cursor, { opacity: 0, scale: 0, duration: 0.25, ease: "power2.out" });
+    if (img) {
+      gsap.to(img, {
+        scale: 1.0,
+        opacity: 0.75,
+        duration: 0.5,
+        ease: "power2.out",
+      });
     }
-
-    // Hide sheen
     if (sheen) {
-      gsap.to(sheen, { opacity: 0, duration: 0.6, ease: "power2.out" });
+      gsap.to(sheen, { opacity: 0, duration: 0.5, ease: "power2.out" });
     }
   };
 
   return (
     <div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpenDetails(project)}
-      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-none bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 select-none group project-card-container"
+      className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-pointer bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 select-none group project-card-container"
       style={{ transformStyle: "preserve-3d" }}
     >
-      {/* 3D Interactive Card Image Container */}
+      {/* Interactive Card Image Container */}
       <div
         className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#050507]"
         style={{ transform: "translateZ(25px)", transformStyle: "preserve-3d" }}
@@ -205,7 +128,10 @@ function ProjectCard({
         <div
           ref={sheenRef}
           className="absolute inset-0 pointer-events-none mix-blend-color-dodge opacity-0 z-20 transition-opacity duration-300"
-          style={{ transform: "translateZ(10px)" }}
+          style={{ 
+            transform: "translateZ(10px)",
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.04) 100%)"
+          }}
         />
 
         {/* Hover Background overlay */}
@@ -237,15 +163,6 @@ function ProjectCard({
           <span className="font-mono text-[9px] text-white font-bold tracking-[0.2em] uppercase">
             {project.category}
           </span>
-        </div>
-
-        {/* Custom Follow Cursor */}
-        <div
-          ref={cursorRef}
-          className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-[#c5a880]/50 bg-black/40 backdrop-blur-[3px] z-40 flex items-center justify-center pointer-events-none opacity-0 scale-0"
-          style={{ transform: "translateZ(60px)" }}
-        >
-          <span className="font-outfit text-[8px] font-bold tracking-[0.2em] text-[#c5a880] uppercase">VIEW</span>
         </div>
       </div>
 
