@@ -608,6 +608,93 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     fetchData();
   }, []);
 
+  // Supabase Realtime subscriptions for live synchronization across all browser tabs and clients
+  useEffect(() => {
+    const channel = supabase
+      .channel("db-realtime-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "projects" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const mapped = mapProjectFromDb(payload.new);
+            setProjects(prev => {
+              if (prev.some(p => p.id === mapped.id)) return prev;
+              return [...prev, mapped];
+            });
+          } else if (payload.eventType === "UPDATE") {
+            const mapped = mapProjectFromDb(payload.new);
+            setProjects(prev => prev.map(p => (p.id === mapped.id ? mapped : p)));
+          } else if (payload.eventType === "DELETE") {
+            const oldId = payload.old.id;
+            setProjects(prev => prev.filter(p => p.id !== oldId));
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "services" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const mapped = mapServiceFromDb(payload.new);
+            setServices(prev => {
+              if (prev.some(s => s.id === mapped.id)) return prev;
+              return [...prev, mapped];
+            });
+          } else if (payload.eventType === "UPDATE") {
+            const mapped = mapServiceFromDb(payload.new);
+            setServices(prev => prev.map(s => (s.id === mapped.id ? mapped : s)));
+          } else if (payload.eventType === "DELETE") {
+            const oldId = payload.old.id;
+            setServices(prev => prev.filter(s => s.id !== oldId));
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "testimonials" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const mapped = mapTestimonialFromDb(payload.new);
+            setTestimonials(prev => {
+              if (prev.some(t => t.id === mapped.id)) return prev;
+              return [...prev, mapped];
+            });
+          } else if (payload.eventType === "UPDATE") {
+            const mapped = mapTestimonialFromDb(payload.new);
+            setTestimonials(prev => prev.map(t => (t.id === mapped.id ? mapped : t)));
+          } else if (payload.eventType === "DELETE") {
+            const oldId = payload.old.id;
+            setTestimonials(prev => prev.filter(t => t.id !== oldId));
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "proposals" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const mapped = mapProposalFromDb(payload.new);
+            setProposals(prev => {
+              if (prev.some(p => p.id === mapped.id)) return prev;
+              return [mapped, ...prev];
+            });
+          } else if (payload.eventType === "UPDATE") {
+            const mapped = mapProposalFromDb(payload.new);
+            setProposals(prev => prev.map(p => (p.id === mapped.id ? mapped : p)));
+          } else if (payload.eventType === "DELETE") {
+            const oldId = payload.old.id;
+            setProposals(prev => prev.filter(p => p.id !== oldId));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   // -------------------------------------------------------------
   // Projects CRUD
   // -------------------------------------------------------------
