@@ -86,6 +86,7 @@ export default function AdminPage() {
 
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
   const budgetTiers = ["$5K - $15K", "$15K - $40K", "$40K - $100K", "$100K+"];
@@ -288,6 +289,85 @@ export default function AdminPage() {
       // Reset input element value so same file can be re-selected if needed
       e.target.value = "";
     }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadError("");
+    setIsUploadingGallery(true);
+    addHudLog(`Uploading ${files.length} gallery image(s)...`, "info");
+
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const fileExt = file.name.split(".").pop();
+        const baseName = file.name.substring(0, file.name.lastIndexOf(".")).replace(/[^a-zA-Z0-9]/g, "_");
+        const fileName = `${Date.now()}_gallery_${i}_${baseName}.${fileExt}`;
+        const filePath = `uploads/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("portfolio")
+          .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: true
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
+        if (data?.publicUrl) {
+          uploadedUrls.push(data.publicUrl);
+        }
+      }
+
+      setProjForm(prev => {
+        const prevImages = prev.details?.images || [];
+        return {
+          ...prev,
+          details: {
+            client: prev.details?.client || "",
+            timeline: prev.details?.timeline || "",
+            role: prev.details?.role || "",
+            engine: prev.details?.engine || "",
+            videoUrl: prev.details?.videoUrl || null,
+            images: [...prevImages, ...uploadedUrls]
+          }
+        };
+      });
+
+      addHudLog(`Uploaded ${uploadedUrls.length} gallery image(s) successfully!`, "success");
+    } catch (err: any) {
+      console.error("Gallery upload error:", err);
+      const errMsg = err.message || "Upload process failed.";
+      setUploadError(errMsg);
+      addHudLog(`Gallery upload failed: ${errMsg}`, "error");
+    } finally {
+      setIsUploadingGallery(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleRemoveGalleryImage = (indexToRemove: number) => {
+    setProjForm(prev => {
+      const prevImages = prev.details?.images || [];
+      const updated = prevImages.filter((_, idx) => idx !== indexToRemove);
+      return {
+        ...prev,
+        details: {
+          client: prev.details?.client || "",
+          timeline: prev.details?.timeline || "",
+          role: prev.details?.role || "",
+          engine: prev.details?.engine || "",
+          videoUrl: prev.details?.videoUrl || null,
+          images: updated
+        }
+      };
+    });
+    addHudLog("Removed gallery image preview", "info");
   };
 
   const handleProjectSubmit = (e: React.FormEvent) => {
@@ -1412,6 +1492,60 @@ export default function AdminPage() {
                       </div>
                     </div>
 
+                    {/* Project Gallery Images Configuration */}
+                    <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Gallery Images (Optional)</label>
+                        {isUploadingGallery ? (
+                          <span className="text-[8px] font-mono text-[#c5a880] flex items-center gap-1 animate-pulse">
+                            <RefreshCw className="w-2.5 h-2.5 animate-spin" /> UPLOADING...
+                          </span>
+                        ) : (
+                          <span className="text-[8px] font-mono text-white/40">
+                            {(projForm.details?.images || []).length} IMAGES
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                        <label className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-md bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer select-none">
+                          <Upload className="w-3.5 h-3.5" />
+                          UPLOAD GALLERY IMAGES
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            className="hidden" 
+                            onChange={handleGalleryUpload} 
+                            disabled={isUploadingGallery}
+                          />
+                        </label>
+                        <span className="text-[9px] font-mono text-white/30 italic">Upload multiple screenshots to create an interactive showcase slider</span>
+                      </div>
+
+                      {/* Preview Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 mt-2 min-h-[80px] border border-white/5 bg-black/35 rounded-md p-3">
+                        {(projForm.details?.images || []).length > 0 ? (
+                          (projForm.details?.images || []).map((imgUrl, index) => (
+                            <div key={`gallery-preview-${index}`} className="relative aspect-video rounded overflow-hidden bg-zinc-950 border border-white/10 group">
+                              <img src={imgUrl} className="w-full h-full object-cover" alt={`Preview ${index + 1}`} />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveGalleryImage(index)}
+                                className="absolute inset-0 bg-black/75 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                              >
+                                <Trash className="w-4 h-4 text-red-500" />
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-full flex items-center justify-center text-[10px] font-mono text-white/15 py-4">
+                            NO GALLERY IMAGES UPLOADED YET
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     {/* Gradient Theme Grid */}
                     <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
                       <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Background Gradient</label>
@@ -1688,10 +1822,64 @@ export default function AdminPage() {
                               )}
                               {projForm.details?.videoUrl && (
                                 <div className="absolute bottom-1 right-1 bg-black/75 px-1.5 py-0.5 rounded text-[8px] font-mono text-white/50 border border-white/5">
-                                  VIDEO
+                              VIDEO
                                 </div>
                               )}
                             </div>
+                          </div>
+                        </div>
+
+                        {/* Project Gallery Images Configuration */}
+                        <div className="bg-[#121217] border border-white/5 p-4 rounded-lg flex flex-col gap-3">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[9px] font-mono text-[#c5a880] tracking-widest uppercase">Project Gallery Images (Optional)</label>
+                            {isUploadingGallery ? (
+                              <span className="text-[8px] font-mono text-[#c5a880] flex items-center gap-1 animate-pulse">
+                                <RefreshCw className="w-2.5 h-2.5 animate-spin" /> UPLOADING...
+                              </span>
+                            ) : (
+                              <span className="text-[8px] font-mono text-white/40">
+                                {(projForm.details?.images || []).length} IMAGES
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                            <label className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-md bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white text-xs font-mono font-bold transition-all duration-200 active:scale-95 cursor-pointer select-none">
+                              <Upload className="w-3.5 h-3.5" />
+                              UPLOAD GALLERY IMAGES
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                multiple 
+                                className="hidden" 
+                                onChange={handleGalleryUpload} 
+                                disabled={isUploadingGallery}
+                              />
+                            </label>
+                            <span className="text-[9px] font-mono text-white/30 italic">Upload multiple screenshots to create an interactive showcase slider</span>
+                          </div>
+
+                          {/* Preview Grid */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 mt-2 min-h-[80px] border border-white/5 bg-black/35 rounded-md p-3">
+                            {(projForm.details?.images || []).length > 0 ? (
+                              (projForm.details?.images || []).map((imgUrl, index) => (
+                                <div key={`gallery-preview-edit-${index}`} className="relative aspect-video rounded overflow-hidden bg-zinc-950 border border-white/10 group">
+                                  <img src={imgUrl} className="w-full h-full object-cover" alt={`Preview ${index + 1}`} />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveGalleryImage(index)}
+                                    className="absolute inset-0 bg-black/75 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                                  >
+                                    <Trash className="w-4 h-4 text-red-500" />
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="col-span-full flex items-center justify-center text-[10px] font-mono text-white/15 py-4">
+                                NO GALLERY IMAGES UPLOADED YET
+                              </div>
+                            )}
                           </div>
                         </div>
 

@@ -23,6 +23,7 @@ export interface Project {
     role: string;
     engine: string;
     videoUrl?: string | null;
+    images?: string[] | null;
   };
   metrics: {
     label: string;
@@ -484,7 +485,8 @@ const mapProjectFromDb = (dbProj: any): Project => ({
     timeline: dbProj.details?.timeline || "",
     role: dbProj.details?.role || "",
     engine: dbProj.details?.engine || "",
-    videoUrl: dbProj.details?.videoUrl || null
+    videoUrl: dbProj.details?.videoUrl || null,
+    images: dbProj.details?.images || []
   },
   metrics: dbProj.metrics || []
 });

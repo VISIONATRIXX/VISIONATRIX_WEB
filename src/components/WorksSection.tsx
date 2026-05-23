@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BarChart3 } from "lucide-react";
+import { X, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -228,10 +228,12 @@ export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [mediaOrientation, setMediaOrientation] = useState<"vertical" | "horizontal">("horizontal");
+  const [activeSlide, setActiveSlide] = useState(0);
 
   // Reset and auto-detect initial media orientation when a case study is selected
   useEffect(() => {
     if (!selectedProject) return;
+    setActiveSlide(0);
     const url = selectedProject.details?.videoUrl || "";
     if (url.includes("youtube.com") || url.includes("youtu.be") || url.includes("vimeo.com")) {
       setMediaOrientation("horizontal");
@@ -589,74 +591,137 @@ export default function WorksSection() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Left/Top Side: Visual Section */}
-              <div className={mediaOrientation === "vertical"
-                ? "relative col-span-5 w-full aspect-[3/4] md:aspect-auto md:h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center shrink-0"
-                : "relative w-full aspect-video md:h-[350px] lg:h-[400px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0"}>
-                {/* Background ambient light */}
-                <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10" />
+              {/* Left/Top Side: Visual Section with Integrated Carousel */}
+              {(() => {
+                const mediaItems: { type: "video" | "image"; url: string }[] = [];
+                if (selectedProject.details?.videoUrl) {
+                  mediaItems.push({ type: "video", url: selectedProject.details.videoUrl });
+                }
+                mediaItems.push({ type: "image", url: selectedProject.image });
+                if (selectedProject.details?.images && selectedProject.details.images.length > 0) {
+                  selectedProject.details.images.forEach((imgUrl: string) => {
+                    if (imgUrl) mediaItems.push({ type: "image", url: imgUrl });
+                  });
+                }
 
-                {/* Dynamic Project Media Player (Video or fallback Image) */}
-                {selectedProject.details?.videoUrl ? (
-                  <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
-                    {selectedProject.details.videoUrl.includes("vimeo.com") || selectedProject.details.videoUrl.includes("youtube.com") || selectedProject.details.videoUrl.includes("youtu.be") ? (
-                      <iframe
-                        src={getVideoEmbedUrl(selectedProject.details.videoUrl)}
-                        className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowFullScreen
-                        title={selectedProject.title}
-                      />
-                    ) : (
-                      <video
-                        src={selectedProject.details.videoUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        onLoadedMetadata={(e) => {
-                          const video = e.currentTarget;
-                          if (video.videoHeight > video.videoWidth) {
-                            setMediaOrientation("vertical");
-                          } else {
-                            setMediaOrientation("horizontal");
-                          }
-                        }}
-                        className="w-full h-full object-cover opacity-90"
-                      />
+                const currentMedia = mediaItems[activeSlide] || mediaItems[0];
+
+                return (
+                  <div className={mediaOrientation === "vertical"
+                    ? "relative col-span-5 w-full aspect-[3/4] md:aspect-auto md:h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center shrink-0"
+                    : "relative w-full aspect-video md:h-[350px] lg:h-[400px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0"}>
+                    {/* Background ambient light */}
+                    <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10 pointer-events-none" />
+
+                    {/* Dynamic Project Media Player (Video or fallback Image) */}
+                    <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
+                      {currentMedia?.type === "video" ? (
+                        currentMedia.url.includes("vimeo.com") || currentMedia.url.includes("youtube.com") || currentMedia.url.includes("youtu.be") ? (
+                          <iframe
+                            src={getVideoEmbedUrl(currentMedia.url)}
+                            className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            title={selectedProject.title}
+                          />
+                        ) : (
+                          <video
+                            src={currentMedia.url}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            onLoadedMetadata={(e) => {
+                              const video = e.currentTarget;
+                              if (video.videoHeight > video.videoWidth) {
+                                setMediaOrientation("vertical");
+                              } else {
+                                setMediaOrientation("horizontal");
+                              }
+                            }}
+                            className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
+                            key={`modal-video-${activeSlide}`}
+                          />
+                        )
+                      ) : (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={currentMedia?.url}
+                          alt={selectedProject.title}
+                          onLoad={(e) => {
+                            const img = e.currentTarget;
+                            if (img.naturalHeight > img.naturalWidth) {
+                              setMediaOrientation("vertical");
+                            } else {
+                              setMediaOrientation("horizontal");
+                            }
+                          }}
+                          className="w-full h-full object-cover opacity-80 transition-all duration-300 scale-100"
+                          key={`modal-image-${activeSlide}`}
+                        />
+                      )}
+                    </div>
+
+                    {/* Navigation Arrow Overlays if multiple items */}
+                    {mediaItems.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveSlide(prev => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+                          }}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 hover:scale-105 active:scale-95 shadow-lg backdrop-blur-md"
+                          aria-label="Previous slide"
+                        >
+                          <ChevronLeft className="w-4.5 h-4.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveSlide(prev => (prev === mediaItems.length - 1 ? 0 : prev + 1));
+                          }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 hover:scale-105 active:scale-95 shadow-lg backdrop-blur-md"
+                          aria-label="Next slide"
+                        >
+                          <ChevronRight className="w-4.5 h-4.5" />
+                        </button>
+
+                        {/* Thumbnail / Dot indicator panel at the bottom */}
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-white/10 pointer-events-auto">
+                          {mediaItems.map((_, idx) => (
+                            <button
+                              key={`dot-${idx}`}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveSlide(idx);
+                              }}
+                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                                idx === activeSlide ? "bg-[#c5a880] w-4" : "bg-white/30 hover:bg-white/60"
+                              }`}
+                              aria-label={`Go to slide ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                      </>
                     )}
-                  </div>
-                ) : (
-                  /* Animated project fallback image */
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={selectedProject.image}
-                    alt={selectedProject.title}
-                    onLoad={(e) => {
-                      const img = e.currentTarget;
-                      if (img.naturalHeight > img.naturalWidth) {
-                        setMediaOrientation("vertical");
-                      } else {
-                        setMediaOrientation("horizontal");
-                      }
-                    }}
-                    className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_infinite_alternate]"
-                    style={{ animationDuration: "12s" }}
-                  />
-                )}
 
-                {/* Floating overlay text on visual side */}
-                <div className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-2">
-                  <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
-                    CASE STUDY DETAILS
-                  </span>
-                  <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
-                    {selectedProject.title}
-                  </h4>
-                  <div className="w-12 h-1 bg-[#c5a880] rounded-full mt-2" />
-                </div>
-              </div>
+                    {/* Floating overlay text on visual side */}
+                    <div className="absolute bottom-8 left-8 right-8 z-20 flex flex-col gap-2 pointer-events-none">
+                      <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
+                        CASE STUDY DETAILS
+                      </span>
+                      <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
+                        {selectedProject.title}
+                      </h4>
+                      <div className="w-12 h-1 bg-[#c5a880] rounded-full mt-2" />
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Right Side: Editorial Content Section */}
               <div 
