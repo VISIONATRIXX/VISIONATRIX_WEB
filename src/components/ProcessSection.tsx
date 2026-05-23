@@ -87,24 +87,27 @@ export default function ProcessSection() {
           transformOrigin: "center center"
         });
 
-        // Card Animation (slide in and fade in - Slow cinematic glide)
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+        // Card Animation (slide in and fade in - Slow cinematic glide on desktop, pure vertical entry on mobile)
         gsap.fromTo(
           card,
           {
             opacity: 0,
-            x: isLeft ? -40 : 40,
-            scale: 0.97,
+            x: isDesktop ? (isLeft ? -40 : 40) : 0,
+            y: isDesktop ? 0 : 25,
+            scale: isDesktop ? 0.97 : 1,
           },
           {
             opacity: 1,
             x: 0,
+            y: 0,
             scale: 1,
-            duration: 1.2,
+            duration: isDesktop ? 1.2 : 0.7,
             ease: "power3.out",
             scrollTrigger: {
               trigger: row,
-              start: "top 75%",
-              toggleActions: "play reverse play reverse",
+              start: isDesktop ? "top 75%" : "top 82%",
+              toggleActions: isDesktop ? "play reverse play reverse" : "play none none none",
             }
           }
         );

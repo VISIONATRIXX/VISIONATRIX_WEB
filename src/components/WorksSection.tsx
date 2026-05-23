@@ -39,10 +39,11 @@ function ProjectCard({
   useEffect(() => {
     const card = cardRef.current;
     if (card) {
+      const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
       gsap.set(card, {
-        rotateX: resting.rotateX,
-        rotateY: resting.rotateY,
-        rotateZ: resting.rotateZ,
+        rotateX: isDesktop ? resting.rotateX : 0,
+        rotateY: isDesktop ? resting.rotateY : 0,
+        rotateZ: isDesktop ? resting.rotateZ : 0,
         scale: 1,
         transformPerspective: 1200,
       });
@@ -50,24 +51,27 @@ function ProjectCard({
   }, [resting]);
 
   const handleMouseEnter = () => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
     const card = cardRef.current;
     const img = imgRef.current;
     const sheen = sheenRef.current;
 
     if (card) {
       gsap.to(card, {
-        scale: 1.025,
+        scale: isDesktop ? 1.025 : 1,
         rotateX: 0,
         rotateY: 0,
         rotateZ: 0,
-        borderColor: "rgba(197, 168, 128, 0.35)",
-        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.8), 0 0 35px rgba(197, 168, 128, 0.12)",
+        borderColor: isDesktop ? "rgba(197, 168, 128, 0.35)" : "rgba(255, 255, 255, 0.05)",
+        boxShadow: isDesktop 
+          ? "0 25px 50px -12px rgba(0,0,0,0.8), 0 0 35px rgba(197, 168, 128, 0.12)" 
+          : "0 20px 25px -5px rgba(0,0,0,0.3)",
         transformPerspective: 1200,
         duration: 0.6,
         ease: "power3.out",
       });
     }
-    if (img) {
+    if (img && isDesktop) {
       gsap.to(img, {
         scale: 1.04,
         opacity: 0.9,
@@ -75,21 +79,22 @@ function ProjectCard({
         ease: "power3.out",
       });
     }
-    if (sheen) {
+    if (sheen && isDesktop) {
       gsap.to(sheen, { opacity: 1, duration: 0.6, ease: "power3.out" });
     }
   };
 
   const handleMouseLeave = () => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
     const card = cardRef.current;
     const img = imgRef.current;
     const sheen = sheenRef.current;
 
     if (card) {
       gsap.to(card, {
-        rotateX: resting.rotateX,
-        rotateY: resting.rotateY,
-        rotateZ: resting.rotateZ,
+        rotateX: isDesktop ? resting.rotateX : 0,
+        rotateY: isDesktop ? resting.rotateY : 0,
+        rotateZ: isDesktop ? resting.rotateZ : 0,
         scale: 1,
         borderColor: "rgba(255, 255, 255, 0.05)",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3), 0 0 0px rgba(0,0,0,0)",
@@ -97,7 +102,7 @@ function ProjectCard({
         ease: "power3.out",
       });
     }
-    if (img) {
+    if (img && isDesktop) {
       gsap.to(img, {
         scale: 1.0,
         opacity: 0.75,
@@ -105,7 +110,7 @@ function ProjectCard({
         ease: "power3.out",
       });
     }
-    if (sheen) {
+    if (sheen && isDesktop) {
       gsap.to(sheen, { opacity: 0, duration: 0.7, ease: "power3.out" });
     }
   };

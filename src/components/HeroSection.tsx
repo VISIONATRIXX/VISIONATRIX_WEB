@@ -75,22 +75,23 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
 
           {/* Large Title — Michroma, bold, wide tracked, with staggered clip-mask reveal */}
           <h1
-            className="font-display text-3xl min-[360px]:text-4xl min-[480px]:text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center whitespace-nowrap overflow-hidden"
+            className="font-display text-[8vw] min-[360px]:text-[8.5vw] sm:text-6xl md:text-7xl lg:text-[6.5rem] tracking-[0.08em] text-white leading-none mb-6 text-gold-glow drop-shadow-[0_0_40px_rgba(197,168,128,0.08)] flex justify-center w-full"
           >
             {"VISIONATRIX".split("").map((char, index) => (
-              <motion.span
-                key={index}
-                initial={{ y: "105%", opacity: 0 }}
-                animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
-                transition={{
-                  delay: 0.2 + index * 0.06,
-                  duration: 1.25,
-                  ease: [0.16, 1, 0.3, 1] as const
-                }}
-                className="inline-block origin-bottom"
-              >
-                {char}
-              </motion.span>
+              <span key={index} className="inline-block overflow-hidden py-1 px-[0.03em]">
+                <motion.span
+                  initial={{ y: "105%", opacity: 0 }}
+                  animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
+                  transition={{
+                    delay: 0.2 + index * 0.06,
+                    duration: 1.25,
+                    ease: [0.16, 1, 0.3, 1] as const
+                  }}
+                  className="inline-block origin-bottom"
+                >
+                  {char}
+                </motion.span>
+              </span>
             ))}
           </h1>
 
