@@ -41,7 +41,7 @@ export default function StudioSection() {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.8,
+        duration: 1.1,
         ease: [0.16, 1, 0.3, 1] as const
       }
     }
@@ -52,7 +52,7 @@ export default function StudioSection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.012,
+        staggerChildren: 0.018,
         delayChildren: 0.15
       }
     }
@@ -64,8 +64,8 @@ export default function StudioSection() {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.65,
-        ease: [0.25, 1, 0.5, 1] as const
+        duration: 0.9,
+        ease: [0.16, 1, 0.3, 1] as const
       }
     }
   };

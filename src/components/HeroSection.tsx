@@ -35,7 +35,7 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
     visible: {
       y: 0,
       opacity: 1,
-      transition: { type: "spring" as const, stiffness: 100, damping: 20 }
+      transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] as const }
     }
   };
 
@@ -83,9 +83,9 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
                 initial={{ y: "105%", opacity: 0 }}
                 animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
                 transition={{
-                  delay: 0.2 + index * 0.05,
-                  duration: 0.85,
-                  ease: [0.16, 1, 0.3, 1]
+                  delay: 0.2 + index * 0.06,
+                  duration: 1.25,
+                  ease: [0.16, 1, 0.3, 1] as const
                 }}
                 className="inline-block origin-bottom"
               >
@@ -102,9 +102,9 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
                   initial={{ y: "105%" }}
                   animate={triggerEntrance ? { y: 0 } : { y: "105%" }}
                   transition={{
-                    delay: 0.85 + index * 0.12,
-                    duration: 0.7,
-                    ease: [0.16, 1, 0.3, 1]
+                    delay: 0.9 + index * 0.15,
+                    duration: 1.0,
+                    ease: [0.16, 1, 0.3, 1] as const
                   }}
                   className="inline-block"
                 >

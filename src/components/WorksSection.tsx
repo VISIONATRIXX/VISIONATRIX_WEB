@@ -56,27 +56,27 @@ function ProjectCard({
 
     if (card) {
       gsap.to(card, {
-        scale: 1.03,
+        scale: 1.025,
         rotateX: 0,
         rotateY: 0,
         rotateZ: 0,
         borderColor: "rgba(197, 168, 128, 0.35)",
         boxShadow: "0 25px 50px -12px rgba(0,0,0,0.8), 0 0 35px rgba(197, 168, 128, 0.12)",
         transformPerspective: 1200,
-        duration: 0.4,
-        ease: "power2.out",
+        duration: 0.6,
+        ease: "power3.out",
       });
     }
     if (img) {
       gsap.to(img, {
-        scale: 1.06,
+        scale: 1.04,
         opacity: 0.9,
-        duration: 0.4,
-        ease: "power2.out",
+        duration: 0.6,
+        ease: "power3.out",
       });
     }
     if (sheen) {
-      gsap.to(sheen, { opacity: 1, duration: 0.4, ease: "power2.out" });
+      gsap.to(sheen, { opacity: 1, duration: 0.6, ease: "power3.out" });
     }
   };
 
@@ -93,20 +93,20 @@ function ProjectCard({
         scale: 1,
         borderColor: "rgba(255, 255, 255, 0.05)",
         boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3), 0 0 0px rgba(0,0,0,0)",
-        duration: 0.5,
-        ease: "power2.out",
+        duration: 0.7,
+        ease: "power3.out",
       });
     }
     if (img) {
       gsap.to(img, {
         scale: 1.0,
         opacity: 0.75,
-        duration: 0.5,
-        ease: "power2.out",
+        duration: 0.7,
+        ease: "power3.out",
       });
     }
     if (sheen) {
-      gsap.to(sheen, { opacity: 0, duration: 0.5, ease: "power2.out" });
+      gsap.to(sheen, { opacity: 0, duration: 0.7, ease: "power3.out" });
     }
   };
 
@@ -291,7 +291,7 @@ export default function WorksSection() {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
-    // Fade-in trigger on mount/filter
+    // Fade-in trigger on mount/filter (Slower, highly premium timing)
     const cards = gsap.utils.toArray(".project-card-container") as HTMLElement[];
     cards.forEach((card) => {
       gsap.fromTo(card,
@@ -300,8 +300,8 @@ export default function WorksSection() {
           opacity: 1,
           y: 0,
           rotateX: 0,
-          duration: 0.8,
-          ease: "power2.out",
+          duration: 1.25,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: card,
             start: "top 88%",

@@ -87,20 +87,20 @@ export default function ProcessSection() {
           transformOrigin: "center center"
         });
 
-        // Card Animation (slide in and fade in)
+        // Card Animation (slide in and fade in - Slow cinematic glide)
         gsap.fromTo(
           card,
           {
             opacity: 0,
-            x: isLeft ? -50 : 50,
-            scale: 0.96,
+            x: isLeft ? -40 : 40,
+            scale: 0.97,
           },
           {
             opacity: 1,
             x: 0,
             scale: 1,
-            duration: 0.8,
-            ease: "power2.out",
+            duration: 1.2,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: row,
               start: "top 75%",
