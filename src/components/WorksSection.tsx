@@ -625,7 +625,10 @@ export default function WorksSection() {
               </div>
 
               {/* Right Side: Editorial Content Section */}
-              <div className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto max-h-[65vh] md:max-h-[90vh] modal-scrollbar flex flex-col justify-between gap-8">
+              <div 
+                data-lenis-prevent
+                className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto max-h-[65vh] md:max-h-[90vh] modal-scrollbar flex flex-col justify-between gap-8"
+              >
                 {/* Title and Tagline */}
                 <div className="flex flex-col gap-3">
                   <span className="font-mono text-[9px] tracking-[0.25em] text-[#c5a880] uppercase">
