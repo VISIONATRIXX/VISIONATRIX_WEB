@@ -617,19 +617,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "projects" },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            const mapped = mapProjectFromDb(payload.new);
-            setProjects(prev => {
-              if (prev.some(p => p.id === mapped.id)) return prev;
-              return [...prev, mapped];
-            });
-          } else if (payload.eventType === "UPDATE") {
-            const mapped = mapProjectFromDb(payload.new);
-            setProjects(prev => prev.map(p => (p.id === mapped.id ? mapped : p)));
-          } else if (payload.eventType === "DELETE") {
-            const oldId = payload.old.id;
-            setProjects(prev => prev.filter(p => p.id !== oldId));
+        async () => {
+          try {
+            const { data, error } = await supabase
+              .from("projects")
+              .select("*")
+              .order("id", { ascending: true });
+            if (error) throw error;
+            setProjects((data || []).map(mapProjectFromDb));
+          } catch (err) {
+            console.error("Realtime projects refresh failed:", err);
           }
         }
       )
@@ -702,7 +699,29 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // -------------------------------------------------------------
   const addProject = async (p: Omit<Project, "id">) => {
     try {
-      const dbProj = mapProjectToDb(p);
+      // Calculate the next sequential numeric ID based on the highest integer ID in state
+      let nextIdNum = 1;
+      if (projects.length > 0) {
+        const ids = projects
+          .map(proj => parseInt(proj.id, 10))
+          .filter(num => !isNaN(num));
+        if (ids.length > 0) {
+          nextIdNum = Math.max(...ids) + 1;
+        }
+      }
+      const nextId = String(nextIdNum).padStart(2, "0");
+
+      // Auto-assign the perfect formatted index to the subtitle if not specified!
+      let pWithSeqSubtitle = { ...p };
+      if (!p.subtitle || p.subtitle === `${p.title} Spec` || p.subtitle === `${p.title.toUpperCase()} Spec`) {
+        pWithSeqSubtitle.subtitle = `${nextId} / ${p.title}`;
+      }
+
+      const dbProj = {
+        ...mapProjectToDb(pWithSeqSubtitle),
+        id: nextId
+      };
+
       const { data, error } = await supabase
         .from("projects")
         .insert([dbProj])
@@ -735,15 +754,64 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProject = async (id: string) => {
     try {
-      const { error } = await supabase
+      // 1. Delete the targeted project row
+      const { error: deleteError } = await supabase
         .from("projects")
         .delete()
         .eq("id", id);
 
-      if (error) throw error;
-      setProjects(prev => prev.filter(item => item.id !== id));
+      if (deleteError) throw deleteError;
+
+      // 2. Fetch all remaining projects to re-sequence them
+      const { data: remaining, error: fetchError } = await supabase
+        .from("projects")
+        .select("*");
+
+      if (fetchError) throw fetchError;
+
+      if (remaining && remaining.length > 0) {
+        // Sort remaining projects by their current ID translated to numeric values
+        const sorted = [...remaining].sort((a, b) => {
+          const numA = parseInt(a.id, 10);
+          const numB = parseInt(b.id, 10);
+          if (isNaN(numA) && isNaN(numB)) return a.title.localeCompare(b.title);
+          if (isNaN(numA)) return 1;
+          if (isNaN(numB)) return -1;
+          return numA - numB;
+        });
+
+        // 3. Sequential update of keys and subtitle indexes in Supabase
+        const updatePromises = sorted.map(async (dbProj, idx) => {
+          const newId = String(idx + 1).padStart(2, "0");
+          let updatedSubtitle = dbProj.subtitle || "";
+          
+          // Re-index subtitle if it matches "XX / Title" format
+          const match = updatedSubtitle.match(/^(\d+)\s*\/\s*(.*)$/);
+          if (match) {
+            updatedSubtitle = `${newId} / ${match[2]}`;
+          }
+
+          if (dbProj.id !== newId || dbProj.subtitle !== updatedSubtitle) {
+            await supabase
+              .from("projects")
+              .update({ id: newId, subtitle: updatedSubtitle })
+              .eq("id", dbProj.id);
+          }
+        });
+
+        await Promise.all(updatePromises);
+      }
+
+      // 4. Re-fetch all sorted fresh entries to completely hydrate UI state
+      const { data: freshProjects, error: freshError } = await supabase
+        .from("projects")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (freshError) throw freshError;
+      setProjects((freshProjects || []).map(mapProjectFromDb));
     } catch (error) {
-      console.error("Failed to delete project from Supabase:", error);
+      console.error("Failed to delete and re-sequence projects in Supabase:", error);
     }
   };
 
