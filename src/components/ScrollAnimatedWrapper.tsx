@@ -57,6 +57,11 @@ export default function ScrollAnimatedWrapper({
     if (enableOpacity) style.opacity = opacityVal;
     if (enableScale) style.scale = scaleVal;
     if (enableY) style.y = yVal;
+  } else {
+    // Explicitly reset on mobile to avoid values getting stuck in faded state (e.g. opacity 0.4)
+    style.opacity = 1;
+    style.scale = 1;
+    style.y = 0;
   }
 
   return (
