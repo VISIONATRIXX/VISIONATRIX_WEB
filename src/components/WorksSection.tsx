@@ -117,7 +117,7 @@ function ProjectCard({
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpenDetails(project)}
       className="flex flex-col gap-5 w-full rounded-2xl overflow-hidden cursor-pointer bg-[#09090d]/80 border border-white/5 shadow-2xl p-4 md:p-6 select-none group project-card-container"
-      style={{ transformStyle: "preserve-3d" }}
+      style={{ transformStyle: "preserve-3d", willChange: "transform, opacity" }}
     >
       {/* Interactive Card Image Container */}
       <div
@@ -311,26 +311,29 @@ export default function WorksSection() {
       );
     });
 
-    // Parallax scroll speed logic
-    const parallaxWrappers = gsap.utils.toArray(".parallax-wrapper") as HTMLElement[];
-    parallaxWrappers.forEach((wrapper) => {
-      const speed = parseFloat(wrapper.getAttribute("data-speed") || "0");
-      if (speed === 0) return;
+    // Parallax scroll speed logic (Only on desktop to prevent mobile main-thread scroll jank)
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    if (isDesktop) {
+      const parallaxWrappers = gsap.utils.toArray(".parallax-wrapper") as HTMLElement[];
+      parallaxWrappers.forEach((wrapper) => {
+        const speed = parseFloat(wrapper.getAttribute("data-speed") || "0");
+        if (speed === 0) return;
 
-      gsap.fromTo(wrapper,
-        { y: -speed },
-        {
-          y: speed,
-          ease: "none",
-          scrollTrigger: {
-            trigger: wrapper,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
+        gsap.fromTo(wrapper,
+          { y: -speed },
+          {
+            y: speed,
+            ease: "none",
+            scrollTrigger: {
+              trigger: wrapper,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            }
           }
-        }
-      );
-    });
+        );
+      });
+    }
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());

@@ -106,7 +106,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
             {/* Actual LOGO.png */}
             <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-110">
               <Image
-                src="/LOGO.png"
+                src="/LOGO.webp"
                 alt="Visionatrix Logo"
                 fill
                 priority

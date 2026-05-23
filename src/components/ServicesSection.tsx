@@ -93,6 +93,7 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     if (!ctx) return;
     
     let animationId: number;
+    let isIntersecting = false;
     let width = canvas.width = canvas.offsetWidth;
     let height = canvas.height = canvas.offsetHeight;
     
@@ -617,14 +618,31 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
         ctx.fillText(`XR_BOUNDS: ACTIVE`, width * 0.08, height * 0.14);
       }
       
-      animationId = requestAnimationFrame(render);
+      if (isIntersecting) {
+        animationId = requestAnimationFrame(render);
+      }
     };
     
-    render();
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const wasIntersecting = isIntersecting;
+          isIntersecting = entry.isIntersecting;
+          if (isIntersecting && !wasIntersecting) {
+            animationId = requestAnimationFrame(render);
+          } else if (!isIntersecting && wasIntersecting) {
+            cancelAnimationFrame(animationId);
+          }
+        });
+      },
+      { threshold: 0.01 }
+    );
+    intersectionObserver.observe(canvas);
     
     return () => {
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
+      intersectionObserver.disconnect();
     };
   }, [type, isHovered]);
   

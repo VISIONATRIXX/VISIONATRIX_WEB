@@ -101,7 +101,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                 }}
               >
                 <Image
-                  src="/LOGO.png"
+                  src="/LOGO.webp"
                   alt="VISIONATRIX Logo"
                   fill
                   priority

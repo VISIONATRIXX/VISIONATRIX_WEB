@@ -81,6 +81,12 @@ export default function ProcessSection() {
 
         const isLeft = idx % 2 === 0;
 
+        // Initialize scale on mount inside GSAP context (20px / 52px = 0.385)
+        gsap.set(node, {
+          scale: 0.385,
+          transformOrigin: "center center"
+        });
+
         // Card Animation (slide in and fade in)
         gsap.fromTo(
           card,
@@ -106,8 +112,7 @@ export default function ProcessSection() {
         // Node Expansion and Glow Transitions helpers
         const activateNode = () => {
           gsap.to(node, {
-            width: window.innerWidth >= 768 ? 52 : 44,
-            height: window.innerWidth >= 768 ? 52 : 44,
+            scale: window.innerWidth >= 768 ? 1.0 : 0.846, // 52px (1.0) or 44px (0.846)
             borderColor: "#c5a880",
             boxShadow: "0 0 22px rgba(197, 168, 128, 0.55), inset 0 0 10px rgba(197, 168, 128, 0.25)",
             duration: 0.45,
@@ -123,8 +128,7 @@ export default function ProcessSection() {
 
         const deactivateNode = () => {
           gsap.to(node, {
-            width: 20,
-            height: 20,
+            scale: 0.385, // 20px / 52px
             borderColor: "rgba(197, 168, 128, 0.35)",
             boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
             duration: 0.45,
@@ -255,7 +259,7 @@ export default function ProcessSection() {
                 {/* Centered Circular Node */}
                 <div 
                   ref={el => { if (el) nodeRefs.current[idx] = el; }}
-                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border border-[#c5a880]/35 bg-[#0b0b0f] z-20 flex items-center justify-center transition-all duration-500 cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden"
+                  className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full border border-[#c5a880]/35 bg-[#0b0b0f] z-20 flex items-center justify-center cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden will-change-transform"
                 >
                   {/* Number Tag (hidden by default) */}
                   <span className="node-number opacity-0 font-display text-[10px] md:text-[11px] font-bold text-[#c5a880] transition-opacity duration-300 select-none">

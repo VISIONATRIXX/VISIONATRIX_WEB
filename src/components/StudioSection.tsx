@@ -24,6 +24,52 @@ export default function StudioSection() {
     }
   };
 
+  const titleContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const titleWordVariants = {
+    hidden: { y: "105%", opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1] as const
+      }
+    }
+  };
+
+  const descContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.012,
+        delayChildren: 0.15
+      }
+    }
+  };
+
+  const descWordVariants = {
+    hidden: { y: "105%", opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.65,
+        ease: [0.25, 1, 0.5, 1] as const
+      }
+    }
+  };
+
   return (
     <section 
       id="studio" 
@@ -99,20 +145,19 @@ export default function StudioSection() {
         {/* Right Side: Philosophy & Big Text Statement */}
         <div className="lg:col-span-8 flex flex-col gap-8">
           {/* Main big statement with staggered word reveals */}
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-[0.06em] leading-[1.2] text-white flex flex-wrap gap-x-3 gap-y-1">
+          <motion.h2 
+            variants={titleContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, margin: "-100px" }}
+            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-[0.06em] leading-[1.2] text-white flex flex-wrap gap-x-3 gap-y-1"
+          >
             {"WE ENGINEER DIGITAL LANDMARKS THAT COMMAND HUMAN RESONANCE.".split(" ").map((word, wordIndex) => {
               const isGold = word === "LANDMARKS" || word === "RESONANCE.";
               return (
                 <span key={wordIndex} className="inline-block overflow-hidden py-1">
                   <motion.span
-                    initial={{ y: "105%", opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: false, margin: "-100px" }}
-                    transition={{
-                      delay: wordIndex * 0.06,
-                      duration: 0.8,
-                      ease: [0.16, 1, 0.3, 1]
-                    }}
+                    variants={titleWordVariants}
                     className={`inline-block ${isGold ? "text-[#c5a880] text-gold-glow" : ""}`}
                   >
                     {word}
@@ -120,28 +165,27 @@ export default function StudioSection() {
                 </span>
               );
             })}
-          </h2>
+          </motion.h2>
 
           {/* Subtext description with fast word stagger reveal */}
-          <p className="font-sans text-sm sm:text-base md:text-lg leading-relaxed text-[#9999aa] max-w-3xl flex flex-wrap gap-x-1.5 gap-y-0.5">
+          <motion.p 
+            variants={descContainerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: false, margin: "-120px" }}
+            className="font-sans text-sm sm:text-base md:text-lg leading-relaxed text-[#9999aa] max-w-3xl flex flex-wrap gap-x-1.5 gap-y-0.5"
+          >
             {"Our philosophy is defined by intent, not algorithm. We reject generic, template-driven interfaces to hand-craft high-fidelity, scroll-driven interactive ecosystems that elevate world-class brands into permanent sensory landmarks.".split(" ").map((word, wordIndex) => (
               <span key={wordIndex} className="inline-block overflow-hidden py-0.5">
                 <motion.span
-                  initial={{ y: "105%", opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: false, margin: "-120px" }}
-                  transition={{
-                    delay: 0.15 + wordIndex * 0.015,
-                    duration: 0.65,
-                    ease: [0.25, 1, 0.5, 1]
-                  }}
+                  variants={descWordVariants}
                   className="inline-block"
                 >
                   {word}
                 </motion.span>
               </span>
             ))}
-          </p>
+          </motion.p>
         </div>
         </motion.div>
       </ScrollAnimatedWrapper>

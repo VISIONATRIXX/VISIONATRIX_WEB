@@ -4,12 +4,20 @@ import { useEffect, useState, useRef } from "react";
 
 export default function CustomCursor() {
   const [tooltipText, setTooltipText] = useState("");
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
   const cursorOuterRef = useRef<HTMLDivElement>(null);
   const cursorInnerRef = useRef<HTMLDivElement>(null);
   const cursorGlowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check if the device is a touch screen (coarse pointer)
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches;
+    if (isCoarse) {
+      setIsTouchDevice(true);
+      return;
+    }
+
     // Enable custom cursor styles across the page
     document.body.classList.add("custom-cursor-active");
 
@@ -141,6 +149,7 @@ export default function CustomCursor() {
     };
   }, []);
 
+  if (isTouchDevice) return null;
 
   return (
     <div

@@ -6,24 +6,24 @@ import Header from "@/components/Header";
 import ScrollNavigation from "@/components/ScrollNavigation";
 import IntroLoader from "@/components/IntroLoader";
 import HeroSection from "@/components/HeroSection";
-import StudioSection from "@/components/StudioSection";
-import ServicesSection from "@/components/ServicesSection";
-import WorksSection from "@/components/WorksSection";
-import ProcessSection from "@/components/ProcessSection";
-import EngineStackSection from "@/components/EngineStackSection";
-import FeedbackSection from "@/components/FeedbackSection";
-import FAQSection from "@/components/FAQSection";
-import ContactSection from "@/components/ContactSection";
-import Footer from "@/components/Footer";
 import type Lenis from "lenis";
-
-// Declare global or other type definitions if needed here
 
 // Load Three.js 3D backdrop client-side only
 const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
 
 // Load CustomCursor client-side only
 const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
+
+// Dynamically load all sections below the fold for optimized bundle splitting and Time-to-Interactive (TTI)
+const StudioSection = dynamic(() => import("@/components/StudioSection"), { ssr: false });
+const ServicesSection = dynamic(() => import("@/components/ServicesSection"), { ssr: false });
+const WorksSection = dynamic(() => import("@/components/WorksSection"), { ssr: false });
+const ProcessSection = dynamic(() => import("@/components/ProcessSection"), { ssr: false });
+const EngineStackSection = dynamic(() => import("@/components/EngineStackSection"), { ssr: false });
+const FeedbackSection = dynamic(() => import("@/components/FeedbackSection"), { ssr: false });
+const FAQSection = dynamic(() => import("@/components/FAQSection"), { ssr: false });
+const ContactSection = dynamic(() => import("@/components/ContactSection"), { ssr: false });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
