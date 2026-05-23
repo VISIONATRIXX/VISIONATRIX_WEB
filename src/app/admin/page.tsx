@@ -186,7 +186,8 @@ export default function AdminPage() {
           timeline: data.details?.timeline || "",
           role: data.details?.role || "",
           engine: data.details?.engine || "",
-          videoUrl: data.details?.videoUrl || ""
+          videoUrl: data.details?.videoUrl || "",
+          images: data.details?.images || []
         }
       });
     } else {
@@ -201,7 +202,7 @@ export default function AdminPage() {
         subtitle: "",
         year: "2026",
         bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
-        details: { client: "", timeline: "", role: "", engine: "", videoUrl: "" },
+        details: { client: "", timeline: "", role: "", engine: "", videoUrl: "", images: [] },
         metrics: [
           { label: "RESOLUTION", value: "8K Projections" },
           { label: "RENDER ENGINE", value: "Octane / WebGL" },
@@ -405,7 +406,8 @@ export default function AdminPage() {
         timeline: projForm.details?.timeline || projForm.year || "2026",
         role: projForm.details?.role || "Digital Production",
         engine: projForm.details?.engine || "Realtime WebGL / Octane",
-        videoUrl: projForm.details?.videoUrl || null
+        videoUrl: projForm.details?.videoUrl || null,
+        images: projForm.details?.images || []
       },
       metrics: finalMetrics
     };
