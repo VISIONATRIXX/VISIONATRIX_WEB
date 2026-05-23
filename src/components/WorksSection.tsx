@@ -227,6 +227,18 @@ function ProjectCardSkeleton({ className }: { className: string }) {
 export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [mediaOrientation, setMediaOrientation] = useState<"vertical" | "horizontal">("horizontal");
+
+  // Reset and auto-detect initial media orientation when a case study is selected
+  useEffect(() => {
+    if (!selectedProject) return;
+    const url = selectedProject.details?.videoUrl || "";
+    if (url.includes("youtube.com") || url.includes("youtu.be") || url.includes("vimeo.com")) {
+      setMediaOrientation("horizontal");
+    } else {
+      setMediaOrientation("horizontal"); // Default fallback
+    }
+  }, [selectedProject]);
 
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -559,7 +571,9 @@ export default function WorksSection() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
               transition={{ type: "spring", damping: 30, stiffness: 240 }}
-              className="w-full max-w-4xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden h-[85vh] max-h-[85vh] md:h-[600px] lg:h-[700px] xl:h-[750px]"
+              className={mediaOrientation === "vertical"
+                ? "w-full max-w-4xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col md:grid md:grid-cols-12 gap-0 overflow-hidden h-[85vh] max-h-[85vh] md:h-[600px] lg:h-[700px] xl:h-[750px]"
+                : "w-full max-w-3xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col gap-0 overflow-hidden h-[85vh] max-h-[85vh] md:h-[680px] lg:h-[780px]"}
               style={{ willChange: "transform, opacity" }}
             >
               {/* Close Button */}
@@ -575,8 +589,10 @@ export default function WorksSection() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Left Side: Visual Section */}
-              <div className="relative col-span-5 w-full aspect-video md:aspect-auto md:h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center">
+              {/* Left/Top Side: Visual Section */}
+              <div className={mediaOrientation === "vertical"
+                ? "relative col-span-5 w-full aspect-[3/4] md:aspect-auto md:h-full overflow-hidden bg-zinc-950 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-center shrink-0"
+                : "relative w-full aspect-video md:h-[350px] lg:h-[400px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0"}>
                 {/* Background ambient light */}
                 <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10" />
@@ -587,7 +603,7 @@ export default function WorksSection() {
                     {selectedProject.details.videoUrl.includes("vimeo.com") || selectedProject.details.videoUrl.includes("youtube.com") || selectedProject.details.videoUrl.includes("youtu.be") ? (
                       <iframe
                         src={getVideoEmbedUrl(selectedProject.details.videoUrl)}
-                        className="w-full h-full border-0 aspect-[9/16] md:aspect-[10/16] pointer-events-none scale-[1.02]"
+                        className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
                         allow="autoplay; fullscreen; picture-in-picture"
                         allowFullScreen
                         title={selectedProject.title}
@@ -599,6 +615,14 @@ export default function WorksSection() {
                         loop
                         muted
                         playsInline
+                        onLoadedMetadata={(e) => {
+                          const video = e.currentTarget;
+                          if (video.videoHeight > video.videoWidth) {
+                            setMediaOrientation("vertical");
+                          } else {
+                            setMediaOrientation("horizontal");
+                          }
+                        }}
                         className="w-full h-full object-cover opacity-90"
                       />
                     )}
@@ -609,6 +633,14 @@ export default function WorksSection() {
                   <img
                     src={selectedProject.image}
                     alt={selectedProject.title}
+                    onLoad={(e) => {
+                      const img = e.currentTarget;
+                      if (img.naturalHeight > img.naturalWidth) {
+                        setMediaOrientation("vertical");
+                      } else {
+                        setMediaOrientation("horizontal");
+                      }
+                    }}
                     className="w-full h-full object-cover opacity-80 scale-105 animate-[pulse_10s_infinite_alternate]"
                     style={{ animationDuration: "12s" }}
                   />
@@ -629,7 +661,9 @@ export default function WorksSection() {
               {/* Right Side: Editorial Content Section */}
               <div 
                 data-lenis-prevent
-                className="col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto flex-1 min-h-0 modal-scrollbar flex flex-col justify-between gap-8"
+                className={mediaOrientation === "vertical"
+                  ? "col-span-7 p-6 md:p-10 lg:p-12 overflow-y-auto flex-1 min-h-0 modal-scrollbar flex flex-col justify-between gap-8"
+                  : "p-6 md:p-10 lg:p-12 overflow-y-auto flex-1 min-h-0 modal-scrollbar flex flex-col gap-8"}
               >
                 {/* Title and Tagline */}
                 <div className="flex flex-col gap-3">
