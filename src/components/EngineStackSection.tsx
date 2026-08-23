@@ -21,7 +21,9 @@ import {
   TerminalSquare, 
   Eye, 
   Gauge,
-  Gamepad2
+  Gamepad2,
+  Film,
+  Video
 } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
@@ -82,6 +84,49 @@ export default function EngineStackSection() {
           name: "FLUX.1 & MAGNIFIC AI",
           iconName: "Zap",
           description: "Neural 8K upscaling & hyper-realistic texturing engines",
+          iconBg: "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+        }
+      ]
+    },
+    {
+      id: "video_editing",
+      label: "VIDEO EDITING & POST-PROD",
+      categoryIcon: "Film",
+      tools: [
+        {
+          name: "ADOBE AFTER EFFECTS",
+          iconName: "Film",
+          description: "Temporal motion graphics, 3D compositing & kinetic typography",
+          iconBg: "bg-purple-500/10 border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+        },
+        {
+          name: "DAVINCI RESOLVE STUDIO",
+          iconName: "Sliders",
+          description: "Cinematic 8K Fairlight audio, HDR color grading & Fusion VFX",
+          iconBg: "bg-orange-500/10 border-orange-500/40 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+        },
+        {
+          name: "ADOBE PREMIERE PRO",
+          iconName: "Video",
+          description: "Non-linear timeline editing, multi-cam assembly & audio sync",
+          iconBg: "bg-indigo-500/10 border-indigo-500/40 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]"
+        },
+        {
+          name: "NUKE BY FOUNDRY",
+          iconName: "Layers",
+          description: "Node-based digital compositing, rotoscoping & deep compositing",
+          iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+        },
+        {
+          name: "TOPAZ VIDEO AI",
+          iconName: "Sparkles",
+          description: "Neural 60fps frame interpolation, motion de-blur & 8K upscaling",
+          iconBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+        },
+        {
+          name: "BORIS FX SAPPHIRE",
+          iconName: "Wrench",
+          description: "Pro VFX suite plugins, anamorphic lens flares & transitions",
           iconBg: "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
         }
       ]
@@ -165,9 +210,9 @@ export default function EngineStackSection() {
           iconBg: "bg-sky-500/10 border-sky-500/40 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.2)]"
         },
         {
-          name: "DAVINCI RESOLVE",
+          name: "SUBSTANCE PAINTER",
           iconName: "Sliders",
-          description: "Cinematic 8K color grading, HDR calibration & audio mastering",
+          description: "PBR texture painting, smart materials & normal map baking",
           iconBg: "bg-orange-500/10 border-orange-500/40 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
         }
       ]
@@ -240,6 +285,8 @@ export default function EngineStackSection() {
       case "Eye": return <Eye className="w-5 h-5" />;
       case "Gauge": return <Gauge className="w-5 h-5" />;
       case "Gamepad2": return <Gamepad2 className="w-5 h-5" />;
+      case "Film": return <Film className="w-5 h-5" />;
+      case "Video": return <Video className="w-5 h-5" />;
       default: return <Sparkles className="w-5 h-5" />;
     }
   };
@@ -266,7 +313,7 @@ export default function EngineStackSection() {
             CAPABILITY ENGINE STACK
           </h2>
           <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed max-w-2xl mx-auto">
-            We harness industry-standard autonomous AI pipelines (n8n, LangChain), 3D render engines (UE5, Houdini), spatial frameworks, and modern web architectures.
+            We harness industry-standard autonomous AI pipelines (n8n), pro video editing suites (After Effects, DaVinci Resolve), 3D render engines (UE5, Houdini), spatial frameworks, and modern web architectures.
           </p>
         </div>
 
