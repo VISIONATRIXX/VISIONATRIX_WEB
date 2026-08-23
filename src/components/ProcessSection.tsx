@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface TimelineStep {
   id: string;
@@ -40,7 +39,6 @@ const steps: TimelineStep[] = [
 ];
 
 export default function ProcessSection() {
-
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const activeLineRef = useRef<HTMLDivElement>(null);
@@ -54,7 +52,7 @@ export default function ProcessSection() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // 1. Line Growth Animation
+      // 1. Vertical Progress Beam Extension Scrub
       if (activeLineRef.current && containerRef.current) {
         gsap.fromTo(
           activeLineRef.current,
@@ -64,15 +62,15 @@ export default function ProcessSection() {
             ease: "none",
             scrollTrigger: {
               trigger: containerRef.current,
-              start: "top 60%",
-              end: "bottom 60%",
-              scrub: true,
+              start: "top 70%",
+              end: "bottom 70%",
+              scrub: 0.5,
             }
           }
         );
       }
 
-      // 2. Loop through steps to apply ScrollTrigger animations
+      // 2. Real-Time Scroll Scrubbed Animations for Every Pipeline Step (Works Scroll Down & Scroll Up!)
       steps.forEach((_, idx) => {
         const row = rowRefs.current[idx];
         const card = cardRefs.current[idx];
@@ -80,80 +78,61 @@ export default function ProcessSection() {
         if (!row || !card || !node) return;
 
         const isLeft = idx % 2 === 0;
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
 
-        // Initialize scale on mount inside GSAP context (20px / 52px = 0.385)
+        // Base node scale
         gsap.set(node, {
           scale: 0.385,
           transformOrigin: "center center"
         });
 
-        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-        // Card Animation (slide in and fade in - Slow cinematic glide on desktop, pure vertical entry on mobile)
-        gsap.fromTo(
+        // 100% Real-Time Scrub Timeline (Synchronized with scroll position up and down)
+        const stepTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: row,
+            start: isDesktop ? "top 85%" : "top 88%",
+            end: isDesktop ? "top 45%" : "top 50%",
+            scrub: 0.6,
+          }
+        });
+
+        // Card Entry & Fade-In Scrub
+        stepTl.fromTo(
           card,
           {
             opacity: 0,
-            x: isDesktop ? (isLeft ? -40 : 40) : 0,
-            y: isDesktop ? 0 : 25,
-            scale: isDesktop ? 0.97 : 1,
+            x: isDesktop ? (isLeft ? -50 : 50) : 0,
+            y: isDesktop ? 0 : 30,
+            scale: 0.95,
           },
           {
             opacity: 1,
             x: 0,
             y: 0,
             scale: 1,
-            duration: isDesktop ? 1.2 : 0.7,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: row,
-              start: isDesktop ? "top 75%" : "top 82%",
-              toggleActions: isDesktop ? "play reverse play reverse" : "play none none none",
-            }
-          }
+            ease: "power2.out",
+          },
+          0
         );
 
-        // Node Expansion and Glow Transitions helpers
-        const activateNode = () => {
-          gsap.to(node, {
-            scale: window.innerWidth >= 768 ? 1.0 : 0.846, // 52px (1.0) or 44px (0.846)
+        // Node Glow & Scale Expansion Scrub
+        stepTl.to(
+          node,
+          {
+            scale: isDesktop ? 1.0 : 0.85,
             borderColor: "#c5a880",
-            boxShadow: "0 0 22px rgba(197, 168, 128, 0.55), inset 0 0 10px rgba(197, 168, 128, 0.25)",
-            duration: 0.45,
-            ease: "back.out(1.5)",
-          });
-          
-          const num = node.querySelector(".node-number");
-          if (num) gsap.to(num, { opacity: 1, duration: 0.25 });
-          
-          const dot = node.querySelector(".node-dot");
-          if (dot) gsap.to(dot, { opacity: 0, duration: 0.25 });
-        };
+            boxShadow: "0 0 24px rgba(197, 168, 128, 0.6), inset 0 0 10px rgba(197, 168, 128, 0.3)",
+            ease: "back.out(1.4)",
+          },
+          0
+        );
 
-        const deactivateNode = () => {
-          gsap.to(node, {
-            scale: 0.385, // 20px / 52px
-            borderColor: "rgba(197, 168, 128, 0.35)",
-            boxShadow: "0 0 8px rgba(197, 168, 128, 0.15)",
-            duration: 0.45,
-            ease: "power2.out",
-          });
-          
-          const num = node.querySelector(".node-number");
-          if (num) gsap.to(num, { opacity: 0, duration: 0.2 });
-          
-          const dot = node.querySelector(".node-dot");
-          if (dot) gsap.to(dot, { opacity: 1, duration: 0.2 });
-        };
+        // Number Tag & Dot Fade-In/Out
+        const num = node.querySelector(".node-number");
+        const dot = node.querySelector(".node-dot");
 
-        ScrollTrigger.create({
-          trigger: row,
-          start: "top 60%", // enters active range
-          end: "bottom 60%", // leaves active range
-          onEnter: activateNode,
-          onLeave: deactivateNode,
-          onEnterBack: activateNode,
-          onLeaveBack: deactivateNode,
-        });
+        if (num) stepTl.to(num, { opacity: 1 }, 0.1);
+        if (dot) stepTl.to(dot, { opacity: 0 }, 0.1);
       });
     }, sectionRef);
 
@@ -168,13 +147,12 @@ export default function ProcessSection() {
       id="process" 
       className="relative w-full bg-[#0b0b0f] py-24 md:py-40 px-6 md:px-12 lg:px-24 overflow-hidden"
     >
-      {/* Background radial glow */}
+      {/* Background radial ambient glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] bg-[#c5a880]/[0.015] opacity-50 blur-[200px] rounded-full" />
       </div>
 
-      <ScrollAnimatedWrapper enableY={false} enableScale={false}>
-        <div className="max-w-6xl mx-auto w-full z-10 flex flex-col items-center">
+      <div className="max-w-6xl mx-auto w-full z-10 flex flex-col items-center">
         {/* Section Header */}
         <div className="w-full flex flex-col items-center text-center mb-16 md:mb-24">
           <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
@@ -209,24 +187,19 @@ export default function ProcessSection() {
                 ref={el => { if (el) rowRefs.current[idx] = el; }}
                 className="relative grid grid-cols-1 md:grid-cols-2 items-center py-12 md:py-20 w-full"
               >
-                {/* Left Column (Desktop only, or left content) */}
+                {/* Left Column */}
                 <div className={`w-full flex md:justify-end pl-14 pr-4 md:pl-0 md:pr-16 lg:pr-24 ${isLeft ? "block" : "hidden md:block"}`}>
                   {isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#121217]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left md:text-right items-start md:items-end group relative"
+                      className="w-full max-w-lg bg-[#121217]/85 backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/30 transition-all duration-300 flex flex-col text-left md:text-right items-start md:items-end group relative"
                     >
-                      {/* Category */}
-                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2 font-bold">
                         {step.category}
                       </span>
-
-                      {/* Title */}
                       <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
-
-                      {/* Description */}
                       <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
                         {step.description}
                       </p>
@@ -239,19 +212,14 @@ export default function ProcessSection() {
                   {!isLeft && (
                     <div 
                       ref={el => { if (el) cardRefs.current[idx] = el; }}
-                      className="w-full max-w-lg bg-[#121217]/75 backdrop-blur-md border border-white/[0.04] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/20 transition-all duration-500 flex flex-col text-left items-start group relative"
+                      className="w-full max-w-lg bg-[#121217]/85 backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 md:p-8 shadow-2xl hover:border-[#c5a880]/30 transition-all duration-300 flex flex-col text-left items-start group relative"
                     >
-                      {/* Category */}
-                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
+                      <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2 font-bold">
                         {step.category}
                       </span>
-
-                      {/* Title */}
                       <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
-
-                      {/* Description */}
                       <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
                         {step.description}
                       </p>
@@ -264,12 +232,9 @@ export default function ProcessSection() {
                   ref={el => { if (el) nodeRefs.current[idx] = el; }}
                   className="absolute left-6 md:left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full border border-[#c5a880]/35 bg-[#0b0b0f] z-20 flex items-center justify-center cursor-default shadow-[0_0_8px_rgba(197,168,128,0.15)] overflow-hidden will-change-transform"
                 >
-                  {/* Number Tag (hidden by default) */}
                   <span className="node-number opacity-0 font-display text-[10px] md:text-[11px] font-bold text-[#c5a880] transition-opacity duration-300 select-none">
                     {step.id}
                   </span>
-                  
-                  {/* Center Dot (visible by default) */}
                   <div className="node-dot w-1.5 h-1.5 rounded-full bg-[#c5a880] transition-opacity duration-300 absolute" />
                 </div>
               </div>
@@ -278,7 +243,6 @@ export default function ProcessSection() {
 
         </div>
       </div>
-    </ScrollAnimatedWrapper>
-  </section>
+    </section>
   );
 }
