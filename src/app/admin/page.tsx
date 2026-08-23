@@ -84,6 +84,15 @@ export default function AdminPage() {
   const [customTagInput, setCustomTagInput] = useState("");
   const [localTags, setLocalTags] = useState<string[]>([]);
 
+  // Quick Upload Streamlined Workflow State
+  const [quickUploadOpen, setQuickUploadOpen] = useState(false);
+  const [quickContentType, setQuickContentType] = useState<"project" | "review">("project");
+  const [quickTitle, setQuickTitle] = useState("");
+  const [quickCategory, setQuickCategory] = useState("");
+  const [quickDescription, setQuickDescription] = useState("");
+  const [quickMediaUrl, setQuickMediaUrl] = useState("");
+  const [isQuickUploadingMedia, setIsQuickUploadingMedia] = useState(false);
+
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
@@ -352,6 +361,58 @@ export default function AdminPage() {
     }
   };
 
+  const handleQuickUploadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickTitle) {
+      alert("Please provide a title or name for your content.");
+      return;
+    }
+
+    if (quickContentType === "project") {
+      addProject({
+        title: quickTitle.toUpperCase(),
+        category: quickCategory || "CGI & WEB",
+        categories: [quickCategory || "CGI"],
+        tagline: quickDescription || quickTitle,
+        description: quickDescription || quickTitle,
+        image: quickMediaUrl || "/work_aura_configurator.png",
+        subtitle: `${quickTitle.toUpperCase()} Spec`,
+        year: "2026",
+        bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
+        details: {
+          client: "Visionatrix Studio",
+          timeline: "2026",
+          role: "Digital Production",
+          engine: "Realtime Engine / WebGL",
+          videoUrl: quickMediaUrl.endsWith(".mp4") || quickMediaUrl.includes("video") ? quickMediaUrl : null
+        },
+        metrics: [
+          { label: "RESOLUTION", value: "8K Projections" },
+          { label: "ENGINE", value: "Realtime WebGL" },
+          { label: "STATUS", value: "Published" }
+        ]
+      });
+      addHudLog(`Quick Published Project: "${quickTitle.toUpperCase()}"`, "success");
+    } else if (quickContentType === "review") {
+      addTestimonial({
+        quote: quickDescription || "Outstanding visual quality and execution.",
+        author: quickTitle.toUpperCase(),
+        role: quickCategory || "Executive Director",
+        company: "Studio Client",
+        rating: 5,
+        isActive: true
+      });
+      addHudLog(`Quick Registered Review from ${quickTitle.toUpperCase()}`, "success");
+    }
+
+    // Reset state & close modal
+    setQuickTitle("");
+    setQuickCategory("");
+    setQuickDescription("");
+    setQuickMediaUrl("");
+    setQuickUploadOpen(false);
+  };
+
   const handleRemoveGalleryImage = (indexToRemove: number) => {
     setProjForm(prev => {
       const prevImages = prev.details?.images || [];
@@ -598,14 +659,26 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Log out action */}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 font-sans text-[10px] tracking-wider text-white/60 hover:text-red-400 border border-white/5 hover:border-red-500/20 px-3 py-1.5 rounded transition-all hover:bg-red-950/10 active:scale-95 cursor-pointer"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span>LOGOUT</span>
-        </button>
+        {/* Quick Upload Content Action */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setQuickUploadOpen(true)}
+            className="flex items-center gap-2 font-sans text-xs tracking-wider text-black font-semibold bg-[#c5a880] hover:bg-white px-3.5 py-1.5 rounded transition-all duration-300 active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(197,168,128,0.3)]"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">QUICK UPLOAD CONTENT</span>
+            <span className="sm:hidden">UPLOAD</span>
+          </button>
+
+          {/* Log out action */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 font-sans text-[10px] tracking-wider text-white/60 hover:text-red-400 border border-white/5 hover:border-red-500/20 px-3 py-1.5 rounded transition-all hover:bg-red-950/10 active:scale-95 cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>LOGOUT</span>
+          </button>
+        </div>
       </header>
 
       {/* MATRIX LAYOUT */}
@@ -2359,6 +2432,189 @@ export default function AdminPage() {
                 </button>
               </div>
 
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 4. QUICK CONTENT UPLOAD STREAMLINED MODAL */}
+      <AnimatePresence>
+        {quickUploadOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md font-sans">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#0b0b0f] border border-[#c5a880]/30 rounded-xl w-full max-w-lg shadow-[0_25px_60px_rgba(0,0,0,0.9)] overflow-hidden relative"
+            >
+              {/* Header */}
+              <div className="bg-[#121217] px-6 py-4 flex items-center justify-between border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Upload className="w-4 h-4 text-[#c5a880]" />
+                  <span className="font-semibold text-xs tracking-wider text-white uppercase">
+                    QUICK CONTENT UPLOADER
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setQuickUploadOpen(false)}
+                  className="p-1 text-white/40 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Form Content */}
+              <form onSubmit={handleQuickUploadSubmit} className="p-6 flex flex-col gap-4">
+                
+                {/* Content Type Selector */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[9px] font-mono text-[#c5a880] tracking-wider uppercase font-bold">
+                    1. SELECT CONTENT TYPE
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setQuickContentType("project")}
+                      className={`p-3 border rounded-lg flex items-center gap-2.5 text-xs font-semibold uppercase transition-all cursor-pointer ${
+                        quickContentType === "project"
+                          ? "bg-[#c5a880]/15 border-[#c5a880] text-[#c5a880]"
+                          : "bg-black/30 border-white/10 text-white/50 hover:border-white/20"
+                      }`}
+                    >
+                      <Briefcase className="w-4 h-4" />
+                      <span>Portfolio Project</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuickContentType("review")}
+                      className={`p-3 border rounded-lg flex items-center gap-2.5 text-xs font-semibold uppercase transition-all cursor-pointer ${
+                        quickContentType === "review"
+                          ? "bg-[#c5a880]/15 border-[#c5a880] text-[#c5a880]"
+                          : "bg-black/30 border-white/10 text-white/50 hover:border-white/20"
+                      }`}
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Client Review</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Title & Category */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">
+                      {quickContentType === "project" ? "Project Title *" : "Author / Client Name *"}
+                    </label>
+                    <input
+                      type="text"
+                      value={quickTitle}
+                      onChange={(e) => setQuickTitle(e.target.value)}
+                      placeholder={quickContentType === "project" ? "e.g. AURA CONFIGURATOR" : "e.g. MARCUS VANCE"}
+                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 text-xs text-white uppercase focus:border-[#c5a880]/50 outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">
+                      {quickContentType === "project" ? "Category" : "Role & Company"}
+                    </label>
+                    <input
+                      type="text"
+                      value={quickCategory}
+                      onChange={(e) => setQuickCategory(e.target.value)}
+                      placeholder={quickContentType === "project" ? "e.g. CGI & WebGL" : "e.g. Design Lead // Leica"}
+                      className="bg-black/45 border border-white/10 rounded-md py-2 px-3 text-xs text-white focus:border-[#c5a880]/50 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Direct File Upload or Image/Video URL */}
+                {quickContentType === "project" && (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">
+                      Media Asset (Upload File or Paste URL)
+                    </label>
+                    
+                    <div className="flex items-center gap-2">
+                      <label className="flex-1 bg-black/45 border border-dashed border-[#c5a880]/30 hover:border-[#c5a880] rounded-md py-3 px-4 flex items-center justify-center gap-2 cursor-pointer transition-colors">
+                        <Upload className="w-4 h-4 text-[#c5a880]" />
+                        <span className="text-xs text-[#c5a880] font-mono">
+                          {isQuickUploadingMedia ? "Uploading Media..." : "Choose Image/Video File"}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*,video/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setIsQuickUploadingMedia(true);
+                            try {
+                              const fileExt = file.name.split(".").pop();
+                              const fileName = `${Date.now()}_quick_${file.name.replace(/[^a-zA-Z0-9]/g, "_")}.${fileExt}`;
+                              const filePath = `uploads/${fileName}`;
+                              const { error: upErr } = await supabase.storage.from("portfolio").upload(filePath, file);
+                              if (upErr) throw upErr;
+                              const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
+                              if (data?.publicUrl) {
+                                setQuickMediaUrl(data.publicUrl);
+                                addHudLog(`Quick uploaded media: ${file.name}`, "success");
+                              }
+                            } catch (err: any) {
+                              alert("Upload failed: " + err.message);
+                            } finally {
+                              setIsQuickUploadingMedia(false);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      value={quickMediaUrl}
+                      onChange={(e) => setQuickMediaUrl(e.target.value)}
+                      placeholder="Or paste media URL (https://...)"
+                      className="bg-black/30 border border-white/5 rounded-md py-1.5 px-3 text-[10px] text-white/60 font-mono outline-none"
+                    />
+
+                    {quickMediaUrl && (
+                      <div className="mt-1 relative w-full h-24 rounded-md overflow-hidden border border-[#c5a880]/30 bg-black flex items-center justify-center">
+                        {quickMediaUrl.endsWith(".mp4") || quickMediaUrl.includes("video") ? (
+                          <video src={quickMediaUrl} className="w-full h-full object-cover" autoPlay loop muted />
+                        ) : (
+                          <img src={quickMediaUrl} alt="Preview" className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Description or Quote */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[9px] font-mono text-white/40 tracking-wider uppercase">
+                    {quickContentType === "project" ? "Description / Summary" : "Review Quote *"}
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={quickDescription}
+                    onChange={(e) => setQuickDescription(e.target.value)}
+                    placeholder={quickContentType === "project" ? "Short overview of the project..." : "Enter client testimonial quote..."}
+                    className="bg-black/45 border border-white/10 rounded-md p-3 text-xs text-white outline-none focus:border-[#c5a880]/50"
+                  />
+                </div>
+
+                {/* Submit Action */}
+                <button
+                  type="submit"
+                  disabled={isQuickUploadingMedia}
+                  className="w-full mt-2 bg-[#c5a880] hover:bg-white text-black font-bold py-3 rounded-md text-xs uppercase tracking-widest transition-all duration-300 active:scale-98 cursor-pointer shadow-[0_0_15px_rgba(197,168,128,0.3)] disabled:opacity-50"
+                >
+                  {isQuickUploadingMedia ? "UPLOADING ASSETS..." : "PUBLISH CONTENT NOW"}
+                </button>
+
+              </form>
             </motion.div>
           </div>
         )}
