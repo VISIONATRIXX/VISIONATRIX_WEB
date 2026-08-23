@@ -247,6 +247,46 @@ const initialProjects: Project[] = [
 const initialServices: ServiceItem[] = [
   {
     id: "01",
+    title: "WEB DEVELOPMENT",
+    description: "We code modern, responsive, and ultra high-performance websites and digital portals engineered for maximum speed, security, and brand conversion.",
+    iconName: "Code",
+    hudTitle: "[ FRONTEND CORE ]",
+    hudItems: [
+      { label: "FRAMEWORK", value: "Next.js / React" },
+      { label: "PERFORMANCE", value: "100 Lighthouse" },
+      { label: "ANIMATION", value: "GSAP / Framer" },
+      { label: "DEPLOY", value: "Vercel Edge" }
+    ],
+    bullets: [
+      "// High-Performance Responsive Web",
+      "// Headless CMS Integration",
+      "// Silky 60fps Micro-Interactions"
+    ],
+    tools: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+    canvasType: "webdev"
+  },
+  {
+    id: "02",
+    title: "AI AUTOMATION",
+    description: "We deploy smart generative AI automation pipelines and custom agentic workflows to eliminate manual bottlenecks and scale your operations.",
+    iconName: "Bot",
+    hudTitle: "[ AUTOMATION ENGINE ]",
+    hudItems: [
+      { label: "PIPELINE", value: "Custom AI Agents" },
+      { label: "MODELS", value: "LLM / Flux / SDXL" },
+      { label: "SPEED", value: "Realtime API" },
+      { label: "LATENCY", value: "<100ms Ingestion" }
+    ],
+    bullets: [
+      "// Automated Content Pipelines",
+      "// Custom Neural Model Tuning",
+      "// Autonomous Agentic Workflows"
+    ],
+    tools: ["ComfyUI", "LangChain", "Python", "OpenAI / Claude"],
+    canvasType: "ai"
+  },
+  {
+    id: "03",
     title: "VIDEO EDITING",
     description: "We structure cinematic narratives, high-impact brand commercials, and director's cut releases utilizing tailored framing rhythms that command digital presence.",
     iconName: "Film",
@@ -255,7 +295,7 @@ const initialServices: ServiceItem[] = [
       { label: "FOCUS", value: "Cinematic Narrative" },
       { label: "OUTPUT", value: "4K / 8K Master Deliveries" },
       { label: "COLOR", value: "Bespoke Color Gradients" },
-      { label: "TECH", value: "DaVinci Resolve / Premiere" }
+      { label: "TECH", value: "DaVinci / Premiere" }
     ],
     bullets: [
       "// Soundscapes Synthesis",
@@ -266,141 +306,141 @@ const initialServices: ServiceItem[] = [
     canvasType: "video"
   },
   {
-    id: "02",
-    title: "VFX SIMULATIONS",
-    description: "We simulate and composite hyper-realistic environmental phenomena, particle streams, and digital cosmetics tailored for cinema and high-fashion advertising campaigns.",
-    iconName: "Sparkles",
-    hudTitle: "[ COMPOSITING HUD ]",
-    hudItems: [
-      { label: "FOCUS", value: "Photoreal FX" },
-      { label: "OUTPUT", value: "DeepEXR Sequences" },
-      { label: "GRAIN", value: "Camera-matched Noise" },
-      { label: "TECH", value: "Nuke / Houdini" }
-    ],
-    bullets: [
-      "// Fluid Dynamics Simulations",
-      "// Photorealistic Compositing",
-      "// Deep Compositing Workflows"
-    ],
-    tools: ["Nuke", "Houdini", "PFTrack", "Syntheyes"],
-    canvasType: "vfx"
-  },
-  {
-    id: "03",
-    title: "CGI ADVERTISING",
-    description: "We construct cinematic luxury product renders, automotive concept visualizations, and bespoke promotional sequences engineered to bridge commercial luxury with futuristic aesthetics.",
-    iconName: "Box",
-    hudTitle: "[ RENDER SPECS ]",
-    hudItems: [
-      { label: "PIPELINE", value: "Sub-pixel Raytracing" },
-      { label: "MATERIALS", value: "Physically Based Shading" },
-      { label: "RESOLUTIONS", value: "8K Master Projections" },
-      { label: "AUDIENCE", value: "Luxury B2B Focus" }
-    ],
-    bullets: [
-      "// 3D Raytraced Metamorphs",
-      "// Physically Accurate Textures",
-      "// Luxury Architectural Shaders"
-    ],
-    tools: ["Blender 3D", "Cinema 4D", "Redshift", "Octane Render"],
-    canvasType: "cgi"
-  },
-  {
     id: "04",
-    title: "ENVIRONMENT CREATION",
-    description: "We build sprawling virtual landscapes, digital twin showrooms, and interactive sensory environments rendered in real-time utilizing state-of-the-art geometry pipelines.",
-    iconName: "Layers",
-    hudTitle: "[ SPATIAL DIAGNOSTICS ]",
+    title: "BRAND SHOOT",
+    description: "We direct professional commercial photography, editorial campaign shoots, and visual brand assets that elevate product positioning.",
+    iconName: "Camera",
+    hudTitle: "[ OPTICAL STUDIO ]",
     hudItems: [
-      { label: "GEOMETRY", value: "Bespoke Megascans" },
-      { label: "LIGHTING", value: "Lumen / Path Tracer" },
-      { label: "DETAIL", value: "Sub-millimeter Micro-mesh" },
-      { label: "TECH", value: "Unreal Engine 5.5" }
+      { label: "SENSOR", value: "Full-Frame Cine" },
+      { label: "LIGHTING", value: "Bespoke Studio Rig" },
+      { label: "RESOLUTION", value: "60MP Raw Masters" },
+      { label: "POST", value: "Haute Couture Retouch" }
     ],
     bullets: [
-      "// Realtime Virtual Sets",
-      "// Procedural Terrain Generation",
-      "// High-fidelity Digital Twins"
+      "// Executive & Product Branding",
+      "// High-Fashion Commercial Shoots",
+      "// Color Graded Raw Masters"
     ],
-    tools: ["Unreal Engine 5", "SpeedTree", "Quixel Bridge", "Substance Painter"],
-    canvasType: "env"
+    tools: ["Sony Cine", "Capture One", "Lightroom", "Photoshop AI"],
+    canvasType: "brand"
   },
   {
     id: "05",
-    title: "WEBGL WEB CODE",
-    description: "We write bespoke WebGL shaders, fluid simulation portals, and 3D websites that load in milliseconds and deliver silky-smooth interactions on any device.",
-    iconName: "Cpu",
-    hudTitle: "[ RENDER CORE ]",
+    title: "LOGO & BRAND DESIGN",
+    description: "We craft unique, memorable visual identities, minimalist emblems, and complete vector design systems tailored to define premium luxury brands.",
+    iconName: "PenTool",
+    hudTitle: "[ VECTOR BRANDING ]",
     hudItems: [
-      { label: "ENGINE", value: "Three.js / WebGL" },
-      { label: "PERFORMANCE", value: "60 FPS Locked" },
-      { label: "SHADERS", value: "Custom GLSL Noise" },
-      { label: "TECH", value: "React Three Fiber" }
+      { label: "GEOMETRY", value: "Golden Ratio Grid" },
+      { label: "PALETTE", value: "Curated HSL Tokens" },
+      { label: "FORMATS", value: "SVG / Vector / Motion" },
+      { label: "SYSTEM", value: "Full Brand Guidelines" }
     ],
     bullets: [
-      "// Custom GLSL Shader Art",
-      "// Interactive Physics Systems",
-      "// Headless WebGL Engines"
+      "// Bespoke Emblem Construction",
+      "// Minimalist Vector Geometry",
+      "// Dynamic Motion Branding"
     ],
-    tools: ["Three.js", "GLSL", "React Three Fiber", "Vite"],
-    canvasType: "webgl"
+    tools: ["Figma", "Adobe Illustrator", "Photoshop", "After Effects"],
+    canvasType: "logo"
   },
   {
     id: "06",
-    title: "APP ARCHITECTURES",
-    description: "We design enterprise-grade mobile interfaces and robust cloud platforms optimized for extreme speed, security, and complex spatial UI interactions.",
-    iconName: "Smartphone",
-    hudTitle: "[ SYSTEMS METRICS ]",
+    title: "UNREAL ENGINE DEV",
+    description: "We engineer high-end interactive 3D experiences, real-time virtual production sets, and immersive spatial applications running at maximum framerates.",
+    iconName: "Layers",
+    hudTitle: "[ REALTIME ENGINE ]",
     hudItems: [
-      { label: "FRAMEWORK", value: "Next.js / React Native" },
-      { label: "STATE", value: "Zustand / Redux" },
-      { label: "DATABASE", value: "Supabase / PostgreSQL" },
-      { label: "TECH", value: "Vercel Edge API" }
+      { label: "ENGINE", value: "Unreal Engine 5.5" },
+      { label: "LIGHTING", value: "Lumen Path Tracer" },
+      { label: "GEOMETRY", value: "Nanite Sub-pixel" },
+      { label: "TARGET", value: "60 FPS Locked" }
     ],
     bullets: [
-      "// Edge API Handlers",
-      "// Micro-frontend Schemes",
-      "// Realtime Database Sync"
+      "// Virtual Production Sets",
+      "// Real-time Photoreal Renders",
+      "// Blueprint & C++ Logic"
     ],
-    tools: ["Next.js", "React Native", "Supabase", "Tailwind CSS"],
-    canvasType: "app"
+    tools: ["Unreal Engine 5", "Substance Painter", "Quixel Bridge", "C++"],
+    canvasType: "unreal"
   },
   {
     id: "07",
-    title: "AI PRODUCTION SHOOTS",
-    description: "We direct AI-driven commercial productions and campaign photography, combining traditional cinematography guidelines with state-of-the-art latent models.",
-    iconName: "ScanFace",
-    hudTitle: "[ LATENT HUD ]",
+    title: "ARCHITECT DESIGN HOME",
+    description: "We formulate functional, high-aesthetic architectural blueprints and modern structural concepts tailored to luxury residential and commercial developments.",
+    iconName: "Home",
+    hudTitle: "[ SPATIAL ARCHITECTURE ]",
     hudItems: [
-      { label: "SAMPLING", value: "Flux / SDXL" },
-      { label: "UPSCALE", value: "4K Magnific AI" },
-      { label: "CONSISTENCY", value: "IP-Adapter / ControlNet" },
-      { label: "TECH", value: "ComfyUI Nodes" }
+      { label: "DRAFTING", value: "Sub-millimeter BIM" },
+      { label: "MODELING", value: "Parametric Structures" },
+      { label: "COMPLIANCE", value: "Structural Standards" },
+      { label: "STYLE", value: "Futuristic Minimal" }
     ],
     bullets: [
-      "// Latent Temporal Consistency",
-      "// Hyper-premium Character Design",
-      "// ControlNet Directed Framing"
+      "// Parametric Home Drafting",
+      "// Spatial Layout Planning",
+      "// Luxury Residential Design"
     ],
-    tools: ["ComfyUI", "Stable Diffusion", "Midjourney", "Photoshop AI"],
-    canvasType: "ai"
+    tools: ["AutoCAD", "Revit", "SketchUp", "Rhino 3D"],
+    canvasType: "architect"
   },
   {
     id: "08",
-    title: "VR & SPATIAL XR",
-    description: "We code fully immersive volumetric environments, spatial computed applications, and hand-tracked simulations pushing the boundaries of human presence.",
-    iconName: "Eye",
-    hudTitle: "[ OPTICAL TELEMETRY ]",
+    title: "3D ARCHITECTURE RENDERS",
+    description: "We produce photorealistic 3D architectural renders, volumetric lighting simulations, and interior material visualizations that bring spatial blueprints to life.",
+    iconName: "Box",
+    hudTitle: "[ PHOTOREAL RENDER ]",
     hudItems: [
-      { label: "TARGET", value: "Vision Pro / Quest" },
+      { label: "RAYTRACING", value: "Sub-pixel Path Tracing" },
+      { label: "MATERIALS", value: "PBR Texture Shaders" },
+      { label: "OUTPUT", value: "8K Still & Flythrough" },
+      { label: "ATMOSPHERE", value: "Volumetric Sun/Sky" }
+    ],
+    bullets: [
+      "// Exterior & Interior 8K Stills",
+      "// Physically Based Materials",
+      "// Volumetric Lighting Renders"
+    ],
+    tools: ["Blender 3D", "3ds Max", "V-Ray", "Corona Render"],
+    canvasType: "render3d"
+  },
+  {
+    id: "09",
+    title: "INTERACTIVE ARCHITECTURE",
+    description: "We build engaging 3D walkthroughs, web-based digital twin models, and real-time interactive property configurators accessible in any browser.",
+    iconName: "MousePointerClick",
+    hudTitle: "[ DIGITAL TWIN HUD ]",
+    hudItems: [
+      { label: "PLATFORM", value: "WebGL / Pixel Stream" },
+      { label: "INTERACTION", value: "Realtime Material Swaps" },
+      { label: "WALKTHROUGH", value: "First-Person Camera" },
+      { label: "SPEED", value: "Instant Browser Load" }
+    ],
+    bullets: [
+      "// Web-Based 3D Walkthroughs",
+      "// Realtime Material Customization",
+      "// Spatial Digital Twins"
+    ],
+    tools: ["Three.js", "Pixel Streaming", "WebGL", "React Three Fiber"],
+    canvasType: "interactive_arch"
+  },
+  {
+    id: "10",
+    title: "AR / VR SOLUTIONS",
+    description: "We code fully immersive augmented and virtual reality spatial applications, hand-tracked headset simulations, and spatial commerce portals.",
+    iconName: "Eye",
+    hudTitle: "[ SPATIAL TELEMETRY ]",
+    hudItems: [
+      { label: "TARGET", value: "Vision Pro / Quest 3" },
       { label: "TRACKING", value: "6DoF Hand Tracking" },
       { label: "VOLUMETRIC", value: "Gaussian Splatting" },
-      { label: "TECH", value: "Unity / WebXR" }
+      { label: "TECH", value: "Unity / OpenXR" }
     ],
     bullets: [
       "// Spatial UI/UX Architecture",
-      "// 3D Gaussian Splat Ingestion",
-      "// Low Latency Spatial Feeds"
+      "// 3D Gaussian Splatting",
+      "// Vision Pro & Quest Portals"
     ],
     tools: ["Unity 3D", "WebXR", "OpenXR", "Swift / VisionOS"],
     canvasType: "xr"
@@ -463,9 +503,14 @@ const initialProposals: Proposal[] = [
   }
 ];
 
-// -------------------------------------------------------------
-// Provider
-// -------------------------------------------------------------
+// Helper to safely format error objects into strings for clean console output
+const formatErrorMsg = (err: any): string => {
+  if (!err) return "Unknown error";
+  if (typeof err === "string") return err;
+  if (err instanceof Error) return err.message;
+  return err.message || err.details || JSON.stringify(err);
+};
+
 // -------------------------------------------------------------
 // Database Mappers
 // -------------------------------------------------------------
@@ -592,17 +637,30 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           supabase.from("proposals").select("*").order("timestamp", { ascending: false })
         ]);
 
-        if (projRes.error) throw projRes.error;
-        if (servRes.error) throw servRes.error;
-        if (testRes.error) throw testRes.error;
-        if (propRes.error) throw propRes.error;
+        const errors: string[] = [];
+        if (projRes.error) errors.push(`projects: ${formatErrorMsg(projRes.error)}`);
+        if (servRes.error) errors.push(`services: ${formatErrorMsg(servRes.error)}`);
+        if (testRes.error) errors.push(`testimonials: ${formatErrorMsg(testRes.error)}`);
+        if (propRes.error) errors.push(`proposals: ${formatErrorMsg(propRes.error)}`);
 
-        setProjects((projRes.data || []).map(mapProjectFromDb));
-        setServices((servRes.data || []).map(mapServiceFromDb));
-        setTestimonials((testRes.data || []).map(mapTestimonialFromDb));
-        setProposals((propRes.data || []).map(mapProposalFromDb));
+        if (errors.length > 0) {
+          console.warn("Supabase hydration notice (using fallback local data):", errors.join(" | "));
+        }
+
+        if (projRes.data && projRes.data.length > 0) {
+          setProjects(projRes.data.map(mapProjectFromDb));
+        }
+        if (servRes.data && servRes.data.length > 0) {
+          setServices(servRes.data.map(mapServiceFromDb));
+        }
+        if (testRes.data && testRes.data.length > 0) {
+          setTestimonials(testRes.data.map(mapTestimonialFromDb));
+        }
+        if (propRes.data && propRes.data.length > 0) {
+          setProposals(propRes.data.map(mapProposalFromDb));
+        }
       } catch (error) {
-        console.error("Error hydrating data from Supabase:", error);
+        console.warn("Error hydrating data from Supabase (using fallback local data):", formatErrorMsg(error));
       } finally {
         setIsLoaded(true);
       }
@@ -626,7 +684,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             if (error) throw error;
             setProjects((data || []).map(mapProjectFromDb));
           } catch (err) {
-            console.error("Realtime projects refresh failed:", err);
+            console.error("Realtime projects refresh failed:", formatErrorMsg(err));
           }
         }
       )
@@ -733,7 +791,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setProjects(prev => [...prev, newProj]);
       }
     } catch (error) {
-      console.error("Failed to add project to Supabase:", error);
+      console.error("Failed to add project to Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -748,7 +806,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setProjects(prev => prev.map(item => (item.id === id ? p : item)));
     } catch (error) {
-      console.error("Failed to update project in Supabase:", error);
+      console.error("Failed to update project in Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -811,7 +869,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (freshError) throw freshError;
       setProjects((freshProjects || []).map(mapProjectFromDb));
     } catch (error) {
-      console.error("Failed to delete and re-sequence projects in Supabase:", error);
+      console.error("Failed to delete and re-sequence projects in Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -829,7 +887,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setServices(prev => prev.map(item => (item.id === id ? s : item)));
     } catch (error) {
-      console.error("Failed to update service in Supabase:", error);
+      console.error("Failed to update service in Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -850,7 +908,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setTestimonials(prev => [...prev, newTest]);
       }
     } catch (error) {
-      console.error("Failed to add testimonial to Supabase:", error);
+      console.error("Failed to add testimonial to Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -865,7 +923,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setTestimonials(prev => prev.map(item => (item.id === id ? t : item)));
     } catch (error) {
-      console.error("Failed to update testimonial in Supabase:", error);
+      console.error("Failed to update testimonial in Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -879,7 +937,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setTestimonials(prev => prev.filter(item => item.id !== id));
     } catch (error) {
-      console.error("Failed to delete testimonial from Supabase:", error);
+      console.error("Failed to delete testimonial from Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -903,7 +961,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setProposals(prev => [newProp, ...prev]);
       }
     } catch (error) {
-      console.error("Failed to add proposal to Supabase:", error);
+      console.error("Failed to add proposal to Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -917,7 +975,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setProposals(prev => prev.map(item => (item.id === id ? { ...item, status } : item)));
     } catch (error) {
-      console.error("Failed to update proposal status in Supabase:", error);
+      console.error("Failed to update proposal status in Supabase:", formatErrorMsg(error));
     }
   };
 
@@ -931,7 +989,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       setProposals(prev => prev.filter(item => item.id !== id));
     } catch (error) {
-      console.error("Failed to delete proposal from Supabase:", error);
+      console.error("Failed to delete proposal from Supabase:", formatErrorMsg(error));
     }
   };
 

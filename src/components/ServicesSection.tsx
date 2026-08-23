@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
-import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Activity } from "lucide-react";
+import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Code, Bot, Camera, PenTool, Home, MousePointerClick, Activity } from "lucide-react";
 import { useAdmin } from "@/context/AdminContext";
 
 interface ServiceItem {
@@ -106,516 +106,572 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     
     let time = 0;
     
-    // Particles setup (re-used for VFX, WebGL, AI vector flow)
-    const particles: { 
-      x: number; 
-      y: number; 
-      vx: number; 
-      vy: number; 
-      radius: number; 
-      alpha: number; 
-    }[] = [];
-    
-    if (type === "vfx" || type === "webgl" || type === "ai") {
-      const count = type === "ai" ? 50 : (type === "vfx" ? 40 : 25);
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * (type === "vfx" ? 1.6 : 0.8),
-          vy: (Math.random() - 0.5) * (type === "vfx" ? 1.6 : 0.8),
-          radius: Math.random() * (type === "vfx" ? 2.5 : 1.8) + 1,
-          alpha: Math.random() * 0.45 + 0.35
-        });
-      }
+    // AI & Neural Network particle nodes
+    const aiNodes: { x: number; y: number; vx: number; vy: number; radius: number; layer: number }[] = [];
+    const aiNodeCount = 28;
+    for (let i = 0; i < aiNodeCount; i++) {
+      aiNodes.push({
+        x: Math.random() * (width || 400),
+        y: Math.random() * (height || 300),
+        vx: (Math.random() - 0.5) * 0.9,
+        vy: (Math.random() - 0.5) * 0.9,
+        radius: Math.random() * 2 + 1.5,
+        layer: Math.floor(Math.random() * 3)
+      });
+    }
+
+    // Code matrix streams for Web Dev
+    const codeChars = "</>{}[]=const;import;async;await;01;return;";
+    const codeStreams: { x: number; y: number; speed: number; char: string }[] = [];
+    for (let i = 0; i < 20; i++) {
+      codeStreams.push({
+        x: Math.random() * (width || 400),
+        y: Math.random() * (height || 300),
+        speed: Math.random() * 1.5 + 0.8,
+        char: codeChars[Math.floor(Math.random() * codeChars.length)]
+      });
+    }
+
+    // XR Volumetric Splats
+    const splats: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[] = [];
+    for (let i = 0; i < 35; i++) {
+      splats.push({
+        x: Math.random() * (width || 400),
+        y: Math.random() * (height || 300),
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        size: Math.random() * 3.5 + 1,
+        alpha: Math.random() * 0.5 + 0.2
+      });
     }
     
-    // CGI 3D rotating cube configuration
-    const vertices = [
-      { x: -1, y: -1, z: -1 },
-      { x: 1, y: -1, z: -1 },
-      { x: 1, y: 1, z: -1 },
-      { x: -1, y: 1, z: -1 },
-      { x: -1, y: -1, z: 1 },
-      { x: 1, y: -1, z: 1 },
-      { x: 1, y: 1, z: 1 },
-      { x: -1, y: 1, z: 1 },
-    ];
-    
-    const edges = [
-      [0, 1], [1, 2], [2, 3], [3, 0], // Back face
-      [4, 5], [5, 6], [6, 7], [7, 4], // Front face
-      [0, 4], [1, 5], [2, 6], [3, 7]  // Connectors
-    ];
-    
     const render = () => {
-      time += 0.012;
+      time += 0.014;
       
-      // Fluid accumulation tails for VFX/AI fields (using transparent black for pristine screen-blend), clearRect for others
-      if (type === "vfx" || type === "ai") {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+      // Trail effect for AI field, clear for others
+      if (type === "ai") {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.09)";
         ctx.fillRect(0, 0, width, height);
       } else {
         ctx.clearRect(0, 0, width, height);
       }
       
-      const mouseRelativeX = mousePosRef.current.x;
-      const mouseRelativeY = mousePosRef.current.y;
+      const mx = mousePosRef.current.x;
+      const my = mousePosRef.current.y;
       
-      if (type === "video") {
-        // Video timeline display
+      // -----------------------------------------------------------------
+      // FIELD 1: WEB DEVELOPMENT (canvasType: "webdev")
+      // Cyber Code Terminal, Responsive Wireframe Layout & Matrix Streams
+      // -----------------------------------------------------------------
+      if (type === "webdev" || type === "app" || type === "webgl") {
+        ctx.fillStyle = "rgba(197, 168, 128, 0.22)";
+        ctx.font = "9px monospace";
+        codeStreams.forEach((st) => {
+          st.y += st.speed;
+          if (st.y > height) st.y = -10;
+          ctx.fillText(st.char, st.x, st.y);
+        });
+
+        // Responsive Viewport Frame Box
+        const frameW = width * 0.58;
+        const frameH = height * 0.62;
+        const frameX = (width - frameW) / 2;
+        const frameY = (height - frameH) / 2;
+
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.45)";
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(frameX, frameY, frameW, frameH);
+
+        // Header Bar & Close dots
+        ctx.fillStyle = "rgba(197, 168, 128, 0.15)";
+        ctx.fillRect(frameX, frameY, frameW, 18);
+        ctx.fillStyle = "rgba(197, 168, 128, 0.7)";
+        ctx.beginPath();
+        ctx.arc(frameX + 10, frameY + 9, 2.5, 0, Math.PI * 2);
+        ctx.arc(frameX + 18, frameY + 9, 2.5, 0, Math.PI * 2);
+        ctx.arc(frameX + 26, frameY + 9, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Responsive Column Grid inside frame
+        const colW = (frameW - 20) / 3;
+        for (let i = 0; i < 3; i++) {
+          const cx = frameX + 8 + i * (colW + 2);
+          const cy = frameY + 24;
+          const ch = frameH - 32;
+          ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
+          ctx.strokeRect(cx, cy, colW, ch);
+
+          // Simulated layout blocks
+          const animH = (Math.sin(time * 2 + i) * 0.2 + 0.5) * (ch - 15);
+          ctx.fillStyle = "rgba(197, 168, 128, 0.12)";
+          ctx.fillRect(cx + 3, cy + 3, colW - 6, animH);
+        }
+
+        // Hover ripple ring
+        if (isHovered) {
+          ctx.strokeStyle = "rgba(197, 168, 128, 0.6)";
+          ctx.beginPath();
+          ctx.arc(mx, my, (time * 40) % 60, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+      // -----------------------------------------------------------------
+      // FIELD 2: AI AUTOMATION (canvasType: "ai")
+      // Multi-layer Neural Network Nodes & Synapse Pulses
+      // -----------------------------------------------------------------
+      } else if (type === "ai") {
+        aiNodes.forEach((n, idx) => {
+          // Attract nodes slightly to cursor on hover
+          if (isHovered) {
+            const dx = mx - n.x;
+            const dy = my - n.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            if (dist < 180) {
+              n.vx += (dx / dist) * 0.04;
+              n.vy += (dy / dist) * 0.04;
+            }
+          }
+
+          n.x += n.vx;
+          n.y += n.vy;
+          if (n.x < 0 || n.x > width) n.vx *= -1;
+          if (n.y < 0 || n.y > height) n.vy *= -1;
+
+          // Draw node
+          ctx.fillStyle = "rgba(197, 168, 128, 0.8)";
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Connect nearby nodes
+          for (let j = idx + 1; j < aiNodes.length; j++) {
+            const n2 = aiNodes[j];
+            const dx = n.x - n2.x;
+            const dy = n.y - n2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 90) {
+              ctx.strokeStyle = `rgba(197, 168, 128, ${0.45 * (1 - dist / 90)})`;
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(n.x, n.y);
+              ctx.lineTo(n2.x, n2.y);
+              ctx.stroke();
+
+              // Synaptic pulse packet
+              const t = (time * 1.5 + idx) % 1.0;
+              const px = n.x + (n2.x - n.x) * t;
+              const py = n.y + (n2.y - n.y) * t;
+              ctx.fillStyle = "#c5a880";
+              ctx.beginPath();
+              ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        });
+
+      // -----------------------------------------------------------------
+      // FIELD 3: VIDEO EDITING (canvasType: "video")
+      // Multitrack Timeline Channels & Audio Waveform FFT Analyzer
+      // -----------------------------------------------------------------
+      } else if (type === "video") {
         ctx.strokeStyle = "rgba(197, 168, 128, 0.12)";
         ctx.lineWidth = 1;
-        const tickSpacing = 24;
-        for (let x = 0; x < width; x += tickSpacing) {
+        for (let x = 0; x < width; x += 24) {
           ctx.beginPath();
           ctx.moveTo(x, 0);
           ctx.lineTo(x, height);
           ctx.stroke();
         }
-        
-        // Render audio waveform bands - highly visible, larger amplitude
-        const barWidth = 4;
+
+        // Waveform Spectrum Bars
+        const barW = 4;
         const gap = 3;
-        const barCount = Math.floor(width / (barWidth + gap));
-        const startX = (width - barCount * (barWidth + gap)) / 2;
-        
-        ctx.fillStyle = "rgba(197, 168, 128, 0.48)";
-        for (let i = 0; i < barCount; i++) {
-          const x = startX + i * (barWidth + gap);
+        const count = Math.floor(width / (barW + gap));
+        const startX = (width - count * (barW + gap)) / 2;
+
+        ctx.fillStyle = "rgba(197, 168, 128, 0.45)";
+        for (let i = 0; i < count; i++) {
+          const x = startX + i * (barW + gap);
           const distToCenter = Math.abs(x - width / 2) / (width / 2);
-          const baseHeight = Math.sin(i * 0.16 + time * 4.2) * 50 + 65;
-          const finalHeight = baseHeight * (1 - distToCenter * 0.4) * (0.55 + Math.sin(time * 0.7) * 0.25);
-          
-          ctx.fillRect(x, height * 0.5 - finalHeight / 2, barWidth, finalHeight);
+          const baseH = Math.sin(i * 0.18 + time * 4) * 45 + 55;
+          const finalH = baseH * (1 - distToCenter * 0.4);
+          ctx.fillRect(x, height * 0.5 - finalH / 2, barW, finalH);
         }
-        
-        // Continuous peak waveform thread line running through the card
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.85)";
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        for (let i = 0; i < width; i += 2) {
-          const distToCenter = Math.abs(i - width / 2) / (width / 2);
-          const y = height * 0.5 + Math.sin(i * 0.015 - time * 2.8) * Math.cos(i * 0.005 + time * 1.4) * 60 * (1 - distToCenter * 0.35);
-          if (i === 0) ctx.moveTo(i, y);
-          else ctx.lineTo(i, y);
-        }
-        ctx.stroke();
-        
-        // Gold sweeping playhead line
-        const playheadX = (time * 85) % width;
+
+        // Gold Playhead Line
+        const phX = (time * 90) % width;
         ctx.strokeStyle = "#c5a880";
         ctx.lineWidth = 2;
-        ctx.shadowColor = "#c5a880";
-        ctx.shadowBlur = 6;
         ctx.beginPath();
-        ctx.moveTo(playheadX, height * 0.1);
-        ctx.lineTo(playheadX, height * 0.9);
+        ctx.moveTo(phX, height * 0.12);
+        ctx.lineTo(phX, height * 0.88);
         ctx.stroke();
-        ctx.shadowBlur = 0;
-        
-        // Custom sweeping playhead dial top
+
+        // Playhead Top Dial
         ctx.fillStyle = "#c5a880";
         ctx.beginPath();
-        ctx.moveTo(playheadX, height * 0.1 - 5);
-        ctx.lineTo(playheadX - 5, height * 0.1);
-        ctx.lineTo(playheadX, height * 0.1 + 5);
-        ctx.lineTo(playheadX + 5, height * 0.1);
+        ctx.moveTo(phX, height * 0.12 - 5);
+        ctx.lineTo(phX - 5, height * 0.12);
+        ctx.lineTo(phX, height * 0.12 + 5);
+        ctx.lineTo(phX + 5, height * 0.12);
         ctx.closePath();
         ctx.fill();
-        
-      } else if (type === "vfx") {
-        // VFX Gravity Particle physics - Elegant elliptical orbit when idle, tracks cursor on hover
-        const targetX = isHovered ? mouseRelativeX : width / 2 + Math.cos(time * 1.8) * 130;
-        const targetY = isHovered ? mouseRelativeY : height / 2 + Math.sin(time * 1.8) * 70;
-        
-        particles.forEach((p) => {
-          const dx = targetX - p.x;
-          const dy = targetY - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (isHovered && dist < 240) {
-            const force = (240 - dist) / 1600;
-            p.vx += (dx / dist) * force;
-            p.vy += (dy / dist) * force;
-          } else {
-            p.vx += (dx / (dist || 1)) * 0.018;
-            p.vy += (dy / (dist || 1)) * 0.018;
-          }
-          
-          // Terminal speed cap
-          const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-          const maxSpeed = 3.2;
-          if (speed > maxSpeed) {
-            p.vx = (p.vx / speed) * maxSpeed;
-            p.vy = (p.vy / speed) * maxSpeed;
-          }
-          
-          p.x += p.vx;
-          p.y += p.vy;
-          
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(197, 168, 128, ${p.alpha})`;
-          ctx.fill();
-        });
-        
-      } else if (type === "cgi") {
-        // Projection matrices for rotating dual-nested wireframe cubes (Tesseract effect)
-        const scaleOuter = Math.min(width, height) * 0.28;
-        const scaleInner = scaleOuter * 0.48;
-        const centerX = width / 2;
-        const centerY = height / 2;
-        
-        const rotXOuter = time * 0.45 + (isHovered ? (mouseRelativeY - centerY) * 0.0025 : 0);
-        const rotYOuter = time * 0.65 + (isHovered ? (mouseRelativeX - centerX) * 0.0025 : 0);
-        
-        const rotXInner = -time * 0.55;
-        const rotYInner = -time * 0.75;
-        
-        const project = (v: typeof vertices[0], rx: number, ry: number, scale: number) => {
-          // X rotation
-          const y1 = v.y * Math.cos(rx) - v.z * Math.sin(rx);
-          const z1 = v.y * Math.sin(rx) + v.z * Math.cos(rx);
-          
-          // Y rotation
-          const x2 = v.x * Math.cos(ry) - z1 * Math.sin(ry);
-          const z2 = v.x * Math.sin(ry) + z1 * Math.cos(ry);
-          
-          const fov = 3.5;
-          const perspective = fov / (fov + z2);
-          
-          return {
-            x: centerX + x2 * scale * perspective,
-            y: centerY + y1 * scale * perspective
-          };
-        };
-        
-        const projectedOuter = vertices.map(v => project(v, rotXOuter, rotYOuter, scaleOuter));
-        const projectedInner = vertices.map(v => project(v, rotXInner, rotYInner, scaleInner));
-        
-        // Render 3D edges Outer
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.52)";
-        ctx.lineWidth = 1.2;
-        edges.forEach(([u, v]) => {
-          ctx.beginPath();
-          ctx.moveTo(projectedOuter[u].x, projectedOuter[u].y);
-          ctx.lineTo(projectedOuter[v].x, projectedOuter[v].y);
-          ctx.stroke();
-        });
-        
-        // Render 3D edges Inner
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
-        ctx.lineWidth = 0.8;
-        edges.forEach(([u, v]) => {
-          ctx.beginPath();
-          ctx.moveTo(projectedInner[u].x, projectedInner[u].y);
-          ctx.lineTo(projectedInner[v].x, projectedInner[v].y);
-          ctx.stroke();
-        });
-        
-        // Outer glowing corner nodes
-        projectedOuter.forEach((p) => {
-          ctx.fillStyle = "#c5a880";
-          ctx.shadowColor = "#c5a880";
-          ctx.shadowBlur = 5;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        });
-        
-      } else if (type === "env") {
-        // Landscape topographic scrolling grid waves - full 3D wireframe mesh grid
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.48)";
+
+      // -----------------------------------------------------------------
+      // FIELD 4: BRAND SHOOT (canvasType: "brand")
+      // Camera Lens Aperture Iris, Focal Reticle & Golden Ratio Grid
+      // -----------------------------------------------------------------
+      } else if (type === "brand") {
+        const cx = width / 2;
+        const cy = height / 2;
+        const baseRadius = 65;
+        const irisOpen = Math.sin(time * 1.8) * 15 + baseRadius;
+
+        // Rule of thirds camera grid
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.15)";
         ctx.lineWidth = 1;
-        
-        const linesCount = 8;
-        const pointsCount = 30;
-        const gridPoints: { x: number; y: number }[][] = [];
-        
-        for (let j = 0; j < linesCount; j++) {
-          const lineY = height * 0.26 + (j / (linesCount - 1)) * height * 0.52;
-          const currentLine: { x: number; y: number }[] = [];
-          
-          for (let i = 0; i < pointsCount; i++) {
-            const px = (i / (pointsCount - 1)) * width;
-            const noise = Math.sin(i * 0.24 - time * 2) * Math.cos(j * 0.38 + i * 0.08) * 20;
-            
-            let mouseDeform = 0;
-            if (isHovered) {
-              const dx = px - mouseRelativeX;
-              const dy = lineY - mouseRelativeY;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 130) {
-                mouseDeform = (130 - dist) * 0.28 * Math.sin(time * 5);
-              }
-            }
-            
-            const py = lineY - Math.abs(noise) - mouseDeform;
-            currentLine.push({ x: px, y: py });
-          }
-          gridPoints.push(currentLine);
-        }
-        
-        // Draw horizontal grid lines
-        gridPoints.forEach((line) => {
+        ctx.beginPath();
+        ctx.moveTo(width / 3, 0); ctx.lineTo(width / 3, height);
+        ctx.moveTo((width * 2) / 3, 0); ctx.lineTo((width * 2) / 3, height);
+        ctx.moveTo(0, height / 3); ctx.lineTo(width, height / 3);
+        ctx.moveTo(0, (height * 2) / 3); ctx.lineTo(width, (height * 2) / 3);
+        ctx.stroke();
+
+        // Outer Lens Housing Ring
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.5)";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(cx, cy, baseRadius + 22, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 8-blade Aperture Iris
+        const bladeCount = 8;
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.75)";
+        ctx.lineWidth = 1.2;
+        for (let i = 0; i < bladeCount; i++) {
+          const angle = (i / bladeCount) * Math.PI * 2 + time * 0.3;
+          const bx = cx + Math.cos(angle) * irisOpen;
+          const by = cy + Math.sin(angle) * irisOpen;
+          const tangentAngle = angle + Math.PI / 2.5;
           ctx.beginPath();
-          line.forEach((p, idx) => {
-            if (idx === 0) ctx.moveTo(p.x, p.y);
-            else ctx.lineTo(p.x, p.y);
-          });
+          ctx.moveTo(bx, by);
+          ctx.lineTo(bx + Math.cos(tangentAngle) * 35, by + Math.sin(tangentAngle) * 35);
+          ctx.stroke();
+        }
+
+        // Camera Focus Lock Reticle at Mouse or Center
+        const tx = isHovered ? mx : cx;
+        const ty = isHovered ? my : cy;
+        ctx.strokeStyle = "#c5a880";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(tx - 14, ty - 14, 28, 28);
+        ctx.fillStyle = "#c5a880";
+        ctx.beginPath();
+        ctx.arc(tx, ty, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+      // -----------------------------------------------------------------
+      // FIELD 5: LOGO & BRAND DESIGN (canvasType: "logo")
+      // Vector Geometry Grid, Bezier Handles & Emblem Construction
+      // -----------------------------------------------------------------
+      } else if (type === "logo" || type === "cgi") {
+        const cx = width / 2;
+        const cy = height / 2;
+
+        // Golden ratio concentric circles
+        const radii = [30, 50, 80, 130];
+        radii.forEach((r, idx) => {
+          ctx.strokeStyle = `rgba(197, 168, 128, ${0.15 + idx * 0.08})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
           ctx.stroke();
         });
-        
-        // Draw vertical connecting grid lines with lower opacity
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.18)";
-        ctx.lineWidth = 0.8;
-        for (let i = 0; i < pointsCount; i++) {
+
+        // Morphing Bezier Curve Vector Path
+        const p1 = { x: cx - 110, y: cy + Math.sin(time * 2) * 30 };
+        const cp1 = { x: cx - 40, y: cy - 70 + Math.cos(time * 2) * 40 };
+        const cp2 = { x: cx + 40, y: cy + 70 - Math.cos(time * 2) * 40 };
+        const p2 = { x: cx + 110, y: cy - Math.sin(time * 2) * 30 };
+
+        // Main curve line
+        ctx.strokeStyle = "#c5a880";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y);
+        ctx.stroke();
+
+        // Control Handle Tangent Lines
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y); ctx.lineTo(cp1.x, cp1.y);
+        ctx.moveTo(p2.x, p2.y); ctx.lineTo(cp2.x, cp2.y);
+        ctx.stroke();
+
+        // Anchor & Control Point Handles
+        [p1, cp1, cp2, p2].forEach((pt, i) => {
+          ctx.fillStyle = i % 3 === 0 ? "#c5a880" : "#ffffff";
+          ctx.fillRect(pt.x - 3.5, pt.y - 3.5, 7, 7);
+        });
+
+      // -----------------------------------------------------------------
+      // FIELD 6: UNREAL ENGINE DEV (canvasType: "unreal")
+      // Nanite Point-Cloud Grid, Lumen Ray Tracing Bounces & Shader HUD
+      // -----------------------------------------------------------------
+      } else if (type === "unreal" || type === "env") {
+        const cx = width / 2;
+        const cy = height / 2;
+
+        // 3D Perspective Terrain Grid Lines
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.28)";
+        ctx.lineWidth = 1;
+        const gridRows = 12;
+        for (let j = 0; j < gridRows; j++) {
+          const y = cy + (j / gridRows) * (height / 2 - 10);
+          const rowScale = j / gridRows;
+          const w = width * (0.2 + rowScale * 0.8);
           ctx.beginPath();
-          for (let j = 0; j < linesCount; j++) {
-            if (j === 0) ctx.moveTo(gridPoints[j][i].x, gridPoints[j][i].y);
-            else ctx.lineTo(gridPoints[j][i].x, gridPoints[j][i].y);
-          }
+          ctx.moveTo(cx - w / 2, y);
+          ctx.lineTo(cx + w / 2, y);
           ctx.stroke();
         }
-        
-      } else if (type === "webgl") {
-        // Floating WebGL connection nodes
-        particles.forEach((p) => {
-          p.x += p.vx;
-          p.y += p.vy;
-          
-          if (p.x < 0 || p.x > width) p.vx *= -1;
-          if (p.y < 0 || p.y > height) p.vy *= -1;
-          
-          ctx.fillStyle = "rgba(197, 168, 128, 0.65)";
+
+        // Vanishing Perspective Radial Lines
+        const radials = 10;
+        for (let i = 0; i <= radials; i++) {
+          const rx = (i / radials) * width;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.moveTo(cx, cy - 30);
+          ctx.lineTo(rx, height);
+          ctx.stroke();
+        }
+
+        // Lumen Ray Tracing Bounces
+        const rayX = cx + Math.cos(time * 2) * 120;
+        const rayY = cy + Math.sin(time * 1.5) * 40;
+        ctx.strokeStyle = "#c5a880";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 30);
+        ctx.lineTo(rayX, rayY);
+        ctx.lineTo(rayX + 50, rayY + 30);
+        ctx.stroke();
+
+        ctx.fillStyle = "#c5a880";
+        ctx.beginPath();
+        ctx.arc(rayX, rayY, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(197, 168, 128, 0.7)";
+        ctx.font = "8.5px monospace";
+        ctx.fillText(`LUMEN: PATH_TRACED | NANITE: 2.4M POLYS`, 15, height - 15);
+
+      // -----------------------------------------------------------------
+      // FIELD 7: ARCHITECT DESIGN HOME (canvasType: "architect")
+      // Architectural Floorplan Blueprint, Dimension Measurements & BIM Lines
+      // -----------------------------------------------------------------
+      } else if (type === "architect") {
+        const bpW = width * 0.65;
+        const bpH = height * 0.65;
+        const bpX = (width - bpW) / 2;
+        const bpY = (height - bpH) / 2;
+
+        // Outer Structural Wall Boundaries
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.75)";
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(bpX, bpY, bpW, bpH);
+
+        // Internal Room Dividers
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        // Vertical wall
+        ctx.moveTo(bpX + bpW * 0.45, bpY);
+        ctx.lineTo(bpX + bpW * 0.45, bpY + bpH);
+        // Horizontal wall
+        ctx.moveTo(bpX, bpY + bpH * 0.55);
+        ctx.lineTo(bpX + bpW * 0.45, bpY + bpH * 0.55);
+        ctx.stroke();
+
+        // Architectural Door Arc Swings
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(bpX + bpW * 0.45, bpY + bpH * 0.55, 24, 0, Math.PI / 2);
+        ctx.stroke();
+
+        // Laser Dimension Measurement Arrows
+        const dimY = bpY - 12;
+        ctx.strokeStyle = "#c5a880";
+        ctx.beginPath();
+        ctx.moveTo(bpX, dimY); ctx.lineTo(bpX + bpW, dimY);
+        ctx.moveTo(bpX, dimY - 4); ctx.lineTo(bpX, dimY + 4);
+        ctx.moveTo(bpX + bpW, dimY - 4); ctx.lineTo(bpX + bpW, dimY + 4);
+        ctx.stroke();
+
+        ctx.fillStyle = "#c5a880";
+        ctx.font = "9px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(`DIM: 14.85m`, bpX + bpW / 2, dimY - 5);
+
+      // -----------------------------------------------------------------
+      // FIELD 8: 3D ARCHITECTURE RENDERS (canvasType: "render3d")
+      // Progressive Raytracing Bucket Grid Scanner & Photoreal Caustics
+      // -----------------------------------------------------------------
+      } else if (type === "render3d") {
+        const bucketSize = 40;
+        const cols = Math.ceil(width / bucketSize);
+        const rows = Math.ceil(height / bucketSize);
+        const totalBuckets = cols * rows;
+        const currentBucket = Math.floor((time * 8) % totalBuckets);
+
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.15)";
+        ctx.lineWidth = 0.8;
+        for (let r = 0; r <= rows; r++) {
+          ctx.beginPath();
+          ctx.moveTo(0, r * bucketSize);
+          ctx.lineTo(width, r * bucketSize);
+          ctx.stroke();
+        }
+        for (let c = 0; c <= cols; c++) {
+          ctx.beginPath();
+          ctx.moveTo(c * bucketSize, 0);
+          ctx.lineTo(c * bucketSize, height);
+          ctx.stroke();
+        }
+
+        // Active Rendering Bucket Box
+        const activeCol = currentBucket % cols;
+        const activeRow = Math.floor(currentBucket / cols);
+        const bx = activeCol * bucketSize;
+        const by = activeRow * bucketSize;
+
+        ctx.strokeStyle = "#c5a880";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bx, by, bucketSize, bucketSize);
+
+        // Render Bucket Scanning Corner Crosses
+        ctx.fillStyle = "#c5a880";
+        ctx.fillRect(bx - 2, by - 2, 4, 4);
+        ctx.fillRect(bx + bucketSize - 2, by - 2, 4, 4);
+
+        ctx.font = "8.5px monospace";
+        ctx.fillText(`PASS: 1024/1024 | BUCKET: [${activeCol}, ${activeRow}]`, 15, 20);
+
+      // -----------------------------------------------------------------
+      // FIELD 9: INTERACTIVE ARCHITECTURE (canvasType: "interactive_arch")
+      // 360 Spatial Camera Frustum, Material Hotspots & Radar Minimap
+      // -----------------------------------------------------------------
+      } else if (type === "interactive_arch") {
+        const cx = width / 2;
+        const cy = height / 2;
+
+        // 360 Camera View Frustum Cone
+        const angle = time * 0.8;
+        const coneLength = 110;
+        const spread = 0.5;
+
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.4)";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle - spread) * coneLength, cy + Math.sin(angle - spread) * coneLength);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle + spread) * coneLength, cy + Math.sin(angle + spread) * coneLength);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, coneLength, angle - spread, angle + spread);
+        ctx.stroke();
+
+        // Material Swap Hotspot Targets
+        const hotspots = [
+          { x: cx - 70, y: cy - 40 },
+          { x: cx + 80, y: cy - 20 },
+          { x: cx, y: cy + 60 }
+        ];
+
+        hotspots.forEach((hs, i) => {
+          const pulse = Math.sin(time * 3 + i) * 4 + 7;
+          ctx.strokeStyle = "#c5a880";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(hs.x, hs.y, pulse, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = "#c5a880";
+          ctx.beginPath();
+          ctx.arc(hs.x, hs.y, 2.5, 0, Math.PI * 2);
           ctx.fill();
         });
-        
-        // Node lines
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
-        ctx.lineWidth = 0.9;
-        for (let i = 0; i < particles.length; i++) {
-          for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < 100) {
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.stroke();
-            }
-          }
-          
-          // Custom interactive cursor connection lines
-          if (isHovered) {
-            const dx = particles[i].x - mouseRelativeX;
-            const dy = particles[i].y - mouseRelativeY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            if (dist < 140) {
-              ctx.strokeStyle = `rgba(197, 168, 128, ${0.62 * (1 - dist / 140)})`;
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(mouseRelativeX, mouseRelativeY);
-              ctx.stroke();
-              
-              // Draw a tiny ring around the connected node
-              ctx.strokeStyle = `rgba(197, 168, 128, ${0.45 * (1 - dist / 140)})`;
-              ctx.beginPath();
-              ctx.arc(particles[i].x, particles[i].y, particles[i].radius * 2.8, 0, Math.PI * 2);
-              ctx.stroke();
-            }
-          }
-        }
-        
-      } else if (type === "app") {
-        // Micro-frontend architecture data flows - Advanced Routing diagram
-        const nodes = [
-          { x: width * 0.25, y: height * 0.35, label: "EDGE" },
-          { x: width * 0.75, y: height * 0.35, label: "DB" },
-          { x: width * 0.5, y: height * 0.7, label: "GATE" },
-          { x: width * 0.5, y: height * 0.2, label: "CORE" },
-        ];
-        
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.32)";
-        ctx.lineWidth = 1.5;
+
+        // Minimap Corner Radar
+        const mmSize = 50;
+        const mmX = width - mmSize - 15;
+        const mmY = height - mmSize - 15;
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.5)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(mmX, mmY, mmSize, mmSize);
+        ctx.fillStyle = "#c5a880";
         ctx.beginPath();
-        // Ring route
-        ctx.moveTo(nodes[0].x, nodes[0].y);
-        ctx.lineTo(nodes[3].x, nodes[3].y);
-        ctx.lineTo(nodes[1].x, nodes[1].y);
-        ctx.lineTo(nodes[2].x, nodes[2].y);
-        ctx.lineTo(nodes[0].x, nodes[0].y);
-        // Direct linkages
-        ctx.moveTo(nodes[3].x, nodes[3].y);
-        ctx.lineTo(nodes[2].x, nodes[2].y);
-        ctx.stroke();
-        
-        const drawSignalPulse = (n1: typeof nodes[0], n2: typeof nodes[0], speed = 1.0) => {
-          const t = (time * 0.28 * speed) % 1.0;
-          const px = n1.x + (n2.x - n1.x) * t;
-          const py = n1.y + (n2.y - n1.y) * t;
-          ctx.fillStyle = "#c5a880";
-          ctx.shadowColor = "#c5a880";
-          ctx.shadowBlur = 5;
-          ctx.fillRect(px - 3, py - 3, 6, 6);
-          ctx.shadowBlur = 0;
-        };
-        
-        drawSignalPulse(nodes[0], nodes[3], 1.1);
-        drawSignalPulse(nodes[3], nodes[1], 0.9);
-        drawSignalPulse(nodes[1], nodes[2], 1.2);
-        drawSignalPulse(nodes[2], nodes[0], 0.8);
-        drawSignalPulse(nodes[3], nodes[2], 1.4);
-        
-        nodes.forEach((node) => {
-          ctx.fillStyle = "#09090c";
-          ctx.strokeStyle = "#c5a880";
-          ctx.lineWidth = 1.2;
-          
-          ctx.fillRect(node.x - 28, node.y - 14, 56, 28);
-          ctx.strokeRect(node.x - 28, node.y - 14, 56, 28);
-          
-          ctx.fillStyle = "rgba(197, 168, 128, 0.95)";
-          ctx.font = "bold 9px monospace";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(node.label, node.x, node.y);
-          
-          if ((Math.floor(time * 3.5) % 2) === 0) {
-            ctx.fillStyle = "#10b981";
-            ctx.beginPath();
-            ctx.arc(node.x + 20, node.y - 8, 2.2, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        });
-        
-        ctx.fillStyle = "rgba(197, 168, 128, 0.65)";
-        ctx.font = "8.5px monospace";
-        ctx.textAlign = "left";
-        ctx.fillText(`[ SYNC: SECURED ] [ PORT: 443 ]`, width * 0.08, height * 0.88);
-        ctx.fillText(`[ SPEED: ${Math.floor(Math.sin(time) * 2 + 10)}ms ]`, width * 0.64, height * 0.88);
-        
-      } else if (type === "ai") {
-        // AI Dynamic Fluid flow fields - Highly visible vectors
-        const targetX = isHovered ? mouseRelativeX : width / 2;
-        const targetY = isHovered ? mouseRelativeY : height / 2;
-        
-        particles.forEach((p) => {
-          const dx = p.x - targetX;
-          const dy = p.y - targetY;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          
-          const vxTarget = -dy / dist;
-          const vyTarget = dx / dist;
-          const pullX = -dx / dist;
-          const pullY = -dy / dist;
-          
-          p.vx = p.vx * 0.94 + (vxTarget * 1.5 + pullX * 0.35) * 0.06;
-          p.vy = p.vy * 0.94 + (vyTarget * 1.5 + pullY * 0.35) * 0.06;
-          
-          p.x += p.vx;
-          p.y += p.vy;
-          
-          if (p.x < -15) p.x = width + 15;
-          if (p.x > width + 15) p.x = -15;
-          if (p.y < -15) p.y = height + 15;
-          if (p.y > height + 15) p.y = -15;
-          
-          ctx.strokeStyle = `rgba(197, 168, 128, ${p.alpha * 0.95})`;
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p.x - p.vx * 2.5, p.y - p.vy * 2.5);
-          ctx.stroke();
-        });
-        
+        ctx.arc(mmX + mmSize / 2, mmY + mmSize / 2, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+      // -----------------------------------------------------------------
+      // FIELD 10: AR / VR SOLUTIONS (canvasType: "xr")
+      // 6DoF Spatial Hand Tracking, Gaussian Splatting & Volumetric Reticle
+      // -----------------------------------------------------------------
       } else if (type === "xr") {
-        // Spatial XR tracking HUD vectors - Dashed rotating dials
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const targetX = isHovered ? mouseRelativeX : centerX;
-        const targetY = isHovered ? mouseRelativeY : centerY;
-        
-        // Outer Solid Tracking Circle
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.42)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 70, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // Dash Dial Overlay rotating slowly
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.18)";
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.setLineDash([4, 6]);
-        ctx.arc(centerX, centerY, 95, time * 0.2, time * 0.2 + Math.PI * 2);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Reticle Target Ring
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.85)";
+        // Volumetric Gaussian Splats Floating Cloud
+        splats.forEach((sp) => {
+          sp.x += sp.vx;
+          sp.y += sp.vy;
+          if (sp.x < 0 || sp.x > width) sp.vx *= -1;
+          if (sp.y < 0 || sp.y > height) sp.vy *= -1;
+
+          ctx.fillStyle = `rgba(197, 168, 128, ${sp.alpha})`;
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // 6DoF Hand-Tracking Skeletal Joints
+        const tx = isHovered ? mx : width / 2;
+        const ty = isHovered ? my : height / 2;
+
+        const joints = [
+          { x: tx, y: ty },
+          { x: tx - 25, y: ty - 35 },
+          { x: tx - 10, y: ty - 50 },
+          { x: tx + 10, y: ty - 45 },
+          { x: tx + 28, y: ty - 30 }
+        ];
+
+        // Bone connecting lines
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.7)";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(targetX, targetY, 20, 0, Math.PI * 2);
+        joints.forEach((j, idx) => {
+          if (idx === 0) ctx.moveTo(j.x, j.y);
+          else ctx.lineTo(j.x, j.y);
+        });
         ctx.stroke();
-        
-        // Crosshair reticle
+
+        // Joint Node Spheres
+        joints.forEach((j) => {
+          ctx.fillStyle = "#c5a880";
+          ctx.beginPath();
+          ctx.arc(j.x, j.y, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Holographic Spatial Optics Circle
+        ctx.strokeStyle = "rgba(197, 168, 128, 0.4)";
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(targetX - 28, targetY);
-        ctx.lineTo(targetX - 8, targetY);
-        ctx.moveTo(targetX + 8, targetY);
-        ctx.lineTo(targetX + 28, targetY);
-        ctx.moveTo(targetX, targetY - 28);
-        ctx.lineTo(targetX, targetY - 8);
-        ctx.moveTo(targetX, targetY + 8);
-        ctx.lineTo(targetX, targetY + 28);
+        ctx.arc(tx, ty, 65, time * 0.5, time * 0.5 + Math.PI * 1.5);
         ctx.stroke();
-        
-        // Elastic link thread
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.22)";
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(targetX, targetY);
-        ctx.stroke();
-        
-        // Static bounds markings
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.28)";
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY - 85);
-        ctx.lineTo(centerX, centerY - 70);
-        ctx.moveTo(centerX, centerY + 70);
-        ctx.lineTo(centerX, centerY + 85);
-        ctx.moveTo(centerX - 85, centerY);
-        ctx.lineTo(centerX - 70, centerY);
-        ctx.moveTo(centerX + 70, centerY);
-        ctx.lineTo(centerX + 85, centerY);
-        ctx.stroke();
-        
-        // Corner HUD markers
-        ctx.strokeStyle = "rgba(197, 168, 128, 0.25)";
-        ctx.beginPath();
-        ctx.moveTo(centerX - 90, centerY - 90);
-        ctx.lineTo(centerX - 90, centerY - 75);
-        ctx.lineTo(centerX - 75, centerY - 90);
-        ctx.closePath();
-        ctx.stroke();
-        
-        ctx.fillStyle = "rgba(197, 168, 128, 0.85)";
-        ctx.font = "9px monospace";
-        ctx.textAlign = "left";
-        ctx.fillText(`6DoF X: ${Math.floor(targetX - centerX)}`, centerX - 55, centerY + 95);
-        ctx.fillText(`6DoF Y: ${Math.floor(centerY - targetY)}`, centerX + 15, centerY + 95);
-        
-        ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
-        ctx.font = "8px monospace";
-        ctx.fillText(`XR_BOUNDS: ACTIVE`, width * 0.08, height * 0.14);
       }
       
       if (isIntersecting) {
@@ -680,14 +736,20 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
   const { services: rawServices } = useAdmin();
 
   const iconMap: Record<string, React.ReactNode> = {
+    Code: <Code className="w-5 h-5 text-[#c5a880]" />,
+    Bot: <Bot className="w-5 h-5 text-[#c5a880]" />,
     Film: <Film className="w-5 h-5 text-[#c5a880]" />,
-    Sparkles: <Sparkles className="w-5 h-5 text-[#c5a880]" />,
-    Box: <Box className="w-5 h-5 text-[#c5a880]" />,
+    Camera: <Camera className="w-5 h-5 text-[#c5a880]" />,
+    PenTool: <PenTool className="w-5 h-5 text-[#c5a880]" />,
     Layers: <Layers className="w-5 h-5 text-[#c5a880]" />,
+    Home: <Home className="w-5 h-5 text-[#c5a880]" />,
+    Box: <Box className="w-5 h-5 text-[#c5a880]" />,
+    MousePointerClick: <MousePointerClick className="w-5 h-5 text-[#c5a880]" />,
+    Eye: <Eye className="w-5 h-5 text-[#c5a880]" />,
+    Sparkles: <Sparkles className="w-5 h-5 text-[#c5a880]" />,
     Cpu: <Cpu className="w-5 h-5 text-[#c5a880]" />,
     Smartphone: <Smartphone className="w-5 h-5 text-[#c5a880]" />,
-    ScanFace: <ScanFace className="w-5 h-5 text-[#c5a880]" />,
-    Eye: <Eye className="w-5 h-5 text-[#c5a880]" />
+    ScanFace: <ScanFace className="w-5 h-5 text-[#c5a880]" />
   };
 
   const services: ServiceItem[] = rawServices.map((s) => ({
@@ -799,18 +861,23 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
         
         {/* Modern Cyber Section Header */}
         <div className="w-full flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 mb-8 lg:mb-10 shrink-0 relative">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] tracking-[0.45em] text-[#6b7280] uppercase">
-              CAPABILITIES HUD
-            </span>
-            <div className="w-8 h-[1px] bg-[#c5a880]/20" />
-            <span className="font-mono text-[9px] text-[#c5a880] animate-pulse">
-              [ ONLINE ]
-            </span>
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-[10px] tracking-[0.45em] text-[#6b7280] uppercase">
+                CAPABILITIES HUD
+              </span>
+              <div className="w-8 h-[1px] bg-[#c5a880]/20" />
+              <span className="font-mono text-[9px] text-[#c5a880] animate-pulse">
+                [ ONLINE ]
+              </span>
+            </div>
+            <h2 className="font-display text-xl md:text-2xl tracking-[0.1em] text-white mt-2 uppercase">
+              CREATIVE TECHNOLOGY STACK
+            </h2>
+            <p className="font-mono text-xs text-[#c5a880]/70 tracking-widest mt-1 uppercase">
+              WE BUILD. AUTOMATE. ELEVATE. — End-to-End Digital Solutions
+            </p>
           </div>
-          <h2 className="font-display text-xl md:text-2xl tracking-[0.1em] text-white mt-2 md:mt-0 uppercase">
-            CREATIVE TECHNOLOGY STACK
-          </h2>
         </div>
 
         {/* Dashboard Frame Grid */}

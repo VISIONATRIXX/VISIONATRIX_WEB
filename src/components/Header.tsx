@@ -27,28 +27,38 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
   }, [isMobileMenuOpen]);
 
   useEffect(() => {
+    const docHeightRef = { current: 1 };
+
+    const updateDocHeight = () => {
+      docHeightRef.current = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+    };
+
     const handleScroll = () => {
-      if (window.scrollY > 20) {
+      const scrollTop = window.scrollY;
+
+      if (scrollTop > 20) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
 
-      // Calculate scroll progress percentage
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      
+      // Calculate scroll progress percentage utilizing cached docHeight
+      const progress = Math.max(0, Math.min(100, (scrollTop / docHeightRef.current) * 100));
+
       if (progressBarRef.current) {
         progressBarRef.current.style.width = `${progress}%`;
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateDocHeight();
     handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", updateDocHeight, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateDocHeight);
     };
   }, []);
 
@@ -73,11 +83,10 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
   return (
     <>
       <motion.header
-        className={`fixed top-0 left-0 right-0 z-[9995] transition-all duration-300 ${
-          scrolled 
-            ? "bg-[#0b0b0f]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10" 
-            : "bg-[#0b0b0f]/35 border-b border-transparent py-[26px]"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-[9995] transition-all duration-300 ${scrolled
+          ? "bg-[#0b0b0f]/85 border-b border-[#c5a880]/15 py-[18px] shadow-lg shadow-black/10"
+          : "bg-[#0b0b0f]/35 border-b border-transparent py-[26px]"
+          }`}
         style={{
           backdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
           WebkitBackdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
@@ -88,17 +97,17 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
       >
         {/* Top Gold Gradient Border (Background Line) */}
         <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-[#7c5f35] via-[#e2cbb0] via-[#7c5f35] via-[#e2cbb0] to-[#7c5f35] opacity-25 z-40" />
-  
+
         {/* Top Scroll Progress Bar */}
         <div
           ref={progressBarRef}
           className="absolute top-0 left-0 h-[2px] bg-gradient-to-r from-[#7c5f35] via-[#e2cbb0] via-[#7c5f35] via-[#e2cbb0] to-[#7c5f35] shadow-[0_0_8px_rgba(197,168,128,0.6)] z-50 will-change-[width]"
           style={{ width: "0%" }}
         />
-  
+
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Logo and Brand Name */}
-          <div 
+          <div
             className="flex items-center gap-3.5 cursor-pointer group"
             onClick={() => onNavClick("home")}
             data-cursor="home"
@@ -106,7 +115,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
             {/* Actual LOGO.png */}
             <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-110">
               <Image
-                src="/LOGO.webp"
+                src="/LOGO.png"
                 alt="Visionatrix Logo"
                 fill
                 priority
@@ -117,7 +126,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               VISIONATRIX
             </span>
           </div>
-  
+
           {/* Navigation Links */}
           <nav className="hidden lg:flex items-center gap-8 xl:gap-11">
             {navItems.map((item, idx) => {
@@ -127,18 +136,17 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
                   key={idx}
                   onClick={() => onNavClick(item.id)}
                   data-cursor={`goto ${item.label.toLowerCase()}`}
-                  className={`font-outfit text-[12.5px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${
-                    active 
-                      ? "text-white font-semibold" 
-                      : "text-[#94a3b8] hover:text-white"
-                  } nav-link-underline ${active ? "active" : ""}`}
+                  className={`font-outfit text-[12.5px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${active
+                    ? "text-white font-semibold"
+                    : "text-[#94a3b8] hover:text-white"
+                    } nav-link-underline ${active ? "active" : ""}`}
                 >
                   {item.label}
                 </button>
               );
             })}
           </nav>
-  
+
           {/* Right Section: CTA & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
             {/* Get Started CTA */}
@@ -152,7 +160,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
                 <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </button>
             </div>
-  
+
             {/* Mobile menu trigger */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -181,7 +189,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           </div>
         </div>
       </motion.header>
-  
+
       {/* Mobile Menu Drawer Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -196,7 +204,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] bg-[#c5a880]/3 blur-[120px] rounded-full" />
             </div>
-  
+
             {/* Menu Links */}
             <nav className="flex flex-col items-center gap-7 z-10">
               {navItems.map((item, idx) => {
@@ -211,17 +219,16 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
                       setIsMobileMenuOpen(false);
                       onNavClick(item.id);
                     }}
-                    className={`font-outfit text-base tracking-[0.22em] transition-colors duration-300 cursor-pointer ${
-                      active 
-                        ? "text-[#c5a880] font-semibold" 
-                        : "text-[#94a3b8] hover:text-white"
-                    }`}
+                    className={`font-outfit text-base tracking-[0.22em] transition-colors duration-300 cursor-pointer ${active
+                      ? "text-[#c5a880] font-semibold"
+                      : "text-[#94a3b8] hover:text-white"
+                      }`}
                   >
                     {item.label}
                   </motion.button>
                 );
               })}
-  
+
               {/* Mobile CTA Button inside the menu drawer */}
               <motion.button
                 initial={{ opacity: 0, y: 15 }}

@@ -41,7 +41,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${outfit.variable} ${michroma.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0b0b0f] text-white">
+      <body className="min-h-full flex flex-col bg-[#0b0b0f] text-white"> 
         <div className="noise-overlay" />
         <AdminProvider>{children}</AdminProvider>
       </body>
