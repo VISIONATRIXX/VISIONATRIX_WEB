@@ -19,6 +19,8 @@ export default function FeedbackSection() {
   const { testimonials: rawTestimonials } = useAdmin();
   const testimonials = rawTestimonials.filter(t => t.isActive);
 
+
+// ADD COMPANY NAMEDS //
   const clientLogos = [
     "ARAVALLI NEWS",
     "JAIMIN FILMS",

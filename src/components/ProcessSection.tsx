@@ -9,32 +9,44 @@ interface TimelineStep {
   category: string;
   title: string;
   description: string;
+  tags: string[];
 }
 
 const steps: TimelineStep[] = [
   {
     id: "01",
-    category: "DISCOVERY & SCOPING",
-    title: "Tactile Metrics Mapping",
-    description: "Collaborating closely with luxury design teams to isolate physical textiles parameters, atmospheric indices, and creative requirements.",
+    category: "DISCOVERY & BLUEPRINT",
+    title: "Requirements & Technical Architecture",
+    description: "Auditing client requirements, defining technology stack parameters (AI, Web, 3D, Video), mapping database architecture, and locking project milestones before production.",
+    tags: ["Project Scope SRS", "Tech Stack Specs", "Milestone Roadmap"]
   },
   {
     id: "02",
-    category: "CONCEPT ARCHITECTURE",
-    title: "Mathematical Speculation",
-    description: "Formulating conceptual digital layouts, fluid vector current flow diagrams, and abstract lighting trajectories prior to drafting code sheets.",
+    category: "DESIGN & PROTOTYPING",
+    title: "Visual Specs & Rapid Prototyping",
+    description: "Designing high-fidelity UI wireframes, CGI moodboards, 3D styleframes, and interactive motion prototypes to align creative direction prior to full build.",
+    tags: ["Figma UI/UX Spec", "3D Styleframes", "Interactive Pre-vis"]
   },
   {
     id: "03",
-    category: "DEVELOPMENT & PRODUCTION",
-    title: "Glassmorphic Sculpting",
-    description: "Constructing dark, volumetric user interfaces, tailored typography hierarchies, and highly responsive micro-bezel elements.",
+    category: "ENGINEERING & PRODUCTION",
+    title: "High-Performance Build & Rendering",
+    description: "Writing production-grade code, rendering 3D environments, compositing 8K video timelines, training AI workflows (n8n/ComfyUI), or deploying responsive web apps.",
+    tags: ["Clean Codebase", "AI Pipelines", "8K Render & Compositing"]
   },
   {
     id: "04",
-    category: "TELEMETRIC INTEGRATION",
-    title: "System Integration",
-    description: "Executing frame rate stress tests, asset optimization cycles, loading latency checks, and strict visual fidelity audits before final delivery.",
+    category: "TESTING & OPTIMIZATION",
+    title: "QA & Performance Telemetry",
+    description: "Executing cross-device responsiveness checks, frame rate performance audits (60/120fps), security vulnerability scans, and GPU asset compression for instant loading.",
+    tags: ["Cross-Platform QA", "60fps GPU Tuning", "Fidelity Audit"]
+  },
+  {
+    id: "05",
+    category: "DEPLOYMENT & HANDOVER",
+    title: "Global Launch & SLA Support",
+    description: "Deploying to high-availability global edge servers, delivering master 8K render exports, configuring automated CI/CD pipelines, and providing ongoing support.",
+    tags: ["Global Edge Launch", "Master Renders", "Post-Launch Support"]
   }
 ];
 
@@ -156,7 +168,7 @@ export default function ProcessSection() {
         {/* Section Header */}
         <div className="w-full flex flex-col items-center text-center mb-16 md:mb-24">
           <span className="font-mono text-[10px] tracking-[0.25em] text-[#c5a880] uppercase mb-2">
-            [ PIPELINE SCHEMES ]
+            [ WORKFLOW BLUEPRINT ]
           </span>
           <h2 className="font-display text-2xl md:text-4xl font-bold tracking-[0.1em] text-white uppercase">
             EXECUTION PIPELINE
@@ -200,9 +212,16 @@ export default function ProcessSection() {
                       <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
-                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
+                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed mb-4">
                         {step.description}
                       </p>
+                      <div className="flex flex-wrap gap-1.5 justify-start md:justify-end">
+                        {step.tags.map((tag, tIdx) => (
+                          <span key={tIdx} className="font-mono text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-md bg-[#c5a880]/10 border border-[#c5a880]/20 text-[#c5a880] uppercase">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -220,9 +239,16 @@ export default function ProcessSection() {
                       <h3 className="font-outfit text-xl md:text-2xl font-bold tracking-[0.05em] text-white uppercase mb-3 group-hover:text-[#c5a880] transition-colors duration-300">
                         {step.title}
                       </h3>
-                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed">
+                      <p className="font-sans text-xs md:text-sm text-[#8e8e9f] leading-relaxed mb-4">
                         {step.description}
                       </p>
+                      <div className="flex flex-wrap gap-1.5 justify-start">
+                        {step.tags.map((tag, tIdx) => (
+                          <span key={tIdx} className="font-mono text-[9px] font-bold tracking-wider px-2.5 py-1 rounded-md bg-[#c5a880]/10 border border-[#c5a880]/20 text-[#c5a880] uppercase">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
