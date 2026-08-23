@@ -275,6 +275,24 @@ export default function EngineStackSection() {
             />
           </svg>
         );
+      case "supabase":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 512 512">
+            <defs>
+              <linearGradient id="supa-a" x1="237.109" x2="419.106" y1="223.219" y2="146.89" gradientTransform="matrix(1 0 0 -1 0 513)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stopColor="#249361" />
+                <stop offset="1" stopColor="#3ecf8e" />
+              </linearGradient>
+              <linearGradient id="supa-b" x1="245.829" x2="328.829" y1="411.681" y2="255.438" gradientTransform="matrix(1 0 0 -1 0 513)" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stopColor="#000" />
+                <stop offset="1" stopColor="#000" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d="M297.6 501c-12.9 16.3-39.2 7.4-39.5-13.4L253.6 183h204.8c37.1 0 57.8 42.8 34.7 71.9z" fill="url(#supa-a)" />
+            <path d="M297.6 501c-12.9 16.3-39.2 7.4-39.5-13.4L253.6 183h204.8c37.1 0 57.8 42.8 34.7 71.9z" fill="url(#supa-b)" fillOpacity="0.2" />
+            <path d="M214.4 11c12.9-16.3 39.2-7.4 39.5 13.4l2 304.5H53.7c-37.1 0-57.8-42.8-34.7-71.9z" fill="#3ecf8e" />
+          </svg>
+        );
       case "ae":
         return (
           <div className="w-7 h-7 bg-[#00005b] rounded-lg border border-[#9999ff] flex items-center justify-center font-outfit text-xs font-black text-[#9999ff] tracking-tighter">
