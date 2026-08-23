@@ -20,7 +20,8 @@ import {
   Compass, 
   TerminalSquare, 
   Eye, 
-  Gauge 
+  Gauge,
+  Gamepad2
 } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
@@ -34,6 +35,7 @@ interface Tool {
 interface EngineStackCategory {
   id: string;
   label: string;
+  categoryIcon: string;
   tools: Tool[];
 }
 
@@ -43,7 +45,8 @@ export default function EngineStackSection() {
   const categories: EngineStackCategory[] = [
     {
       id: "ai_automation",
-      label: "🤖 AI AUTOMATION & AGENTS",
+      label: "AI AUTOMATION & AGENTS",
+      categoryIcon: "Bot",
       tools: [
         {
           name: "n8n WORKFLOW AUTOMATION",
@@ -85,7 +88,8 @@ export default function EngineStackSection() {
     },
     {
       id: "web_spatial",
-      label: "💻 WEB & SPATIAL CORE",
+      label: "WEB & SPATIAL CORE",
+      categoryIcon: "Code",
       tools: [
         {
           name: "NEXT.JS 15 & REACT",
@@ -127,7 +131,8 @@ export default function EngineStackSection() {
     },
     {
       id: "unreal_graphics",
-      label: "🎮 UNREAL & 3D GRAPHICS",
+      label: "UNREAL & 3D GRAPHICS",
+      categoryIcon: "Gamepad2",
       tools: [
         {
           name: "UNREAL ENGINE 5.4",
@@ -169,7 +174,8 @@ export default function EngineStackSection() {
     },
     {
       id: "architect_bim",
-      label: "🏠 ARCHITECT & BIM",
+      label: "ARCHITECT & BIM",
+      categoryIcon: "Compass",
       tools: [
         {
           name: "AUTODESK REVIT",
@@ -233,6 +239,7 @@ export default function EngineStackSection() {
       case "TerminalSquare": return <TerminalSquare className="w-5 h-5" />;
       case "Eye": return <Eye className="w-5 h-5" />;
       case "Gauge": return <Gauge className="w-5 h-5" />;
+      case "Gamepad2": return <Gamepad2 className="w-5 h-5" />;
       default: return <Sparkles className="w-5 h-5" />;
     }
   };
@@ -263,7 +270,7 @@ export default function EngineStackSection() {
           </p>
         </div>
 
-        {/* Centered Tab Selector */}
+        {/* Centered Tab Selector with Lucide Icons */}
         <div className="flex justify-center mb-12 md:mb-16 shrink-0 z-20 w-full overflow-x-auto modal-scrollbar pb-2">
           <div className="inline-flex p-1.5 bg-[#0b0b0e] border border-white/10 rounded-full gap-1.5 shrink-0">
             {categories.map((cat) => {
@@ -272,11 +279,14 @@ export default function EngineStackSection() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveTab(cat.id)}
-                  className={`relative px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-outfit text-[9.5px] sm:text-xs tracking-[0.15em] font-bold transition-all duration-300 cursor-pointer shrink-0 ${
+                  className={`relative px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-outfit text-[9.5px] sm:text-xs tracking-[0.15em] font-bold transition-all duration-300 cursor-pointer shrink-0 flex items-center gap-2 ${
                     isActive ? "text-[#c5a880]" : "text-white/40 hover:text-white"
                   }`}
                 >
-                  <span className="relative z-10">{cat.label}</span>
+                  <span className="relative z-10 flex items-center gap-2">
+                    {renderIcon(cat.categoryIcon)}
+                    <span>{cat.label}</span>
+                  </span>
                   {isActive && (
                     <motion.div
                       layoutId="activeEngineTab"

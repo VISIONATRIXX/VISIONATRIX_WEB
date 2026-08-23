@@ -49,14 +49,14 @@ export function renderXrSolutionsAnimation({ ctx, width, height, time, mx, my, i
   ctx.fillStyle = "#c5a880";
   ctx.font = "bold 8.5px monospace";
   ctx.textAlign = "left";
-  ctx.fillText("⭕ META HORIZON OS v65 — SPATIAL VR DASHBOARD", dockX + 16, dockY + 20);
+  ctx.fillText("[ META HORIZON OS v65 — SPATIAL VR DASHBOARD ]", dockX + 16, dockY + 20);
 
   // Floating VR App Cards inside Horizon OS
   const cardW = (dockW - 48) / 3;
   const cards = [
-    { title: "BEAT SABER VR", icon: "⚔️", color: "#e11d48" },
-    { title: "WORKROOMS", icon: "🕶️", color: "#3b82f6" },
-    { title: "SPATIAL 3D VR", icon: "🌌", color: "#10b981" }
+    { title: "BEAT SABER VR", badge: "GAME", color: "#e11d48" },
+    { title: "WORKROOMS", badge: "DESK", color: "#3b82f6" },
+    { title: "SPATIAL 3D VR", badge: "3D", color: "#10b981" }
   ];
 
   cards.forEach((c, idx) => {
@@ -72,14 +72,22 @@ export function renderXrSolutionsAnimation({ ctx, width, height, time, mx, my, i
     ctx.fillRect(cX, cY, cardW, cH);
     ctx.strokeRect(cX, cY, cardW, cH);
 
-    // App Icon
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "18px monospace";
+    // Vector Graphics Icon Badge
+    const iconX = cX + cardW / 2;
+    const iconY = cY + 30;
+    ctx.strokeStyle = isCardSelected ? "#10b981" : "#c5a880";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(iconX, iconY, 12, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = isCardSelected ? "#10b981" : "#c5a880";
+    ctx.font = "bold 8px monospace";
     ctx.textAlign = "center";
-    ctx.fillText(c.icon, cX + cardW / 2, cY + 35);
+    ctx.fillText(c.badge, iconX, iconY + 3);
 
     // App Title
-    ctx.fillStyle = isCardSelected ? "#10b981" : "#c5a880";
+    ctx.fillStyle = isCardSelected ? "#ffffff" : "#c5a880";
     ctx.font = "bold 7.5px monospace";
     ctx.fillText(c.title, cX + cardW / 2, cY + cH - 12);
   });
@@ -145,7 +153,7 @@ export function renderXrSolutionsAnimation({ ctx, width, height, time, mx, my, i
   ctx.fillStyle = "#ffffff";
   ctx.font = "bold 7px monospace";
   ctx.textAlign = "center";
-  ctx.fillText("[ ⚡ TRIGGER CLICK ]", ctrlX, ctrlY + 62);
+  ctx.fillText("[ TRIGGER CLICK ]", ctrlX, ctrlY + 62);
 
   // 5. META QUEST VR SYSTEM TELEMETRY HUD
   ctx.fillStyle = "#c5a880";

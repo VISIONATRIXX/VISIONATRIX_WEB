@@ -4,30 +4,30 @@ export function renderAiAutomationAnimation({ ctx, width, height, time }: Canvas
   const topY = height * 0.22;
   const midY = height * 0.50;
   const botY = height * 0.78;
-  const nodeW = 96;
+  const nodeW = 98;
   const nodeH = 32;
 
   // 1. Pipeline Primary Sequence (Row 1)
   const primaryNodes = [
-    { id: "inbound", label: "WhatsApp Inbound", icon: "⚡", x: width * 0.08, y: topY },
-    { id: "switch", label: "Has Message?", icon: "🔀", x: width * 0.23, y: topY },
-    { id: "extract", label: "Extract Msg", icon: "{}", x: width * 0.39, y: topY },
-    { id: "supabase", label: "Supabase DB", icon: "🌐", x: width * 0.54, y: topY },
-    { id: "filter", label: "Filter Intent", icon: "🔍", x: width * 0.69, y: topY },
-    { id: "agent", label: "AI Patient Agent", icon: "🤖", x: width * 0.86, y: topY }
+    { id: "inbound", label: "WhatsApp Inbound", badge: "INBOUND", x: width * 0.08, y: topY },
+    { id: "switch", label: "Has Message?", badge: "IF/ELSE", x: width * 0.23, y: topY },
+    { id: "extract", label: "Extract Msg", badge: "PARSER", x: width * 0.39, y: topY },
+    { id: "supabase", label: "Supabase DB", badge: "DB", x: width * 0.54, y: topY },
+    { id: "filter", label: "Filter Intent", badge: "FILTER", x: width * 0.69, y: topY },
+    { id: "agent", label: "AI Patient Agent", badge: "AGENT", x: width * 0.86, y: topY }
   ];
 
   // 2. Branching Secondary Node (Row 2 - False Branch)
-  const fallbackNode = { id: "ack", label: "Ack Event (200)", icon: "✓", x: width * 0.23, y: midY };
+  const fallbackNode = { id: "ack", label: "Ack Event (200)", badge: "200 OK", x: width * 0.23, y: midY };
 
   // 3. Sub-Tool Fan-Out Nodes (Row 3 - AI Agent Sub-nodes)
   const toolNodes = [
-    { id: "openai", label: "OpenAI GPT-4o", icon: "🧠", x: width * 0.22, y: botY },
-    { id: "gemini", label: "Gemini 1.5 Pro", icon: "✨", x: width * 0.35, y: botY },
-    { id: "memory", label: "Vector Memory", icon: "💾", x: width * 0.48, y: botY },
-    { id: "schedule", label: "Check Doctor", icon: "📅", x: width * 0.61, y: botY },
-    { id: "book", label: "Book Appt", icon: "📝", x: width * 0.74, y: botY },
-    { id: "voice", label: "AI Voice Call", icon: "🎙️", x: width * 0.87, y: botY }
+    { id: "openai", label: "OpenAI GPT-4o", badge: "LLM", x: width * 0.22, y: botY },
+    { id: "gemini", label: "Gemini 1.5 Pro", badge: "PRO", x: width * 0.35, y: botY },
+    { id: "memory", label: "Vector Memory", badge: "VEC", x: width * 0.48, y: botY },
+    { id: "schedule", label: "Check Doctor", badge: "CAL", x: width * 0.61, y: botY },
+    { id: "book", label: "Book Appt", badge: "SYNC", x: width * 0.74, y: botY },
+    { id: "voice", label: "AI Voice Call", badge: "VOX", x: width * 0.87, y: botY }
   ];
 
   // Overall 7-phase execution cycle clock
@@ -125,12 +125,12 @@ export function renderAiAutomationAnimation({ ctx, width, height, time }: Canvas
     ctx.arc(n.x + nodeW / 2, n.y, 2.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Icon & Label
+    // Badge & Label
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-    ctx.font = "bold 8px monospace";
+    ctx.font = "bold 7.5px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`${n.icon} ${n.label}`, n.x, n.y);
+    ctx.fillText(`${n.label}`, n.x, n.y);
 
     // Status Badge
     if (isNodeActive) {
@@ -140,7 +140,7 @@ export function renderAiAutomationAnimation({ ctx, width, height, time }: Canvas
     } else if (isNodeDone) {
       ctx.fillStyle = "#c5a880";
       ctx.font = "6.5px monospace";
-      ctx.fillText("✓ 200 OK", n.x, n.y - nodeH / 2 - 6);
+      ctx.fillText("200 OK", n.x, n.y - nodeH / 2 - 6);
     }
   });
 
@@ -159,10 +159,10 @@ export function renderAiAutomationAnimation({ ctx, width, height, time }: Canvas
   ctx.stroke();
 
   ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-  ctx.font = "8px monospace";
+  ctx.font = "7.5px monospace";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(`${fallbackNode.icon} ${fallbackNode.label}`, fallbackNode.x, fallbackNode.y);
+  ctx.fillText(`${fallbackNode.label}`, fallbackNode.x, fallbackNode.y);
 
   // 6. Render Sub-Tool Circle Nodes
   toolNodes.forEach((tn) => {
@@ -177,12 +177,12 @@ export function renderAiAutomationAnimation({ ctx, width, height, time }: Canvas
     ctx.fill();
     ctx.stroke();
 
-    // Tool Icon
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "10px monospace";
+    // Tool Badge Text
+    ctx.fillStyle = "#10b981";
+    ctx.font = "bold 7px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(tn.icon, tn.x, tn.y);
+    ctx.fillText(tn.badge, tn.x, tn.y);
 
     // Tool Label
     ctx.fillStyle = "rgba(197, 168, 128, 0.85)";
