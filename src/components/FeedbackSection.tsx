@@ -23,12 +23,13 @@ export default function FeedbackSection() {
     "ARAVALLI NEWS",
     "JAIMIN FILMS",
     "BHUMI INFRASTRUCTURE",
+    "BHAVDIP FILMS",
+    "MAITRI VISUALIZATION",
     "ARAVALLI NEWS",
     "JAIMIN FILMS",
     "BHUMI INFRASTRUCTURE",
-    "ARAVALLI NEWS",
-    "JAIMIN FILMS",
-    "BHUMI INFRASTRUCTURE"
+    "BHAVDIP FILMS",
+    "MAITRI VISUALIZATION"
   ];
 
   const TESTIMONIAL_COUNT = testimonials.length;
