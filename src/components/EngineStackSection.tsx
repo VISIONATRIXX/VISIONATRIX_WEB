@@ -336,8 +336,13 @@ export default function EngineStackSection() {
         );
       case "topaz":
         return (
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#06B6D4" />
+          <svg className="w-7 h-7" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="7" fill="#0A0E1A" stroke="#00C2FF" strokeWidth="1" />
+            <path
+              d="M16 4L20.5 11.5L28 16L20.5 20.5L16 28L11.5 20.5L4 16L11.5 11.5L16 4Z"
+              fill="#00C2FF"
+            />
+            <circle cx="16" cy="16" r="3" fill="#FFFFFF" />
           </svg>
         );
       case "sapphire":
