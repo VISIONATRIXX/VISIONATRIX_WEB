@@ -20,18 +20,15 @@ export default function FeedbackSection() {
   const testimonials = rawTestimonials.filter(t => t.isActive);
 
   const clientLogos = [
-    "MERCEDES BENZ",
-    "LEICA CAMERA",
-    "SAINT LAURENT",
-    "APEX RACING",
-    "LUMINANCE",
-    "NEURAL NET",
-    "MERCEDES BENZ",
-    "LEICA CAMERA",
-    "SAINT LAURENT",
-    "APEX RACING",
-    "LUMINANCE",
-    "NEURAL NET"
+    "ARAVALLI NEWS",
+    "JAIMIN FILMS",
+    "BHUMI INFRASTRUCTURE",
+    "ARAVALLI NEWS",
+    "JAIMIN FILMS",
+    "BHUMI INFRASTRUCTURE",
+    "ARAVALLI NEWS",
+    "JAIMIN FILMS",
+    "BHUMI INFRASTRUCTURE"
   ];
 
   const TESTIMONIAL_COUNT = testimonials.length;
