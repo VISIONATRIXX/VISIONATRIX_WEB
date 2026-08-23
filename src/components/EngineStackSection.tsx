@@ -1,35 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Workflow, 
-  Bot, 
-  Sparkles, 
-  Cpu, 
-  Database, 
-  Zap, 
-  Code, 
-  Box, 
-  Radio, 
-  Layers, 
-  Activity, 
-  Flame, 
-  Wrench, 
-  Sliders, 
-  Compass, 
-  TerminalSquare, 
-  Eye, 
-  Gauge,
-  Gamepad2,
-  Film,
-  Video
-} from "lucide-react";
+import { Bot, Film, Code, Gamepad2, Compass } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
 interface Tool {
+  id: string;
   name: string;
-  iconName: string;
   description: string;
   iconBg: string;
 }
@@ -37,7 +15,7 @@ interface Tool {
 interface EngineStackCategory {
   id: string;
   label: string;
-  categoryIcon: string;
+  categoryIcon: JSX.Element;
   tools: Tool[];
 }
 
@@ -48,41 +26,41 @@ export default function EngineStackSection() {
     {
       id: "ai_automation",
       label: "AI AUTOMATION & AGENTS",
-      categoryIcon: "Bot",
+      categoryIcon: <Bot className="w-4 h-4" />,
       tools: [
         {
+          id: "n8n",
           name: "n8n WORKFLOW AUTOMATION",
-          iconName: "Workflow",
           description: "Autonomous agentic node pipelines, webhooks & API orchestration",
+          iconBg: "bg-[#ff6d5a]/10 border-[#ff6d5a]/40 text-[#ff6d5a] shadow-[0_0_15px_rgba(255,109,90,0.25)]"
+        },
+        {
+          id: "langchain",
+          name: "LANGCHAIN & AUTOGEN",
+          description: "Multi-agent autonomous framework & vector memory index",
           iconBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
         },
         {
-          name: "LANGCHAIN & AUTOGEN",
-          iconName: "Bot",
-          description: "Multi-agent autonomous framework & vector memory index",
-          iconBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
-        },
-        {
+          id: "openai",
           name: "OPENAI GPT-4o & GEMINI",
-          iconName: "Sparkles",
           description: "Generative multi-modal LLM APIs & real-time audio models",
           iconBg: "bg-purple-500/10 border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
         },
         {
+          id: "comfyui",
           name: "COMFYUI DIFFUSION NODES",
-          iconName: "Cpu",
           description: "Custom node-based Stable Diffusion & Flux.1 generation",
           iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
         },
         {
+          id: "supabase",
           name: "SUPABASE VECTOR DB",
-          iconName: "Database",
           description: "pgvector embeddings, edge functions & real-time sync state",
           iconBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
         },
         {
+          id: "flux",
           name: "FLUX.1 & MAGNIFIC AI",
-          iconName: "Zap",
           description: "Neural 8K upscaling & hyper-realistic texturing engines",
           iconBg: "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
         }
@@ -91,170 +69,170 @@ export default function EngineStackSection() {
     {
       id: "video_editing",
       label: "VIDEO EDITING & POST-PROD",
-      categoryIcon: "Film",
+      categoryIcon: <Film className="w-4 h-4" />,
       tools: [
         {
+          id: "ae",
           name: "ADOBE AFTER EFFECTS",
-          iconName: "Film",
           description: "Temporal motion graphics, 3D compositing & kinetic typography",
-          iconBg: "bg-purple-500/10 border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
+          iconBg: "bg-[#9999ff]/10 border-[#9999ff]/40 text-[#9999ff] shadow-[0_0_15px_rgba(153,153,255,0.25)]"
         },
         {
+          id: "davinci",
           name: "DAVINCI RESOLVE STUDIO",
-          iconName: "Sliders",
           description: "Cinematic 8K Fairlight audio, HDR color grading & Fusion VFX",
-          iconBg: "bg-orange-500/10 border-orange-500/40 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+          iconBg: "bg-[#e11d48]/10 border-[#e11d48]/40 text-rose-400 shadow-[0_0_15px_rgba(225,29,72,0.25)]"
         },
         {
+          id: "pr",
           name: "ADOBE PREMIERE PRO",
-          iconName: "Video",
           description: "Non-linear timeline editing, multi-cam assembly & audio sync",
-          iconBg: "bg-indigo-500/10 border-indigo-500/40 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]"
+          iconBg: "bg-[#9999ff]/10 border-[#9999ff]/40 text-[#00005b] shadow-[0_0_15px_rgba(0,0,91,0.25)]"
         },
         {
+          id: "nuke",
           name: "NUKE BY FOUNDRY",
-          iconName: "Layers",
           description: "Node-based digital compositing, rotoscoping & deep compositing",
           iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
         },
         {
+          id: "topaz",
           name: "TOPAZ VIDEO AI",
-          iconName: "Sparkles",
           description: "Neural 60fps frame interpolation, motion de-blur & 8K upscaling",
           iconBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
         },
         {
+          id: "sapphire",
           name: "BORIS FX SAPPHIRE",
-          iconName: "Wrench",
           description: "Pro VFX suite plugins, anamorphic lens flares & transitions",
-          iconBg: "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
+          iconBg: "bg-blue-500/10 border-blue-500/40 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
         }
       ]
     },
     {
       id: "web_spatial",
       label: "WEB & SPATIAL CORE",
-      categoryIcon: "Code",
+      categoryIcon: <Code className="w-4 h-4" />,
       tools: [
         {
+          id: "next",
           name: "NEXT.JS 15 & REACT",
-          iconName: "Code",
           description: "Server components, App router & edge runtime deployment",
-          iconBg: "bg-zinc-500/10 border-zinc-500/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+          iconBg: "bg-white/10 border-white/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.15)]"
         },
         {
+          id: "three",
           name: "THREE.JS & WEBGL",
-          iconName: "Box",
           description: "Custom GLSL shaders, 60fps GPU matrices & 3D canvas",
           iconBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
         },
         {
+          id: "visionos",
           name: "APPLE VISIONOS & OPENXR",
-          iconName: "Radio",
           description: "Spatial computing canvas layouts & 6DoF hand tracking",
           iconBg: "bg-pink-500/10 border-pink-500/40 text-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.2)]"
         },
         {
+          id: "tailwind",
           name: "TAILWIND CSS ENGINE",
-          iconName: "Layers",
           description: "Utility-first design tokens & silky glassmorphism styling",
           iconBg: "bg-sky-500/10 border-sky-500/40 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.2)]"
         },
         {
+          id: "vercel",
           name: "VERCEL EDGE NETWORK",
-          iconName: "Activity",
           description: "Global sub-10ms CDN distribution & serverless function streaming",
           iconBg: "bg-zinc-500/10 border-zinc-500/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]"
         },
         {
+          id: "gsap",
           name: "GSAP & FRAMER MOTION",
-          iconName: "Flame",
           description: "Physics-based spring dynamics & 60fps scroll animations",
-          iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+          iconBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
         }
       ]
     },
     {
       id: "unreal_graphics",
       label: "UNREAL & 3D GRAPHICS",
-      categoryIcon: "Gamepad2",
+      categoryIcon: <Gamepad2 className="w-4 h-4" />,
       tools: [
         {
+          id: "unreal",
           name: "UNREAL ENGINE 5.4",
-          iconName: "Cpu",
           description: "Nanite geometry virtualization & Lumen GI path-tracing",
-          iconBg: "bg-zinc-500/10 border-zinc-500/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+          iconBg: "bg-white/10 border-white/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.15)]"
         },
         {
+          id: "houdini",
           name: "HOUDINI FX",
-          iconName: "Sparkles",
           description: "Procedural fluid dynamics, destruction & particle simulations",
-          iconBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-        },
-        {
-          name: "BLENDER 3D SUITE",
-          iconName: "Box",
-          description: "High-poly mesh modeling, rigging & Cycles raytracing",
           iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
         },
         {
-          name: "AUTODESK MAYA",
-          iconName: "Wrench",
-          description: "Hard-surface CAD geometry, UV unwrapping & character rigging",
-          iconBg: "bg-blue-500/10 border-blue-500/40 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+          id: "blender",
+          name: "BLENDER 3D SUITE",
+          description: "High-poly mesh modeling, rigging & Cycles raytracing",
+          iconBg: "bg-orange-500/10 border-orange-500/40 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
         },
         {
+          id: "maya",
+          name: "AUTODESK MAYA",
+          description: "Hard-surface CAD geometry, UV unwrapping & character rigging",
+          iconBg: "bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+        },
+        {
+          id: "c4d",
           name: "CINEMA 4D",
-          iconName: "Layers",
           description: "Volumetric lighting, MoGraph animations & luxury product renders",
           iconBg: "bg-sky-500/10 border-sky-500/40 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.2)]"
         },
         {
+          id: "substance",
           name: "SUBSTANCE PAINTER",
-          iconName: "Sliders",
           description: "PBR texture painting, smart materials & normal map baking",
-          iconBg: "bg-orange-500/10 border-orange-500/40 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+          iconBg: "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]"
         }
       ]
     },
     {
       id: "architect_bim",
       label: "ARCHITECT & BIM",
-      categoryIcon: "Compass",
+      categoryIcon: <Compass className="w-4 h-4" />,
       tools: [
         {
+          id: "revit",
           name: "AUTODESK REVIT",
-          iconName: "Compass",
           description: "Building Information Modeling (BIM), floorplans & 3D structural specs",
           iconBg: "bg-blue-500/10 border-blue-500/40 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
         },
         {
+          id: "rhino",
           name: "RHINO 3D & GRASSHOPPER",
-          iconName: "TerminalSquare",
           description: "Parametric architectural modeling & complex freeform surfaces",
           iconBg: "bg-purple-500/10 border-purple-500/40 text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
         },
         {
+          id: "vray",
           name: "V-RAY & CORONA RENDER",
-          iconName: "Eye",
           description: "Photorealistic caustics, physical sun/sky & material shaders",
           iconBg: "bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
         },
         {
+          id: "archviz",
           name: "UNREAL ARCHVIZ",
-          iconName: "Box",
           description: "Real-time interactive architectural walkthroughs & material swappers",
           iconBg: "bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
         },
         {
+          id: "lumion",
           name: "LUMION 3D",
-          iconName: "Flame",
           description: "Atmospheric landscape rendering, interior lighting & cinematic flythroughs",
           iconBg: "bg-sky-500/10 border-sky-500/40 text-sky-400 shadow-[0_0_15px_rgba(14,165,233,0.2)]"
         },
         {
+          id: "sketchup",
           name: "SKETCHUP PRO",
-          iconName: "Gauge",
           description: "Rapid 3D schematic floorplan drafting & interior space planning",
           iconBg: "bg-red-500/10 border-red-500/40 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
         }
@@ -264,30 +242,173 @@ export default function EngineStackSection() {
 
   const currentCategory = categories.find((c) => c.id === activeTab) || categories[0];
 
-  const renderIcon = (iconName: string) => {
-    switch (iconName) {
-      case "Workflow": return <Workflow className="w-5 h-5" />;
-      case "Bot": return <Bot className="w-5 h-5" />;
-      case "Sparkles": return <Sparkles className="w-5 h-5" />;
-      case "Cpu": return <Cpu className="w-5 h-5" />;
-      case "Database": return <Database className="w-5 h-5" />;
-      case "Zap": return <Zap className="w-5 h-5" />;
-      case "Code": return <Code className="w-5 h-5" />;
-      case "Box": return <Box className="w-5 h-5" />;
-      case "Radio": return <Radio className="w-5 h-5" />;
-      case "Layers": return <Layers className="w-5 h-5" />;
-      case "Activity": return <Activity className="w-5 h-5" />;
-      case "Flame": return <Flame className="w-5 h-5" />;
-      case "Wrench": return <Wrench className="w-5 h-5" />;
-      case "Sliders": return <Sliders className="w-5 h-5" />;
-      case "Compass": return <Compass className="w-5 h-5" />;
-      case "TerminalSquare": return <TerminalSquare className="w-5 h-5" />;
-      case "Eye": return <Eye className="w-5 h-5" />;
-      case "Gauge": return <Gauge className="w-5 h-5" />;
-      case "Gamepad2": return <Gamepad2 className="w-5 h-5" />;
-      case "Film": return <Film className="w-5 h-5" />;
-      case "Video": return <Video className="w-5 h-5" />;
-      default: return <Sparkles className="w-5 h-5" />;
+  // Render Official Brand Vector Logos
+  const renderOfficialLogo = (toolId: string) => {
+    switch (toolId) {
+      case "n8n":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="5" width="8" height="8" rx="2" fill="#FF6D5A" />
+            <rect x="14" y="5" width="8" height="8" rx="2" fill="#FF6D5A" />
+            <rect x="8" y="13" width="8" height="8" rx="2" fill="#EA4B71" />
+            <path d="M10 9H14M12 13V15" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        );
+      case "ae":
+        return (
+          <div className="w-7 h-7 bg-[#00005b] rounded-lg border border-[#9999ff] flex items-center justify-center font-outfit text-xs font-black text-[#9999ff] tracking-tighter">
+            Ae
+          </div>
+        );
+      case "pr":
+        return (
+          <div className="w-7 h-7 bg-[#00005b] rounded-lg border border-[#ea77ff] flex items-center justify-center font-outfit text-xs font-black text-[#ea77ff] tracking-tighter">
+            Pr
+          </div>
+        );
+      case "davinci":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4.5" fill="#E11D48" opacity="0.85" />
+            <circle cx="8.5" cy="15" r="4.5" fill="#10B981" opacity="0.85" />
+            <circle cx="15.5" cy="15" r="4.5" fill="#3B82F6" opacity="0.85" />
+          </svg>
+        );
+      case "nuke":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill="#F59E0B" />
+            <text x="12" y="15" textAnchor="middle" fill="#000" fontSize="10" fontWeight="900" fontFamily="sans-serif">N</text>
+          </svg>
+        );
+      case "topaz":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#06B6D4" />
+          </svg>
+        );
+      case "sapphire":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2 20,9 12,22 4,9" fill="#3B82F6" stroke="#93C5FD" strokeWidth="1" />
+          </svg>
+        );
+      case "unreal":
+      case "archviz":
+        return (
+          <div className="w-7 h-7 rounded-full border border-white/60 bg-black flex items-center justify-center font-outfit text-xs font-extrabold text-white">
+            U
+          </div>
+        );
+      case "blender":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="13" r="5" fill="#EA580C" />
+            <circle cx="12" cy="13" r="2.5" fill="#3B82F6" />
+            <path d="M5 6L10 10M19 6L14 10" stroke="#EA580C" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        );
+      case "houdini":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#f59e0b] bg-[#18181b] flex items-center justify-center font-outfit text-xs font-black text-[#f59e0b]">
+            H
+          </div>
+        );
+      case "maya":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#06b6d4] bg-[#090d16] flex items-center justify-center font-outfit text-xs font-black text-[#06b6d4]">
+            M
+          </div>
+        );
+      case "c4d":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#0ea5e9] bg-[#090d16] flex items-center justify-center font-outfit text-[9px] font-black text-[#0ea5e9]">
+            C4D
+          </div>
+        );
+      case "substance":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#f43f5e] bg-[#18090c] flex items-center justify-center font-outfit text-xs font-black text-[#f43f5e]">
+            S
+          </div>
+        );
+      case "next":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#000" stroke="#fff" strokeWidth="1.5" />
+            <path d="M7.5 7.5V16.5M16.5 7.5V16.5M7.5 7.5L16.5 16.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        );
+      case "three":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,3 21,19 3,19" stroke="#06B6D4" strokeWidth="1.8" fill="none" />
+            <line x1="12" y1="3" x2="12" y2="19" stroke="#06B6D4" strokeWidth="1.2" />
+          </svg>
+        );
+      case "visionos":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="7" width="18" height="10" rx="5" stroke="#EC4899" strokeWidth="1.8" fill="none" />
+            <circle cx="8.5" cy="12" r="2.5" stroke="#EC4899" strokeWidth="1.2" />
+            <circle cx="15.5" cy="12" r="2.5" stroke="#EC4899" strokeWidth="1.2" />
+          </svg>
+        );
+      case "tailwind":
+        return (
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <path d="M12 6C9 6 7.5 7.5 7.5 10.5C7.5 12 8.5 12.5 9 13.5C9.5 14.5 9.5 15.5 8 18C11 18 12.5 16.5 12.5 13.5C12.5 12 11.5 11.5 11 10.5C10.5 9.5 10.5 8.5 12 6Z" fill="#0EA5E9" />
+            <path d="M18 10C15 10 13.5 11.5 13.5 14.5C13.5 16 14.5 16.5 15 17.5C15.5 18.5 15.5 19.5 14 22C17 22 18.5 20.5 18.5 17.5C18.5 16 17.5 15.5 17 14.5C16.5 13.5 16.5 12.5 18 10Z" fill="#0EA5E9" />
+          </svg>
+        );
+      case "vercel":
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,4 22,20 2,20" fill="#FFFFFF" />
+          </svg>
+        );
+      case "gsap":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#10b981] bg-[#051810] flex items-center justify-center font-outfit text-[9px] font-black text-[#10b981]">
+            GSAP
+          </div>
+        );
+      case "revit":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#3b82f6] bg-[#07101e] flex items-center justify-center font-outfit text-xs font-black text-[#3b82f6]">
+            R
+          </div>
+        );
+      case "rhino":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#a855f7] bg-[#12071e] flex items-center justify-center font-outfit text-[9px] font-black text-[#a855f7]">
+            RHINO
+          </div>
+        );
+      case "vray":
+        return (
+          <div className="w-7 h-7 rounded-full border border-[#f59e0b] bg-[#1e1507] flex items-center justify-center font-outfit text-[9px] font-black text-[#f59e0b]">
+            V-RAY
+          </div>
+        );
+      case "lumion":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#0ea5e9] bg-[#07161e] flex items-center justify-center font-outfit text-[8px] font-black text-[#0ea5e9]">
+            LUMION
+          </div>
+        );
+      case "sketchup":
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#ef4444] bg-[#1e0707] flex items-center justify-center font-outfit text-[9px] font-black text-[#ef4444]">
+            SKP
+          </div>
+        );
+      default:
+        return (
+          <div className="w-7 h-7 rounded-lg border border-[#c5a880] bg-[#12100b] flex items-center justify-center font-outfit text-xs font-bold text-[#c5a880]">
+            FX
+          </div>
+        );
     }
   };
 
@@ -313,7 +434,7 @@ export default function EngineStackSection() {
             CAPABILITY ENGINE STACK
           </h2>
           <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed max-w-2xl mx-auto">
-            We harness industry-standard autonomous AI pipelines (n8n), pro video editing suites (After Effects, DaVinci Resolve), 3D render engines (UE5, Houdini), spatial frameworks, and modern web architectures.
+            We harness official industry-standard software suites (n8n, After Effects, DaVinci Resolve, Unreal Engine 5, Houdini), spatial frameworks, and modern web architectures.
           </p>
         </div>
 
@@ -331,7 +452,7 @@ export default function EngineStackSection() {
                   }`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    {renderIcon(cat.categoryIcon)}
+                    {cat.categoryIcon}
                     <span>{cat.label}</span>
                   </span>
                   {isActive && (
@@ -369,9 +490,9 @@ export default function EngineStackSection() {
                     <div className="absolute inset-0 rounded-full border border-[#c5a880]/40 animate-ping" />
                   </div>
 
-                  {/* Lucide Tool Icon Badge */}
+                  {/* Official Brand Software Icon */}
                   <div className={`w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${tool.iconBg}`}>
-                    {renderIcon(tool.iconName)}
+                    {renderOfficialLogo(tool.id)}
                   </div>
 
                   {/* Tool metadata details */}
