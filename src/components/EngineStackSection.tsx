@@ -467,9 +467,24 @@ export default function EngineStackSection() {
         );
       case "sketchup":
         return (
-          <div className="w-7 h-7 rounded-lg border border-[#ef4444] bg-[#1e0707] flex items-center justify-center font-outfit text-[9px] font-black text-[#ef4444]">
-            SKP
-          </div>
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 1.5L2.5 7V17L12 22.5L21.5 17V7L12 1.5Z"
+              fill="#E1251B"
+            />
+            <path
+              d="M12 1.5L21.5 7V17L12 22.5V1.5Z"
+              fill="#B81416"
+            />
+            <path
+              d="M6.5 9.5L12 6.5L17.5 9.5L12 12.5L6.5 9.5Z"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M6.5 13.5L12 16.5V20.5L6.5 17.5V13.5Z"
+              fill="#FFFFFF"
+            />
+          </svg>
         );
       default:
         return (
