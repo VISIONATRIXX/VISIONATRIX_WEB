@@ -217,57 +217,170 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
 
       // -----------------------------------------------------------------
       // FIELD 2: AI AUTOMATION (canvasType: "ai")
-      // Multi-layer Neural Network Nodes & Synapse Pulses
+      // n8n-Style Workflow Graph Execution Flow & Bezier Data Streams
       // -----------------------------------------------------------------
       } else if (type === "ai") {
-        aiNodes.forEach((n, idx) => {
-          // Attract nodes slightly to cursor on hover
-          if (isHovered) {
-            const dx = mx - n.x;
-            const dy = my - n.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-            if (dist < 180) {
-              n.vx += (dx / dist) * 0.04;
-              n.vy += (dy / dist) * 0.04;
-            }
-          }
+        // Define n8n workflow nodes with responsive coordinates
+        const mainY = height * 0.28;
+        const toolY = height * 0.74;
+        const nodeW = 104;
+        const nodeH = 34;
 
-          n.x += n.vx;
-          n.y += n.vy;
-          if (n.x < 0 || n.x > width) n.vx *= -1;
-          if (n.y < 0 || n.y > height) n.vy *= -1;
+        const mainNodes = [
+          { id: "trigger", label: "Webhook (POST)", icon: "⚡", x: width * 0.10, y: mainY },
+          { id: "extract", label: "Extract Msg", icon: "{}", x: width * 0.32, y: mainY },
+          { id: "db", label: "Supabase DB", icon: "🌐", x: width * 0.54, y: mainY },
+          { id: "agent", label: "AI Agent Core", icon: "🤖", x: width * 0.78, y: mainY }
+        ];
 
-          // Draw node
-          ctx.fillStyle = "rgba(197, 168, 128, 0.8)";
+        const toolNodes = [
+          { id: "openai", label: "OpenAI GPT-4o", icon: "🧠", x: width * 0.56, y: toolY },
+          { id: "gemini", label: "Gemini Pro", icon: "✨", x: width * 0.72, y: toolY },
+          { id: "voice", label: "Voice Agent", icon: "🎙️", x: width * 0.88, y: toolY }
+        ];
+
+        // Overall execution cycle clock (0 -> 5)
+        const totalDuration = 5.5; // 5.5 seconds per full workflow run
+        const progress = (time % totalDuration) / totalDuration;
+        const currentStep = Math.floor(progress * 5); // 5 execution phases
+
+        // Helper to draw a Bezier connection spline with animated flowing data packets
+        const drawBezierWire = (
+          x1: number, y1: number, 
+          x2: number, y2: number, 
+          isActive: boolean, 
+          flowProgress: number
+        ) => {
+          const dx = (x2 - x1) * 0.5;
+          const cp1x = x1 + dx;
+          const cp1y = y1;
+          const cp2x = x2 - dx;
+          const cp2y = y2;
+
+          // Wire line
+          ctx.strokeStyle = isActive ? "rgba(197, 168, 128, 0.75)" : "rgba(197, 168, 128, 0.18)";
+          ctx.lineWidth = isActive ? 1.8 : 1.0;
+          if (!isActive) ctx.setLineDash([4, 4]);
           ctx.beginPath();
-          ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+          ctx.moveTo(x1, y1);
+          ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Glowing Data Packet traveling along Bezier curve when wire is active
+          if (isActive && flowProgress >= 0 && flowProgress <= 1) {
+            const t = flowProgress;
+            // Cubic Bezier interpolation formula
+            const cx = Math.pow(1 - t, 3) * x1 +
+                       3 * Math.pow(1 - t, 2) * t * cp1x +
+                       3 * (1 - t) * Math.pow(t, 2) * cp2x +
+                       Math.pow(t, 3) * x2;
+            const cy = Math.pow(1 - t, 3) * y1 +
+                       3 * Math.pow(1 - t, 2) * t * cp1y +
+                       3 * (1 - t) * Math.pow(t, 2) * cp2y +
+                       Math.pow(t, 3) * y2;
+
+            // Packet glow aura
+            ctx.fillStyle = "#10b981";
+            ctx.beginPath();
+            ctx.arc(cx, cy, 3.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        };
+
+        // Draw main pipeline Bezier wires
+        for (let i = 0; i < mainNodes.length - 1; i++) {
+          const n1 = mainNodes[i];
+          const n2 = mainNodes[i + 1];
+          const isActive = currentStep >= i;
+          const stepProgress = (progress * 5) - i;
+          drawBezierWire(n1.x + nodeW / 2, n1.y, n2.x - nodeW / 2, n2.y, isActive, stepProgress);
+        }
+
+        // Draw AI Agent fan-out wires to sub-tools
+        const agentNode = mainNodes[3];
+        toolNodes.forEach((tn) => {
+          const isActive = currentStep >= 3;
+          const stepProgress = (progress * 5) - 3;
+          drawBezierWire(agentNode.x, agentNode.y + nodeH / 2, tn.x, tn.y - 18, isActive, stepProgress);
+        });
+
+        // Render main n8n workflow node cards
+        mainNodes.forEach((n, i) => {
+          const isNodeActive = currentStep === i;
+          const isNodeCompleted = currentStep > i;
+
+          // Card Background
+          ctx.fillStyle = "#0c0d12";
+          ctx.strokeStyle = isNodeActive ? "#10b981" : (isNodeCompleted ? "#c5a880" : "rgba(197, 168, 128, 0.2)");
+          ctx.lineWidth = isNodeActive ? 1.8 : 1.0;
+
+          ctx.beginPath();
+          if (typeof ctx.roundRect === "function") {
+            ctx.roundRect(n.x - nodeW / 2, n.y - nodeH / 2, nodeW, nodeH, 6);
+          } else {
+            ctx.rect(n.x - nodeW / 2, n.y - nodeH / 2, nodeW, nodeH);
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          // Input/Output Ports
+          ctx.fillStyle = isNodeActive ? "#10b981" : "#c5a880";
+          ctx.beginPath();
+          ctx.arc(n.x - nodeW / 2, n.y, 3, 0, Math.PI * 2);
+          ctx.arc(n.x + nodeW / 2, n.y, 3, 0, Math.PI * 2);
           ctx.fill();
 
-          // Connect nearby nodes
-          for (let j = idx + 1; j < aiNodes.length; j++) {
-            const n2 = aiNodes[j];
-            const dx = n.x - n2.x;
-            const dy = n.y - n2.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 90) {
-              ctx.strokeStyle = `rgba(197, 168, 128, ${0.45 * (1 - dist / 90)})`;
-              ctx.lineWidth = 0.8;
-              ctx.beginPath();
-              ctx.moveTo(n.x, n.y);
-              ctx.lineTo(n2.x, n2.y);
-              ctx.stroke();
+          // Icon & Label Text
+          ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+          ctx.font = "bold 8.5px monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(`${n.icon} ${n.label}`, n.x, n.y);
 
-              // Synaptic pulse packet
-              const t = (time * 1.5 + idx) % 1.0;
-              const px = n.x + (n2.x - n.x) * t;
-              const py = n.y + (n2.y - n.y) * t;
-              ctx.fillStyle = "#c5a880";
-              ctx.beginPath();
-              ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-              ctx.fill();
-            }
+          // Status Badge above active/completed node
+          if (isNodeActive) {
+            ctx.fillStyle = "#10b981";
+            ctx.font = "bold 7px monospace";
+            ctx.fillText("[ EXECUTING ]", n.x, n.y - nodeH / 2 - 7);
+          } else if (isNodeCompleted) {
+            ctx.fillStyle = "#c5a880";
+            ctx.font = "7px monospace";
+            ctx.fillText("✓ 200 OK", n.x, n.y - nodeH / 2 - 7);
           }
         });
+
+        // Render tool sub-nodes (circles)
+        toolNodes.forEach((tn) => {
+          const isToolActive = currentStep === 4;
+
+          ctx.fillStyle = "#090a0f";
+          ctx.strokeStyle = isToolActive ? "#10b981" : "rgba(197, 168, 128, 0.25)";
+          ctx.lineWidth = isToolActive ? 1.5 : 1.0;
+
+          ctx.beginPath();
+          ctx.arc(tn.x, tn.y, 16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Icon
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "11px monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(tn.icon, tn.x, tn.y);
+
+          // Label
+          ctx.fillStyle = "rgba(197, 168, 128, 0.85)";
+          ctx.font = "8px monospace";
+          ctx.fillText(tn.label, tn.x, tn.y + 24);
+        });
+
+        // Telemetry Footer
+        ctx.fillStyle = "rgba(197, 168, 128, 0.6)";
+        ctx.font = "8.5px monospace";
+        ctx.textAlign = "left";
+        ctx.fillText(`WORKFLOW: n8n_AI_AGENT_PIPELINE | STATUS: RUNNING`, 15, height - 15);
 
       // -----------------------------------------------------------------
       // FIELD 3: VIDEO EDITING (canvasType: "video")
