@@ -86,6 +86,8 @@ export default function Home() {
     import("lenis").then(({ default: LenisClass }) => {
       if (isDestroyed) return; // Guard against race condition if component unmounts during import
       
+      const isTouchDevice = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
       lenisInstance = new LenisClass({
         duration: 1.1,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -93,8 +95,13 @@ export default function Home() {
         gestureOrientation: "vertical",
         smoothWheel: true,
         wheelMultiplier: 1.2,
-        touchMultiplier: 1.5,
+        syncTouch: false,
+        touchMultiplier: 1,
       });
+
+      if (isTouchDevice && lenisInstance) {
+        lenisInstance.options.syncTouch = false;
+      }
 
       // Synchronize ScrollTrigger with Lenis scroll events
       import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
