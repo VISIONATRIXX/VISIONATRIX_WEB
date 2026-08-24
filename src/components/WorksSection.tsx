@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers } from "lucide-react";
+import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers, Globe, Monitor, Smartphone } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -32,12 +32,21 @@ function MarqueeProjectCard({
       {/* Gradient Vignette Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
 
-      {/* Top Category Badge */}
-      <div className="absolute top-5 left-5 z-20 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5 shadow-md">
-        <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] shadow-[0_0_6px_#c5a880]" />
-        <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
-          {project.category}
-        </span>
+      {/* Top Category Badges */}
+      <div className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between pointer-events-none">
+        <div className="bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5 shadow-md">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] shadow-[0_0_6px_#c5a880]" />
+          <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
+            {project.category}
+          </span>
+        </div>
+
+        {project.details?.liveUrl && (
+          <div className="bg-[#c5a880]/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-[#c5a880]/50 flex items-center gap-1 shadow-[0_0_12px_rgba(197,168,128,0.3)]">
+            <Globe className="w-3 h-3 text-[#c5a880]" />
+            <span className="font-mono text-[8px] text-[#c5a880] font-bold tracking-widest uppercase">LIVE SITE</span>
+          </div>
+        )}
       </div>
 
       {/* Bottom Title & Subtitle Info */}
@@ -88,6 +97,7 @@ export default function WorksSection() {
   const [showAllDrawer, setShowAllDrawer] = useState(false);
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [activeSlide, setActiveSlide] = useState(0);
+  const [liveMode, setLiveMode] = useState(false);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
@@ -427,7 +437,7 @@ export default function WorksSection() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Visual Media Carousel */}
+              {/* Visual Media Carousel / Interactive Live Site Viewer */}
               {(() => {
                 const mediaItems: { type: "video" | "image"; url: string }[] = [];
                 if (selectedProject.details?.videoUrl) {
@@ -441,77 +451,149 @@ export default function WorksSection() {
                 }
 
                 const currentMedia = mediaItems[activeSlide] || mediaItems[0];
+                const hasLiveSite = Boolean(selectedProject.details?.liveUrl);
 
                 return (
-                  <div className="relative w-full aspect-video md:h-[350px] lg:h-[400px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0">
+                  <div className="relative w-full aspect-video md:h-[380px] lg:h-[420px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0 group">
                     <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10 pointer-events-none" />
 
-                    <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
-                      {currentMedia?.type === "video" ? (
-                        currentMedia.url.includes("vimeo.com") || currentMedia.url.includes("youtube.com") || currentMedia.url.includes("youtu.be") ? (
-                          <iframe
-                            src={getVideoEmbedUrl(currentMedia.url)}
-                            className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                            title={selectedProject.title}
-                          />
-                        ) : (
-                          <video
-                            src={currentMedia.url}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
-                            key={`modal-video-${activeSlide}`}
-                          />
-                        )
-                      ) : (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={currentMedia?.url}
-                          alt={selectedProject.title}
-                          className="w-full h-full object-cover opacity-80 transition-all duration-300 scale-100"
-                          key={`modal-image-${activeSlide}`}
-                        />
-                      )}
-                    </div>
+                    {/* Mode Toggle Pills Header */}
+                    {hasLiveSite && (
+                      <div className="absolute top-4 left-6 z-30 flex items-center gap-2 bg-black/80 backdrop-blur-md p-1 rounded-full border border-white/15 shadow-xl">
+                        <button
+                          type="button"
+                          onClick={() => setLiveMode(false)}
+                          className={`px-3 py-1 rounded-full font-mono text-[9px] tracking-wider font-bold transition-all uppercase cursor-pointer ${
+                            !liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/50 hover:text-white"
+                          }`}
+                        >
+                          MEDIA SHOWCASE
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLiveMode(true)}
+                          className={`px-3 py-1 rounded-full font-mono text-[9px] tracking-wider font-bold transition-all uppercase flex items-center gap-1.5 cursor-pointer ${
+                            liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/50 hover:text-white"
+                          }`}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>LIVE WEBSITE PREVIEW</span>
+                        </button>
+                      </div>
+                    )}
 
-                    {mediaItems.length > 1 && (
+                    {/* Live Website Interactive View vs Media View */}
+                    {liveMode && hasLiveSite ? (
+                      <div className="absolute inset-0 z-20 flex flex-col bg-[#050508]">
+                        {/* Simulated Browser Address Bar Header */}
+                        <div className="bg-[#101015] border-b border-white/10 px-4 py-2 flex items-center justify-between font-mono text-[10px] text-white/50">
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                              <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                            </div>
+                            <div className="bg-black/60 px-3 py-1 rounded border border-white/10 flex items-center gap-2 text-white/80 text-[9px] font-mono truncate max-w-[280px] sm:max-w-[400px]">
+                              <Globe className="w-3 h-3 text-[#c5a880] shrink-0" />
+                              <span className="truncate">{selectedProject.details.liveUrl}</span>
+                            </div>
+                          </div>
+
+                          <a
+                            href={selectedProject.details.liveUrl!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/10 px-2.5 py-1 rounded border border-[#c5a880]/20 font-bold"
+                          >
+                            <span>OPEN IN NEW TAB</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+
+                        {/* Interactive Responsive Iframe Container */}
+                        <div className="flex-1 w-full h-full relative bg-black">
+                          <iframe
+                            src={selectedProject.details.liveUrl!}
+                            title={`${selectedProject.title} Live Preview`}
+                            className="w-full h-full border-0 select-none"
+                            loading="lazy"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                          />
+                        </div>
+                      </div>
+                    ) : (
                       <>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveSlide(prev => (prev === 0 ? mediaItems.length - 1 : prev - 1));
-                          }}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveSlide(prev => (prev === mediaItems.length - 1 ? 0 : prev + 1));
-                          }}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
+                        <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
+                          {currentMedia?.type === "video" ? (
+                            currentMedia.url.includes("vimeo.com") || currentMedia.url.includes("youtube.com") || currentMedia.url.includes("youtu.be") ? (
+                              <iframe
+                                src={getVideoEmbedUrl(currentMedia.url)}
+                                className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                                title={selectedProject.title}
+                              />
+                            ) : (
+                              <video
+                                src={currentMedia.url}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
+                                key={`modal-video-${activeSlide}`}
+                              />
+                            )
+                          ) : (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                              src={currentMedia?.url}
+                              alt={selectedProject.title}
+                              className="w-full h-full object-cover opacity-80 transition-all duration-300 scale-100"
+                              key={`modal-image-${activeSlide}`}
+                            />
+                          )}
+                        </div>
+
+                        {mediaItems.length > 1 && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveSlide(prev => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+                              }}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
+                            >
+                              <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveSlide(prev => (prev === mediaItems.length - 1 ? 0 : prev + 1));
+                              }}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
                       </>
                     )}
 
-                    <div className="absolute bottom-6 left-8 right-8 z-20 flex flex-col gap-2 pointer-events-none">
-                      <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
-                        CASE STUDY BRIEF
-                      </span>
-                      <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
-                        {selectedProject.title}
-                      </h4>
-                    </div>
+                    {!liveMode && (
+                      <div className="absolute bottom-6 left-8 right-8 z-20 flex flex-col gap-2 pointer-events-none">
+                        <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
+                          CASE STUDY BRIEF
+                        </span>
+                        <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
+                          {selectedProject.title}
+                        </h4>
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -576,19 +658,34 @@ export default function WorksSection() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-6 border-t border-white/5">
-                  <a
-                    href="#contact"
-                    onClick={() => {
-                      setSelectedProject(null);
-                      setShowAllDrawer(false);
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      (window as any).lenis?.start();
-                    }}
-                    className="w-full sm:w-auto font-mono text-[10px] tracking-[0.16em] text-[#c5a880] hover:text-white flex items-center justify-center gap-1.5 transition-colors duration-300"
-                  >
-                    <span>START SIMILAR PROJECT</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                  <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+                    {selectedProject.details?.liveUrl && (
+                      <a
+                        href={selectedProject.details.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto px-5 py-3 bg-[#c5a880] hover:bg-white text-black font-outfit text-xs font-bold tracking-[0.18em] uppercase rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(197,168,128,0.35)] flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                      >
+                        <Globe className="w-4 h-4" />
+                        <span>LAUNCH LIVE WEBSITE</span>
+                        <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                      </a>
+                    )}
+
+                    <a
+                      href="#contact"
+                      onClick={() => {
+                        setSelectedProject(null);
+                        setShowAllDrawer(false);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (window as any).lenis?.start();
+                      }}
+                      className="w-full sm:w-auto font-mono text-[10px] tracking-[0.16em] text-[#c5a880] hover:text-white flex items-center justify-center gap-1.5 transition-colors duration-300 py-2"
+                    >
+                      <span>START SIMILAR PROJECT</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
 
                   <button
                     onClick={() => {
@@ -598,7 +695,7 @@ export default function WorksSection() {
                         (window as any).lenis?.start();
                       }
                     }}
-                    className="w-full sm:w-auto px-8 py-3 bg-[#c5a880] hover:bg-[#b0926a] text-black font-outfit text-xs font-bold tracking-[0.2em] rounded-xl transition-all duration-300 shadow-md cursor-pointer hover:shadow-lg hover:shadow-[#c5a880]/10"
+                    className="w-full sm:w-auto px-6 py-3 border border-white/10 hover:border-white/30 bg-black/40 text-white/70 hover:text-white font-outfit text-xs font-bold tracking-[0.2em] rounded-xl transition-all duration-300 cursor-pointer"
                   >
                     CLOSE BRIEFCASE
                   </button>

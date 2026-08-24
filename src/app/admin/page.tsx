@@ -28,6 +28,7 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  Globe,
   Star,
   ChevronRight,
   Clock,
@@ -1397,6 +1398,21 @@ export default function AdminPage() {
                     className="bg-black/50 border border-white/10 rounded-lg p-3.5 focus:border-[#c5a880] outline-none text-xs text-white/80 leading-relaxed font-sans font-light resize-none"
                     placeholder="Brief description explaining client goals, visual execution, and technology stack used..."
                     required
+                  />
+                </div>
+
+                {/* Live Website URL Field */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[9px] font-mono text-[#c5a880] tracking-wider uppercase font-bold flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5" />
+                    LIVE HOSTED WEBSITE URL (OPTIONAL SHOWCASE)
+                  </label>
+                  <input 
+                    type="url" 
+                    value={projForm.details?.liveUrl || ""} 
+                    onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, liveUrl: e.target.value } })} 
+                    className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white font-mono"
+                    placeholder="e.g. https://my-app.vercel.app or https://aravallinews.com"
                   />
                 </div>
 

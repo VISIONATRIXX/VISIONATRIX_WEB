@@ -24,6 +24,7 @@ export interface Project {
     engine: string;
     videoUrl?: string | null;
     images?: string[] | null;
+    liveUrl?: string | null;
   };
   metrics: {
     label: string;
