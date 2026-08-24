@@ -170,7 +170,7 @@ export default function Home() {
             setStartAnimations(true);
             setTimeout(() => {
               setTriggerHeroEntrance(true);
-            }, 1200);
+            }, 500);
           }}
           onComplete={() => {
             setShowIntro(false);
