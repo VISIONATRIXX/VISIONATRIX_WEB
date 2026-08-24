@@ -485,30 +485,7 @@ const initialTestimonials: Testimonial[] = [
 ];
 
 // Initial preloaded mock CRM inbox requests
-const initialProposals: Proposal[] = [
-  {
-    id: "prop-01",
-    fullName: "Charlotte Laurent",
-    email: "c.laurent@aetheria-meta.com",
-    organization: "Aetheria Metaverse Portal",
-    service: "WEBGL WEB CODE",
-    details: "Staging a high-performance WebGL browser portal with real-time particle refraction shaders. Need cross-platform locking at 60 FPS.",
-    budget: "$40K - $100K",
-    timestamp: "2026-05-22T12:30:00.000Z",
-    status: "Pending"
-  },
-  {
-    id: "prop-02",
-    fullName: "Sarah Jenkins",
-    email: "s.jenkins@ap-watches.de",
-    organization: "AP Horology Spec",
-    service: "VR & SPATIAL XR",
-    details: "Designing a spatial watch movement assembly simulation featuring 6DoF finger-tracking and photoreal volumetric light maps.",
-    budget: "$100K+",
-    timestamp: "2026-05-21T18:15:00.000Z",
-    status: "In-Review"
-  }
-];
+const initialProposals: Proposal[] = [];
 
 // Helper to safely format error objects into strings for clean console output
 const formatErrorMsg = (err: any): string => {
@@ -693,7 +670,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           setTestimonials(testRes.data.map(mapTestimonialFromDb));
         }
         if (propRes.data && propRes.data.length > 0) {
-          setProposals(propRes.data.map(mapProposalFromDb));
+          const mappedProps = propRes.data.map(mapProposalFromDb).filter(p => !p.organization?.toLowerCase().includes("aetheria"));
+          setProposals(mappedProps);
+        } else {
+          setProposals([]);
         }
       } catch (error) {
         console.warn("Error hydrating data from Supabase (using fallback local data):", formatErrorMsg(error));
