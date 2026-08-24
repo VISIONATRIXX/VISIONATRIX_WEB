@@ -173,6 +173,8 @@ export default function WorksSection() {
   const [isSafariExpanded, setIsSafariExpanded] = useState(false);
   const [isSafariMinimized, setIsSafariMinimized] = useState(false);
 
+  const { projects, isLoaded } = useAdmin();
+
   const handleOpenProject = (p: Project) => {
     setSelectedProject(p);
     if (p.details?.liveUrl) {
@@ -186,12 +188,53 @@ export default function WorksSection() {
     (window as any).lenis?.stop();
   };
 
+  // Global Keyboard Shortcuts Listener (Esc to exit modal, Arrow Left/Right to navigate projects)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept keypress if user is typing in an input or textarea
+      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) {
+        return;
+      }
+
+      if (e.key === "Escape" || e.key === "Esc") {
+        if (selectedProject) {
+          setSelectedProject(null);
+          if (!showAllDrawer) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).lenis?.start();
+          }
+        } else if (showAllDrawer) {
+          setShowAllDrawer(false);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any).lenis?.start();
+        }
+      }
+
+      if (selectedProject) {
+        const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
+        
+        if (e.key === "ArrowRight") {
+          const nextIndex = (currentIndex + 1) % projects.length;
+          handleOpenProject(projects[nextIndex]);
+        } else if (e.key === "ArrowLeft") {
+          const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+          handleOpenProject(projects[prevIndex]);
+        } else if (e.key === "r" || e.key === "R") {
+          setIframeKey(k => k + 1);
+        } else if (e.key === "f" || e.key === "F") {
+          setIsSafariExpanded(prev => !prev);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedProject, showAllDrawer, projects]);
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
   const row3Ref = useRef<HTMLDivElement>(null);
-
-  const { projects, isLoaded } = useAdmin();
 
   // Divide projects into 3 distinct marquee rows:
   // Row 1: Web & SaaS Platforms
@@ -616,18 +659,51 @@ export default function WorksSection() {
                         </button>
                       </div>
 
-                      {/* Nav Controls */}
-                      <div className="hidden sm:flex items-center gap-1.5 text-white/30 border-l border-white/10 pl-3">
-                        <ChevronLeft className="w-4 h-4 cursor-not-allowed" />
-                        <ChevronRight className="w-4 h-4 cursor-not-allowed" />
-                        <button
-                          type="button"
-                          onClick={() => setIframeKey(k => k + 1)}
-                          className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer ml-1"
-                          title="Reload Page"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                        </button>
+                      {/* Nav Controls & Keyboard Shortcuts */}
+                      <div className="hidden sm:flex items-center gap-2 border-l border-white/10 pl-3">
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
+                              const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+                              handleOpenProject(projects[prevIndex]);
+                            }}
+                            className="p-1 text-white/60 hover:text-white transition-colors cursor-pointer"
+                            title="Previous Project (← Arrow)"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
+                              const nextIndex = (currentIndex + 1) % projects.length;
+                              handleOpenProject(projects[nextIndex]);
+                            }}
+                            className="p-1 text-white/60 hover:text-white transition-colors cursor-pointer"
+                            title="Next Project (→ Arrow)"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIframeKey(k => k + 1)}
+                            className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer"
+                            title="Reload Page (R)"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Apple Keyboard Shortcut Badge */}
+                        <div className="hidden xl:flex items-center gap-1.5 bg-black/60 border border-white/15 px-2.5 py-1 rounded-md text-[8.5px] font-mono text-white/60">
+                          <span className="bg-white/10 px-1 py-0.2 rounded text-white font-bold">ESC</span>
+                          <span>EXIT</span>
+                          <span className="text-white/20">•</span>
+                          <span className="bg-white/10 px-1 py-0.2 rounded text-white font-bold">← / →</span>
+                          <span>NAV</span>
+                        </div>
                       </div>
 
                       {/* Showcase Mode Switcher (Media vs Live Site) */}
