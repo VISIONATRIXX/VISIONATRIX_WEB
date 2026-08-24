@@ -32,6 +32,14 @@ export default function Home() {
   const [triggerHeroEntrance, setTriggerHeroEntrance] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   
+  // Pre-warm WebGL scene and main layout in background during intro screen so curtain slide up is butter-smooth 60-120 FPS
+  useEffect(() => {
+    const prewarmTimer = setTimeout(() => {
+      setStartAnimations(true);
+    }, 400);
+    return () => clearTimeout(prewarmTimer);
+  }, []);
+  
   // Track scroll position to update active dot navigation via window observer
   useEffect(() => {
     if (showIntro) return;
@@ -170,7 +178,7 @@ export default function Home() {
             setStartAnimations(true);
             setTimeout(() => {
               setTriggerHeroEntrance(true);
-            }, 500);
+            }, 1200);
           }}
           onComplete={() => {
             setShowIntro(false);
