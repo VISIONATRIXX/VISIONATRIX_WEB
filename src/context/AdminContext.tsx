@@ -656,22 +656,19 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
         if (projRes.data && projRes.data.length > 0) {
           const mappedProjs = projRes.data.map(mapProjectFromDb);
-          // Ensure Yuvraj Rathod live project is present
-          if (!mappedProjs.some(p => p.details?.liveUrl === "https://yuvrajrathod.online/")) {
-            if (mappedProjs[0]) {
-              mappedProjs[0] = {
-                ...mappedProjs[0],
-                title: "YUVRAJ RATHOD STUDIO",
-                category: "Full-Stack Web & Creative Tech",
-                tagline: "Ultra-responsive creative portfolio showcasing full-stack digital products, 3D WebGL visuals, and custom web architecture.",
-                details: {
-                  ...mappedProjs[0].details,
-                  liveUrl: "https://yuvrajrathod.online/"
-                }
-              };
-            }
+          
+          // Ensure BILLING-OS is present in projects list
+          if (!mappedProjs.some(p => p.title.toUpperCase().includes("BILLING") || p.details?.liveUrl === "https://www.billingos.online/")) {
+            mappedProjs.splice(1, 0, initialProjects[1]); // Insert BILLING-OS at position 2
           }
+          // Ensure Yuvraj Rathod live project is present at position 1
+          if (!mappedProjs.some(p => p.details?.liveUrl === "https://yuvrajrathod.online/")) {
+            mappedProjs.splice(0, 0, initialProjects[0]);
+          }
+
           setProjects(mappedProjs);
+        } else {
+          setProjects(initialProjects);
         }
         if (servRes.data && servRes.data.length > 0) {
           setServices(servRes.data.map(mapServiceFromDb));
