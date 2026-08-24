@@ -126,27 +126,27 @@ const initialProjects: Project[] = [
   },
   {
     id: "02",
-    title: "ARAVALLI NEWS",
-    category: "Digital News & Media Platform",
-    categories: ["WEB DEV", "APPS"],
-    subtitle: "02 / MEDIA NETWORK",
+    title: "BILLING-OS",
+    category: "Restaurant POS & Automated WhatsApp CRM",
+    categories: ["WEB DEV", "APPS", "SAAS"],
+    subtitle: "02 / SAAS POS PLATFORM",
     year: "2026",
     image: "/work_omnis_interactive.webp",
-    tagline: "High-traffic real-time news portal engineered for sub-second page loads and dynamic content delivery.",
-    description: "A high-performance digital news network engineered with Next.js edge server rendering. Features real-time article publishing feeds, categorized news channels, custom dark theme aesthetic, and SEO optimization for peak organic reach.",
-    bgGradient: "from-zinc-900 via-[#1c1212] to-[#050507]",
+    tagline: "Modern Restaurant POS & Automated WhatsApp CRM Platform with Real-time GST & n8n Automation.",
+    description: "Billing-OS is a modern, mobile-optimized Point of Sale (POS) web application built using React 18, Vite, and a sleek Glassmorphic Midnight Slate dark mode UI. It allows restaurant staff to manage food menu items, generate customer bills with real-time GST calculations, and store order history in Google Firebase Firestore. Upon checkout, the system triggers n8n Webhooks and Evolution API (v2) to instantly send automated digital receipts to customers via WhatsApp while maintaining an automated CRM database in Google Sheets.",
+    bgGradient: "from-amber-950 via-zinc-900 to-[#050507]",
     details: {
-      role: "Full-Stack Web Developer",
-      client: "Aravalli Media Group",
-      engine: "Next.js / TypeScript / Tailwind / Supabase",
+      role: "Lead POS & Automation Architect",
+      client: "Madhav Restaurant / Billing-OS",
+      engine: "React 18 / Vite / Firebase / n8n / Evolution API",
       timeline: "2026",
       videoUrl: null,
-      liveUrl: "https://yuvrajrathod.online/"
+      liveUrl: "https://www.billingos.online/"
     },
     metrics: [
-      { label: "PAGE SPEED", value: "< 0.5s Edge Speed" },
-      { label: "MOBILE ADAPTIVE", value: "100% Fluid Layout" },
-      { label: "SEO OPTIMIZATION", value: "Fully Indexable" }
+      { label: "WHATSAPP CRM", value: "Automated Receipts 📲" },
+      { label: "DATABASE ENGINE", value: "Firebase Cloud Firestore" },
+      { label: "WORKFLOW AUTOMATION", value: "n8n Webhook & Evolution API" }
     ]
   },
   {
