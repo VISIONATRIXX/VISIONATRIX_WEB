@@ -16,18 +16,24 @@ function MarqueeProjectCard({
   project: Project; 
   onOpenDetails: (p: Project) => void 
 }) {
+  const livePreviewUrl = project.details?.liveUrl 
+    ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=1280&h=800`
+    : null;
+  const displayImage = project.image || livePreviewUrl;
+
   return (
     <div
       onClick={() => onOpenDetails(project)}
       className="group relative flex-shrink-0 w-[300px] sm:w-[380px] aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)] select-none"
     >
-      {/* Background Image / Ambient Dark Glass Canvas */}
-      {project.image ? (
+      {/* Real Live Website Page Snapshot / Background Image / Ambient Canvas */}
+      {displayImage ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={project.image}
+          src={displayImage}
           alt={project.title}
-          className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
+          className="w-full h-full object-cover object-top rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
+          loading="lazy"
         />
       ) : (
         <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
@@ -386,25 +392,32 @@ export default function WorksSection() {
 
             {/* Grid of Filtered Projects */}
             <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProjects.map((project) => (
-                <div
-                  key={`all-${project.id}`}
-                  onClick={() => handleOpenProject(project)}
-                  className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
-                >
-                  {project.image ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
-                    />
-                  ) : (
-                    <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
-                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
-                      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
-                    </div>
-                  )}
+              {filteredProjects.map((project) => {
+                const livePreviewUrl = project.details?.liveUrl 
+                  ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=1280&h=800`
+                  : null;
+                const displayImage = project.image || livePreviewUrl;
+
+                return (
+                  <div
+                    key={`all-${project.id}`}
+                    onClick={() => handleOpenProject(project)}
+                    className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
+                  >
+                    {displayImage ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={displayImage}
+                        alt={project.title}
+                        className="w-full h-full object-cover object-top rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+                      </div>
+                    )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
 
                   <div className="absolute top-5 left-5 z-20 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
@@ -423,7 +436,8 @@ export default function WorksSection() {
                     </h4>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </motion.div>
         )}
