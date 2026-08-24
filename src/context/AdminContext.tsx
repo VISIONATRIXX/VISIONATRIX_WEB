@@ -128,7 +128,7 @@ const initialProjects: Project[] = [
     id: "02",
     title: "BILLING-OS",
     category: "Restaurant POS & Automated WhatsApp CRM",
-    categories: ["WEB DEV", "APPS", "SAAS"],
+    categories: ["SAAS", "POS SYSTEM", "FULLSTACK"],
     subtitle: "02 / SAAS POS PLATFORM",
     year: "2026",
     image: "",
@@ -151,102 +151,102 @@ const initialProjects: Project[] = [
   },
   {
     id: "03",
+    title: "VISORA",
+    category: "AI Visual Context Engine & MCP Component Patcher",
+    categories: ["AI AGENT", "MCP SERVER", "VISUAL EDITING", "REACT"],
+    subtitle: "03 / AI VISUAL ENGINE",
+    year: "2026",
+    image: "",
+    tagline: "The Visual Context Engine for AI Coding — Real-time component selector & MCP patcher.",
+    description: "Visora is an advanced AI visual context engine developed by Visionatrixx. It connects AI coding assistants directly to frontend DOM components via the Model Context Protocol (MCP), allowing developers to visually select, patch, and iterate on live React & Vite user interfaces in real time.",
+    bgGradient: "from-indigo-950 via-slate-900 to-[#050507]",
+    details: {
+      role: "Lead AI Systems Developer",
+      client: "Visionatrix AI Core",
+      engine: "MCP / React / Vite / TypeScript / Node",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://visora-demo.vercel.app/"
+    },
+    metrics: [
+      { label: "AI CORE", value: "Model Context Protocol (MCP)" },
+      { label: "DOM PATCHER", value: "Real-time Component Sync" },
+      { label: "FRAMEWORK", value: "React / Vite / Node" }
+    ]
+  },
+  {
+    id: "04",
+    title: "ESTATEOS",
+    category: "AI Real Estate CRM & WhatsApp Operating System",
+    categories: ["SAAS", "REAL ESTATE CRM", "WHATSAPP AI", "VOICE CALLS"],
+    subtitle: "04 / REAL ESTATE SAAS",
+    year: "2026",
+    image: "",
+    tagline: "Minimalist AI-Powered Operating System for Real Estate Brokers with WhatsApp Lead Automation & Voice Follow-ups.",
+    description: "EstateOS is an end-to-end SaaS platform built for Indian real estate agents. Features a WhatsApp-first AI lead qualification agent (Aria) with Hinglish support, real-time Google Sheets CRM sync, automated Sarvam AI Hindi voice follow-up callers, and instant property video walkthrough generators.",
+    bgGradient: "from-emerald-950 via-zinc-900 to-[#050507]",
+    details: {
+      role: "Founder & Lead Architect",
+      client: "EstateOS SaaS Platform",
+      engine: "Next.js 14 / n8n / Claude API / Sarvam AI",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://estateos-os.vercel.app/"
+    },
+    metrics: [
+      { label: "WHATSAPP BOT", value: "Multilingual Aria AI" },
+      { label: "VOICE CALLS", value: "Sarvam AI Hindi TTS" },
+      { label: "CRM STORAGE", value: "Real-time Sheets & Drive" }
+    ]
+  },
+  {
+    id: "05",
+    title: "FILEGRAM",
+    category: "Unlimited Telegram Cloud Storage Web Platform",
+    categories: ["WEB APP", "TELEGRAM API", "CLOUD DRIVE", "NEXT.JS"],
+    subtitle: "05 / CLOUD STORAGE",
+    year: "2026",
+    image: "",
+    tagline: "Turn your Telegram storage into an unlimited, high-speed cloud drive with a modern web interface.",
+    description: "FileGram is a modern cloud storage platform leveraging Telegram API as an unlimited, zero-cost backend storage layer. Built with Next.js 14, Tailwind CSS, Supabase Auth, and GramJS/Telegram API for high-speed file chunking, instant stream playback, and file sharing.",
+    bgGradient: "from-cyan-950 via-sky-950 to-[#050507]",
+    details: {
+      role: "Full-Stack Web Architect",
+      client: "FileGram Platform",
+      engine: "Next.js 14 / Telegram API / Supabase / Tailwind",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://filegramm.vercel.app/"
+    },
+    metrics: [
+      { label: "STORAGE ENGINE", value: "Telegram API Chunking" },
+      { label: "BANDWIDTH", value: "Unlimited Free Transfer" },
+      { label: "FRAMEWORK", value: "Next.js 14 / Supabase" }
+    ]
+  },
+  {
+    id: "06",
     title: "JAIMIN FILMS",
-    category: "Cinematic Studio & Production Web App",
-    categories: ["WEB DEV", "VIDEO", "VFX"],
-    subtitle: "03 / FILM STUDIO PORTAL",
+    category: "Cinematic Film Studio & Video Production Showcase",
+    categories: ["FILM STUDIO", "VIDEO PORTFOLIO", "4K STREAMING", "NEXT.JS"],
+    subtitle: "06 / FILM STUDIO PORTAL",
     year: "2026",
     image: "",
     tagline: "Immersive video portfolio & cinematic production showcase engineered with smooth motion physics.",
-    description: "An ultra-sleek digital showcase platform designed for Jaimin Films. Highlights high-definition commercial films, director cuts, and video portfolios with seamless video streaming and dynamic project filtering.",
+    description: "An ultra-sleek digital showcase platform designed for Jaimin Films. Highlights high-definition commercial films, director cuts, wedding cinematics, and video portfolios with seamless 4K video streaming and dynamic project filtering.",
     bgGradient: "from-blue-950 via-slate-900 to-[#050507]",
     details: {
       role: "Creative Web Architect",
-      client: "Jaimin Films",
+      client: "Jaimin Films Studio",
       engine: "Next.js / React / Framer Motion / Video CDN",
       timeline: "2026",
       videoUrl: null,
-      liveUrl: "https://yuvrajrathod.online/"
+      liveUrl: "https://jaimin-films.vercel.app/"
     },
     metrics: [
       { label: "VIDEO STREAMING", value: "4K Master Playback" },
       { label: "UI ACCELERATION", value: "Hardware Accelerated" },
       { label: "RESPONSIVENESS", value: "All Breakpoints" }
-    ]
-  },
-  {
-    id: "04",
-    title: "BHUMI INFRASTRUCTURE",
-    category: "Corporate Infrastructure & Real Estate Platform",
-    categories: ["WEB DEV", "APPS"],
-    subtitle: "04 / INFRASTRUCTURE PORTAL",
-    year: "2026",
-    image: "",
-    tagline: "Enterprise real estate & construction portfolio showcasing landmark engineering projects.",
-    description: "A robust corporate web platform engineered for Bhumi Infrastructure. Built to present major civil engineering projects, spatial site blueprints, corporate credentials, and direct client inquiry workflows.",
-    bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
-    details: {
-      role: "Lead Web Developer",
-      client: "Bhumi Infrastructure",
-      engine: "Next.js / TailwindCSS / Supabase",
-      timeline: "2026",
-      videoUrl: null,
-      liveUrl: "https://yuvrajrathod.online/"
-    },
-    metrics: [
-      { label: "SECURITY", value: "SSL Encrypted" },
-      { label: "PERFORMANCE", value: "Sub-Second Edge" },
-      { label: "LEAD CONVERSION", value: "Integrated Forms" }
-    ]
-  },
-  {
-    id: "05",
-    title: "MAITRI VISUALIZATION",
-    category: "3D Architectural Visualization Portal",
-    categories: ["WEB DEV", "CGI", "APPS"],
-    subtitle: "05 / SPATIAL VISUALS PORTAL",
-    year: "2026",
-    image: "",
-    tagline: "Photorealistic 3D architectural render gallery & digital spatial walkthrough showcase.",
-    description: "A high-end architectural gallery platform designed for Maitri Visualization. Displays 3D spatial renders, interior walkthroughs, and interactive project catalogs with crystal-clear visual clarity.",
-    bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
-    details: {
-      role: "Full-Stack Web Developer",
-      client: "Maitri Visualization",
-      engine: "Next.js / WebGL Gallery / Tailwind",
-      timeline: "2026",
-      videoUrl: null,
-      liveUrl: "https://yuvrajrathod.online/"
-    },
-    metrics: [
-      { label: "VISUAL ACCURACY", value: "High-Res Image Assets" },
-      { label: "LOAD SPEED", value: "Optimized WebP Edge" },
-      { label: "CROSS-PLATFORM", value: "Mobile & Desktop" }
-    ]
-  },
-  {
-    id: "06",
-    title: "BHAVDIP FILMS",
-    category: "Creative Video Studio & Production Showcase",
-    categories: ["WEB DEV", "VIDEO"],
-    subtitle: "06 / CINEMATIC STUDIO",
-    year: "2026",
-    image: "",
-    tagline: "Dynamic media platform highlighting director reels, wedding films, and brand commercials.",
-    description: "A sleek media portal engineered for Bhavdip Films. Features embedded high-bitrate video showcases, categorized portfolio reels, and streamlined client consultation booking.",
-    bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
-    details: {
-      role: "Web Developer & Designer",
-      client: "Bhavdip Films",
-      engine: "Next.js / Tailwind / Motion",
-      timeline: "2026",
-      videoUrl: null,
-      liveUrl: "https://yuvrajrathod.online/"
-    },
-    metrics: [
-      { label: "MEDIA PLAYER", value: "Seamless Video Stream" },
-      { label: "DESIGN SYSTEM", value: "Custom Dark Aesthetic" },
-      { label: "STATUS", value: "LIVE PRODUCTION 🟢" }
     ]
   }
 ];
@@ -657,14 +657,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (projRes.data && projRes.data.length > 0) {
           const mappedProjs = projRes.data.map(mapProjectFromDb);
           
-          // Ensure BILLING-OS is present in projects list
-          if (!mappedProjs.some(p => p.title.toUpperCase().includes("BILLING") || p.details?.liveUrl === "https://www.billingos.online/")) {
-            mappedProjs.splice(1, 0, initialProjects[1]);
-          }
-          // Ensure Yuvraj Rathod live project is present at position 1
-          if (!mappedProjs.some(p => p.details?.liveUrl === "https://yuvrajrathod.online/")) {
-            mappedProjs.splice(0, 0, initialProjects[0]);
-          }
+          // Ensure all default initial live projects exist in the list
+          initialProjects.forEach((initP) => {
+            const hasP = mappedProjs.some(
+              p => p.title.toUpperCase() === initP.title.toUpperCase() || 
+                   (initP.details?.liveUrl && p.details?.liveUrl === initP.details.liveUrl)
+            );
+            if (!hasP) {
+              mappedProjs.push(initP);
+            }
+          });
 
           // Deduplicate by title & re-index unique IDs cleanly
           const uniqueMap = new Map<string, Project>();
