@@ -1309,6 +1309,36 @@ export default function AdminPage() {
               {/* Form Content */}
               <form onSubmit={handleProjectSubmit} className="p-6 flex flex-col gap-5 overflow-y-auto scrollbar-thin flex-1">
                 
+                {/* Live Website Project Notice & Mode Toggle */}
+                <div className="bg-[#12121a] border border-[#c5a880]/40 p-4 rounded-xl flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-[#c5a880] tracking-widest uppercase font-bold flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-emerald-400 animate-pulse" />
+                      LIVE HOSTED WEBSITE SHOWCASE
+                    </span>
+                    <span className="text-[8.5px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 px-2 py-0.5 rounded-full font-bold">
+                      SAFARI SANDBOX READY
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[9px] font-mono text-white/70 tracking-wider uppercase font-bold">
+                      LIVE WEBSITE URL * (e.g. https://www.billingos.online/ or https://aravallinews.com)
+                    </label>
+                    <input 
+                      type="url" 
+                      value={projForm.details?.liveUrl || ""} 
+                      onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, liveUrl: e.target.value } })} 
+                      className="bg-black/80 border border-[#c5a880]/50 focus:border-[#c5a880] focus:ring-1 focus:ring-[#c5a880] rounded-lg py-2.5 px-3.5 outline-none text-xs text-white font-mono font-bold"
+                      placeholder="https://www.billingos.online/"
+                    />
+                  </div>
+
+                  <p className="text-[10px] text-white/50 leading-relaxed font-sans italic">
+                    💡 Entering a live URL automatically renders a real-time website homepage screenshot card on your agency portfolio, and launches the Apple macOS Safari Sandbox Studio when clicked!
+                  </p>
+                </div>
+
                 {/* 1. Title, Year & Category */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="sm:col-span-2 flex flex-col gap-1.5">
@@ -1320,7 +1350,7 @@ export default function AdminPage() {
                       value={projForm.title || ""} 
                       onChange={(e) => setProjForm({ ...projForm, title: e.target.value })} 
                       className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] focus:ring-1 focus:ring-[#c5a880]/30 outline-none text-xs text-white uppercase tracking-wider font-semibold"
-                      placeholder="e.g. MERCEDES AMG GT AURA CONFIGURATOR"
+                      placeholder="e.g. BILLING-OS"
                       required
                     />
                   </div>
@@ -1352,7 +1382,7 @@ export default function AdminPage() {
                         value={projForm.category || ""} 
                         onChange={(e) => setProjForm({ ...projForm, category: e.target.value })} 
                         className="flex-1 bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
-                        placeholder="e.g. WebGL & Creative Tech"
+                        placeholder="e.g. Restaurant POS / SaaS"
                         required
                       />
                       <button
@@ -1378,12 +1408,29 @@ export default function AdminPage() {
                       required
                     >
                       <option value="" disabled className="text-white/30">SELECT CATEGORY</option>
-                      {Array.from(new Set(["CGI", "VFX", "WEB DEV", "AI SHOOTS", "VR", ...projects.map(p => p.category).filter(Boolean)])).map(cat => (
+                      {Array.from(new Set(["WEB DEV", "SAAS", "POS SYSTEM", "CGI", "VFX", "AI SHOOTS", "VR", ...projects.map(p => p.category).filter(Boolean)])).map(cat => (
                         <option key={cat} value={cat} className="bg-[#0b0b0f] text-white">{cat}</option>
                       ))}
                       <option value="CREATE_NEW_CATEGORY" className="bg-[#0b0b0f] text-[#c5a880] font-semibold">+ CREATE NEW CATEGORY...</option>
                     </select>
                   )}
+                </div>
+
+                {/* Category Tag Pills (e.g. SaaS, POS System, Fullstack) */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
+                    CARD CATEGORY TAG PILLS (COMMA SEPARATED, e.g. SaaS, POS System, Fullstack)
+                  </label>
+                  <input 
+                    type="text" 
+                    value={(projForm.categories || []).join(", ")} 
+                    onChange={(e) => {
+                      const tags = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
+                      setProjForm({ ...projForm, categories: tags });
+                    }} 
+                    className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white font-mono"
+                    placeholder="SaaS, POS System, Fullstack"
+                  />
                 </div>
 
                 {/* Description */}
@@ -1398,21 +1445,6 @@ export default function AdminPage() {
                     className="bg-black/50 border border-white/10 rounded-lg p-3.5 focus:border-[#c5a880] outline-none text-xs text-white/80 leading-relaxed font-sans font-light resize-none"
                     placeholder="Brief description explaining client goals, visual execution, and technology stack used..."
                     required
-                  />
-                </div>
-
-                {/* Live Website URL Field */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-mono text-[#c5a880] tracking-wider uppercase font-bold flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5" />
-                    LIVE HOSTED WEBSITE URL (OPTIONAL SHOWCASE)
-                  </label>
-                  <input 
-                    type="url" 
-                    value={projForm.details?.liveUrl || ""} 
-                    onChange={(e) => setProjForm({ ...projForm, details: { ...projForm.details!, liveUrl: e.target.value } })} 
-                    className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white font-mono"
-                    placeholder="e.g. https://my-app.vercel.app or https://aravallinews.com"
                   />
                 </div>
 
