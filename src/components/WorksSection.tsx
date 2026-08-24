@@ -19,8 +19,18 @@ const WorksSection = memo(function WorksSection() {
   const [iframeKey, setIframeKey] = useState(0);
   const [isSafariExpanded, setIsSafariExpanded] = useState(false);
   const [isSafariMinimized, setIsSafariMinimized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const { projects } = useAdmin();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleOpenProject = (p: Project) => {
     setSelectedProject(p);
@@ -35,10 +45,9 @@ const WorksSection = memo(function WorksSection() {
     (window as any).lenis?.stop();
   };
 
-  // Global Keyboard Shortcuts Listener (Esc to exit modal, Arrow Left/Right to navigate projects)
+  // Global Keyboard Shortcuts Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept keypress if user is typing in an input or textarea
       if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
@@ -83,10 +92,7 @@ const WorksSection = memo(function WorksSection() {
   const row2Ref = useRef<HTMLDivElement>(null);
   const row3Ref = useRef<HTMLDivElement>(null);
 
-  // Divide projects into 3 distinct marquee rows:
-  // Row 1: Web & SaaS Platforms
-  // Row 2: Video Editing, Reels & UGC Showcase
-  // Row 3: Unreal Engine & 3D Automation
+  // Divide projects into 3 distinct showcase rows:
   const row1Projects = projects.filter(p => 
     Boolean(p.details?.liveUrl) || 
     p.categories.some(c => ["WEB", "SAAS", "POS", "APP", "DEV", "FULLSTACK"].some(k => c.toUpperCase().includes(k))) ||
@@ -103,14 +109,14 @@ const WorksSection = memo(function WorksSection() {
     p.category.toUpperCase().includes("CGI") || p.category.toUpperCase().includes("VFX") || p.category.toUpperCase().includes("3D") || p.category.toUpperCase().includes("UNREAL") || p.category.toUpperCase().includes("AUTOMATION")
   );
 
-  // Fallbacks if list is small to ensure endless infinite marquee loop
   const list1 = row1Projects.length > 0 ? row1Projects : projects;
   const list2 = row2Projects.length > 0 ? row2Projects : projects;
   const list3 = row3Projects.length > 0 ? row3Projects : projects;
 
-  const dupRow1 = [...list1, ...list1, ...list1];
-  const dupRow2 = [...list2, ...list2, ...list2];
-  const dupRow3 = [...list3, ...list3, ...list3];
+  // On mobile, use 2x duplication; on desktop use 3x
+  const dupRow1 = isMobile ? [...list1, ...list1] : [...list1, ...list1, ...list1];
+  const dupRow2 = isMobile ? [...list2, ...list2] : [...list2, ...list2, ...list2];
+  const dupRow3 = isMobile ? [...list3, ...list3] : [...list3, ...list3, ...list3];
 
   const categories = [
     "ALL",
@@ -126,9 +132,9 @@ const WorksSection = memo(function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
-  // Smooth GSAP Scroll Velocity Controller — pauses when section is off-screen
+  // Desktop-only GSAP marquee ticker loop (bypassed on mobile to guarantee 60-120 FPS native touch scrolling)
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || isMobile) return;
     gsap.registerPlugin(ScrollTrigger);
 
     const section = sectionRef.current;
@@ -142,14 +148,12 @@ const WorksSection = memo(function WorksSection() {
     let x2 = -1200;
     let x3 = 0;
 
-    // IntersectionObserver to pause ticker when section is off-screen
     const io = new IntersectionObserver(
       ([entry]) => { isVisible = entry.isIntersecting; },
       { rootMargin: "200px" }
     );
     io.observe(section);
 
-    // Measure page scroll velocity
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top bottom",
@@ -159,7 +163,6 @@ const WorksSection = memo(function WorksSection() {
       }
     });
 
-    // GPU Ticker — only processes when visible
     const updateTicker = (_time: number, deltaTime: number) => {
       if (!isVisible) return;
 
@@ -191,7 +194,7 @@ const WorksSection = memo(function WorksSection() {
       st.kill();
       gsap.ticker.remove(updateTicker);
     };
-  }, [projects.length]);
+  }, [projects.length, isMobile]);
 
   return (
     <section 
@@ -207,7 +210,7 @@ const WorksSection = memo(function WorksSection() {
 
       <ScrollAnimatedWrapper enableY={false} enableScale={false} className="w-full flex flex-col gap-12">
         
-        {/* Clean Header Section */}
+        {/* Header Section */}
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex flex-col md:flex-row md:items-end justify-between gap-6 z-10">
           <div className="flex flex-col gap-3 max-w-2xl">
             <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-[#c5a880] uppercase font-bold">
@@ -221,14 +224,13 @@ const WorksSection = memo(function WorksSection() {
             </p>
           </div>
 
-          {/* Action Trigger Button: VIEW ALL PROJECTS */}
           <button
             onClick={() => {
               setShowAllDrawer(true);
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (window as any).lenis?.stop();
             }}
-            className="group flex items-center gap-3 px-6 py-3.5 bg-[#c5a880] hover:bg-[#b0926a] text-black rounded-xl font-outfit text-xs font-bold tracking-[0.18em] transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(197,168,128,0.3)] shrink-0 cursor-pointer"
+            className="group flex items-center gap-3 px-6 py-3.5 bg-[#c5a880] hover:bg-[#b0926a] text-black rounded-xl font-outfit text-xs font-bold tracking-[0.18em] transition-all duration-300 shadow-xl shrink-0 cursor-pointer"
           >
             <Grid className="w-4 h-4" />
             <span>VIEW ALL PROJECTS ({projects.length})</span>
@@ -236,16 +238,14 @@ const WorksSection = memo(function WorksSection() {
           </button>
         </div>
 
-        {/* ------------------------------------------------------------- */}
-        {/* 3 CATEGORIZED SHOWCASE ROWS */}
-        {/* ------------------------------------------------------------- */}
+        {/* 3 SHOWCASE ROWS */}
         <div className="w-full flex flex-col gap-12 overflow-hidden py-6 z-10">
           
           {/* ROW 1: 🌐 WEB & SAAS PLATFORMS */}
           <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
                   01 <span className="text-emerald-400 font-mono font-normal">/</span> WEB & SAAS PLATFORMS
                 </span>
@@ -256,14 +256,15 @@ const WorksSection = memo(function WorksSection() {
               <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
+            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
               <div ref={row1Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow1.map((project, idx) => (
-                  <MarqueeProjectCard
-                    key={`r1-${project.id}-${idx}`}
-                    project={project}
-                    onOpenDetails={handleOpenProject}
-                  />
+                  <div key={`r1-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
+                    <MarqueeProjectCard
+                      project={project}
+                      onOpenDetails={handleOpenProject}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -273,7 +274,7 @@ const WorksSection = memo(function WorksSection() {
           <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#c5a880] shadow-[0_0_10px_#c5a880]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-[#c5a880]" />
                 <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
                   02 <span className="text-[#c5a880] font-mono font-normal">/</span> CINEMATIC & UGC MEDIA PRODUCTION
                 </span>
@@ -284,14 +285,15 @@ const WorksSection = memo(function WorksSection() {
               <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
+            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
               <div ref={row2Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow2.map((project, idx) => (
-                  <MarqueeProjectCard
-                    key={`r2-${project.id}-${idx}`}
-                    project={project}
-                    onOpenDetails={handleOpenProject}
-                  />
+                  <div key={`r2-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
+                    <MarqueeProjectCard
+                      project={project}
+                      onOpenDetails={handleOpenProject}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -301,7 +303,7 @@ const WorksSection = memo(function WorksSection() {
           <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#38bdf8]" />
+                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
                 <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
                   03 <span className="text-cyan-400 font-mono font-normal">/</span> UNREAL ENGINE & 3D AUTOMATION
                 </span>
@@ -312,14 +314,15 @@ const WorksSection = memo(function WorksSection() {
               <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
+            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
               <div ref={row3Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow3.map((project, idx) => (
-                  <MarqueeProjectCard
-                    key={`r3-${project.id}-${idx}`}
-                    project={project}
-                    onOpenDetails={handleOpenProject}
-                  />
+                  <div key={`r3-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
+                    <MarqueeProjectCard
+                      project={project}
+                      onOpenDetails={handleOpenProject}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -327,7 +330,7 @@ const WorksSection = memo(function WorksSection() {
 
         </div>
 
-        {/* Bottom CTA to Open View All Projects Grid */}
+        {/* Bottom CTA */}
         <div className="flex justify-center items-center z-10 pt-4">
           <button
             onClick={() => {
@@ -345,7 +348,6 @@ const WorksSection = memo(function WorksSection() {
 
       </ScrollAnimatedWrapper>
 
-      {/* Expanded "View All Projects" Drawer Modal */}
       <AllProjectsDrawer
         isOpen={showAllDrawer}
         onClose={() => setShowAllDrawer(false)}
@@ -356,7 +358,6 @@ const WorksSection = memo(function WorksSection() {
         onSelectProject={handleOpenProject}
       />
 
-      {/* Fullscreen Apple macOS Safari Browser Window Sandbox Modal */}
       <SafariSandboxModal
         selectedProject={selectedProject}
         projects={projects}

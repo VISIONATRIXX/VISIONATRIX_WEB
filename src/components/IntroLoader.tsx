@@ -59,8 +59,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
           
           {/* Parallax Curtain Sheet 3: Translucent technical slate overlay */}
           <motion.div
-            className="absolute inset-0 bg-[#121217] z-10 pointer-events-none transform-gpu"
-            style={{ willChange: "transform" }}
+            className="absolute inset-0 bg-[#121217] z-10 pointer-events-none"
             exit={{
               y: "-100%",
               transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.16 }
@@ -69,8 +68,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
           
           {/* Parallax Curtain Sheet 2: Translucent luxury gold accent sheet */}
           <motion.div
-            className="absolute inset-0 bg-[#c5a880] opacity-15 z-20 pointer-events-none transform-gpu"
-            style={{ willChange: "transform" }}
+            className="absolute inset-0 bg-[#c5a880] opacity-15 z-20 pointer-events-none"
             exit={{
               y: "-100%",
               transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.08 }
@@ -79,24 +77,23 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
 
           {/* Parallax Curtain Sheet 1: Main deep black background container holding the loader */}
           <motion.div
-            className="absolute inset-0 bg-[#0b0b0f] z-30 flex flex-col items-center justify-center overflow-hidden transform-gpu"
-            style={{ willChange: "transform" }}
+            className="absolute inset-0 bg-[#0b0b0f] z-30 flex flex-col items-center justify-center overflow-hidden"
             exit={{
               y: "-100%",
               transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1], delay: 0.0 }
             }}
           >
             {/* Ambient gold background node */}
-            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#c5a880]/[0.02] pointer-events-none select-none" />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-[#c5a880]/[0.02] blur-[100px] pointer-events-none select-none" />
 
             {/* Core Logo + Title Container */}
             <div className="relative flex flex-col items-center justify-center text-center px-6">
               
-              {/* 1. Central Logo Asset */}
+              {/* 1. Central Logo Asset - appears first of all */}
               <motion.div
                 className="relative w-[150px] h-[150px] md:w-[180px] md:h-[180px] z-10 mb-8"
-                initial={{ opacity: 0, scale: 0.85, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)", y: -10 }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)", y: 0 }}
                 transition={{ 
                   delay: 0.2, 
                   duration: 1.0, 
@@ -109,18 +106,24 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                   fill
                   priority
                   className="object-contain"
+                  style={{
+                    filter: "drop-shadow(0 0 25px rgba(255, 255, 255, 0.08))",
+                  }}
                 />
               </motion.div>
 
-              {/* 2. Typographic Letter-by-Letter Staggered Reveal */}
+              {/* 2. Typographic Letter-by-Letter Staggered Reveal - delayed to start after logo blooms */}
               <motion.h1
                 className="text-white font-display text-base md:text-lg tracking-[0.4em] z-10 uppercase flex justify-center items-center select-none"
+                style={{
+                  textShadow: "0 0 12px rgba(255, 255, 255, 0.06)",
+                }}
               >
                 {textLetters.map((char, index) => (
                   <motion.span
                     key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
+                    animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                     transition={{
                       duration: 0.8,
                       ease: [0.16, 1, 0.3, 1],
@@ -135,10 +138,10 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
 
             </div>
 
-            {/* 3. Skip Intro Bypass Action Pill Button */}
+            {/* 3. Skip Intro Bypass Action Pill Button - delayed to fade in seamlessly as text finishes */}
             <motion.button
               onClick={handleDismiss}
-              className="absolute bottom-16 px-6 py-2.5 rounded-full border border-white/10 bg-[#121217] text-white/50 cursor-pointer overflow-hidden z-40 select-none focus:outline-none"
+              className="absolute bottom-16 px-6 py-2.5 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md text-white/50 cursor-pointer overflow-hidden z-40 select-none focus:outline-none"
               style={{
                 fontFamily: "var(--font-mono-custom, 'JetBrains Mono', monospace)",
                 fontSize: "0.7rem",
@@ -178,7 +181,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                   repeatType: "loop",
                   duration: 1.4,
                   ease: "easeInOut",
-                  repeatDelay: 2.8,
+                  repeatDelay: 2.8, // Sweeps every 4.2 seconds
                 }}
                 style={{
                   top: 0,

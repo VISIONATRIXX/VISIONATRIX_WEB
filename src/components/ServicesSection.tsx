@@ -98,6 +98,13 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     
     let animationId: number;
     let isIntersecting = false;
+    const isMobileDevice = window.innerWidth < 1024;
+    
+    // On mobile screens, render static backdrop without running 60fps rAF loop
+    if (isMobileDevice) {
+      return;
+    }
+
     let width = canvas.width = canvas.clientWidth || 300;
     let height = canvas.height = canvas.clientHeight || 200;
     
