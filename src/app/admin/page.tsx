@@ -961,9 +961,9 @@ export default function AdminPage() {
                   </div>
 
                   <div className="flex flex-col">
-                    {projects.map(p => (
+                    {projects.map((p, index) => (
                       <div 
-                        key={p.id}
+                        key={`admin-proj-${p.id || index}-${index}`}
                         className="flex items-center justify-between px-5 py-4 border-b border-white/[0.03] text-xs hover:bg-white/[0.01] transition-colors"
                       >
                         <div className="flex-1 max-w-[80px] font-mono text-white/30 font-bold">{p.id}</div>

@@ -659,14 +659,28 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           
           // Ensure BILLING-OS is present in projects list
           if (!mappedProjs.some(p => p.title.toUpperCase().includes("BILLING") || p.details?.liveUrl === "https://www.billingos.online/")) {
-            mappedProjs.splice(1, 0, initialProjects[1]); // Insert BILLING-OS at position 2
+            mappedProjs.splice(1, 0, initialProjects[1]);
           }
           // Ensure Yuvraj Rathod live project is present at position 1
           if (!mappedProjs.some(p => p.details?.liveUrl === "https://yuvrajrathod.online/")) {
             mappedProjs.splice(0, 0, initialProjects[0]);
           }
 
-          setProjects(mappedProjs);
+          // Deduplicate by title & re-index unique IDs cleanly
+          const uniqueMap = new Map<string, Project>();
+          mappedProjs.forEach(p => {
+            const key = p.title.toUpperCase().trim();
+            if (!uniqueMap.has(key)) {
+              uniqueMap.set(key, p);
+            }
+          });
+
+          const cleanProjs = Array.from(uniqueMap.values()).map((p, idx) => ({
+            ...p,
+            id: (idx + 1).toString().padStart(2, '0')
+          }));
+
+          setProjects(cleanProjs);
         } else {
           setProjects(initialProjects);
         }
