@@ -21,16 +21,23 @@ function MarqueeProjectCard({
       onClick={() => onOpenDetails(project)}
       className="group relative flex-shrink-0 w-[300px] sm:w-[380px] aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)] select-none"
     >
-      {/* Background Image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={project.image}
-        alt={project.title}
-        className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
-      />
+      {/* Background Image / Ambient Dark Glass Canvas */}
+      {project.image ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={project.image}
+          alt={project.title}
+          className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
+        />
+      ) : (
+        <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+        </div>
+      )}
 
       {/* Gradient Vignette Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent rounded-2xl pointer-events-none" />
 
       {/* Top Category Badges */}
       <div className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between pointer-events-none">
@@ -385,12 +392,19 @@ export default function WorksSection() {
                   onClick={() => handleOpenProject(project)}
                   className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
-                  />
+                  {project.image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover rounded-xl opacity-75 group-hover:opacity-95 group-hover:scale-105 transition-all duration-700 ease-out"
+                    />
+                  ) : (
+                    <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
+                      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
 
                   <div className="absolute top-5 left-5 z-20 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
