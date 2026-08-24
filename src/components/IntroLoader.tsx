@@ -57,18 +57,21 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
       {!isDismissed && (
         <div className="fixed inset-0 z-[10000] overflow-hidden pointer-events-auto">
           
-          {/* Main GPU Hardware-Accelerated Black Curtain Sheet with Gold Top Border Accent */}
+          {/* Main GPU Hardware-Accelerated Black Curtain Sheet with Thick Gold Border Accent */}
           <motion.div
-            className="absolute inset-0 bg-[#0b0b0f] z-30 flex flex-col items-center justify-center overflow-hidden border-b-2 border-[#c5a880]/60 shadow-[0_15px_50px_rgba(197,168,128,0.2)] transform-gpu"
+            className="absolute inset-0 bg-[#0b0b0f] z-30 flex flex-col items-center justify-center overflow-hidden transform-gpu"
             style={{
               willChange: "transform",
               transform: "translateZ(0)"
             }}
             exit={{
               y: "-100%",
-              transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
+              transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] }
             }}
           >
+            {/* Thick Luxury Gold Accent Beam at Bottom Edge of Curtain */}
+            <div className="absolute bottom-0 left-0 right-0 h-[4px] md:h-[5px] bg-gradient-to-r from-[#7c5f35] via-[#c5a880] via-[#e2cbb0] via-[#c5a880] to-[#7c5f35] shadow-[0_0_25px_rgba(197,168,128,0.85),0_0_45px_rgba(197,168,128,0.4)] z-50 pointer-events-none" />
+
             {/* Ambient gold background glow */}
             <div className="absolute w-[400px] h-[400px] rounded-full bg-[#c5a880]/[0.02] blur-[100px] pointer-events-none select-none" />
 
