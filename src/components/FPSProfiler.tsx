@@ -23,10 +23,15 @@ interface PerformanceReport {
   bottleneckSummary: string[];
 }
 
-export default function FPSProfiler({ activeSection }: { activeSection: string }) {
+interface FPSProfilerProps {
+  activeSection: string;
+  enabled?: boolean;
+}
+
+export default function FPSProfiler({ activeSection, enabled = false }: FPSProfilerProps) {
   const [fps, setFps] = useState<number>(60);
   const [frameTime, setFrameTime] = useState<number>(16.6);
-  const [isRecording, setIsRecording] = useState<boolean>(true);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
   const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const [report, setReport] = useState<PerformanceReport | null>(null);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
@@ -40,8 +45,10 @@ export default function FPSProfiler({ activeSection }: { activeSection: string }
     activeSectionRef.current = activeSection;
   }, [activeSection]);
 
-  // Real-Time FPS Loop
+  // Real-Time FPS Loop — only runs if enabled is true
   useEffect(() => {
+    if (!enabled) return;
+
     let animationFrameId: number;
     let lastFpsUpdate = performance.now();
 
@@ -191,6 +198,8 @@ export default function FPSProfiler({ activeSection }: { activeSection: string }
     if (val >= 30) return "text-amber-400 border-amber-500/40 bg-amber-950/40";
     return "text-rose-400 border-rose-500/40 bg-rose-950/40";
   };
+
+  if (!enabled) return null;
 
   return (
     <>
