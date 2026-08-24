@@ -428,400 +428,334 @@ export default function WorksSection() {
             style={{ willChange: "opacity" }}
           >
             <motion.div
-              initial={{ scale: 0.95, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 30 }}
-              transition={{ type: "spring", damping: 30, stiffness: 240 }}
-              className="w-full max-w-3xl bg-[#0b0b0f] border border-white/10 rounded-2xl relative shadow-[0_0_80px_rgba(0,0,0,0.8),_0_0_50px_rgba(197,168,128,0.06)] flex flex-col gap-0 overflow-hidden h-[85vh] max-h-[85vh] md:h-[680px] lg:h-[780px]"
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              className="w-[95vw] max-w-[1550px] h-[92vh] max-h-[92vh] bg-[#07070b] border border-[#c5a880]/30 rounded-2xl relative shadow-[0_30px_100px_rgba(0,0,0,0.98)] flex flex-col overflow-hidden font-sans"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setSelectedProject(null);
-                  if (!showAllDrawer) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (window as any).lenis?.start();
-                  }
-                }}
-                className="absolute top-6 right-6 text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 w-9 h-9 rounded-full border border-white/10 flex items-center justify-center cursor-pointer z-50 shadow-lg backdrop-blur-md animate-pulse"
-                aria-label="Close modal"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              {/* Visual Media Carousel / Interactive Live Site Viewer */}
+              {/* Apple macOS Safari Header Bar (Full Width Top) */}
               {(() => {
-                const mediaItems: { type: "video" | "image"; url: string }[] = [];
-                if (selectedProject.details?.videoUrl) {
-                  mediaItems.push({ type: "video", url: selectedProject.details.videoUrl });
-                }
-                mediaItems.push({ type: "image", url: selectedProject.image });
-                if (selectedProject.details?.images && selectedProject.details.images.length > 0) {
-                  selectedProject.details.images.forEach((imgUrl: string) => {
-                    if (imgUrl) mediaItems.push({ type: "image", url: imgUrl });
-                  });
-                }
-
-                const currentMedia = mediaItems[activeSlide] || mediaItems[0];
                 const hasLiveSite = Boolean(selectedProject.details?.liveUrl);
 
                 return (
-                  <div className="relative w-full aspect-video md:h-[380px] lg:h-[420px] overflow-hidden bg-zinc-950 border-b border-white/10 flex items-center justify-center shrink-0 group">
-                    <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent z-10 pointer-events-none" />
-
-                    {/* Mode Toggle Pills Header */}
-                    {hasLiveSite && (
-                      <div className="absolute top-4 left-6 z-30 flex items-center gap-2 bg-black/80 backdrop-blur-md p-1 rounded-full border border-white/15 shadow-xl">
+                  <div className="bg-[#121219] border-b border-white/10 px-5 py-3 flex items-center justify-between gap-4 shrink-0 shadow-2xl z-30 select-none">
+                    {/* Left: Traffic Lights & Mode Toggle */}
+                    <div className="flex items-center gap-4 shrink-0">
+                      {/* Apple Window Traffic Controls */}
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => setLiveMode(false)}
-                          className={`px-3 py-1 rounded-full font-mono text-[9px] tracking-wider font-bold transition-all uppercase cursor-pointer ${
-                            !liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/50 hover:text-white"
-                          }`}
+                          onClick={() => {
+                            setSelectedProject(null);
+                            if (!showAllDrawer) {
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              (window as any).lenis?.start();
+                            }
+                          }}
+                          className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] hover:bg-[#ff3b30] flex items-center justify-center text-black font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(255,95,86,0.5)]"
+                          title="Close Window"
                         >
-                          MEDIA SHOWCASE
+                          <X className="w-2.5 h-2.5 opacity-0 hover:opacity-100" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setLiveMode(true)}
-                          className={`px-3 py-1 rounded-full font-mono text-[9px] tracking-wider font-bold transition-all uppercase flex items-center gap-1.5 cursor-pointer ${
-                            liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/50 hover:text-white"
-                          }`}
+                          onClick={() => setIsSafariMinimized(!isSafariMinimized)}
+                          className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] hover:bg-[#ffcc00] flex items-center justify-center text-black font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(255,189,46,0.5)]"
+                          title="Minimize Window"
                         >
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span>LIVE WEBSITE PREVIEW</span>
+                          <Minus className="w-2.5 h-2.5 opacity-0 hover:opacity-100" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsSafariExpanded(true)}
+                          className="w-3.5 h-3.5 rounded-full bg-[#27C93F] hover:bg-[#34c759] flex items-center justify-center text-black font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(39,201,63,0.5)]"
+                          title="Fullscreen Sandbox"
+                        >
+                          <Maximize2 className="w-2 h-2 opacity-0 hover:opacity-100" />
                         </button>
                       </div>
-                    )}
 
-                    {/* Live Website Interactive View vs Media View */}
-                    {liveMode && hasLiveSite ? (
-                      <div className="absolute inset-0 z-20 flex flex-col bg-[#08080c] select-none">
-                        {/* Authentic Apple macOS Safari Window Bar Header */}
-                        <div className="bg-[#16161d] border-b border-white/10 px-4 py-2.5 flex flex-col gap-2 shrink-0 shadow-2xl">
-                          {/* Row 1: Traffic Lights + URL Bar + Viewport Controls + Fullscreen Button */}
-                          <div className="flex items-center justify-between gap-3">
-                            
-                            {/* Apple Window Controls (Red, Yellow, Green Traffic Lights) */}
-                            <div className="flex items-center gap-2 shrink-0">
-                              {/* Red Close Button */}
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setLiveMode(false);
-                                  setIsSafariExpanded(false);
-                                }}
-                                className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] hover:bg-[#ff3b30] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(255,95,86,0.4)]"
-                                title="Close Safari Sandbox"
-                              >
-                                <X className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 font-bold" />
-                              </button>
+                      {/* Nav Controls */}
+                      <div className="hidden sm:flex items-center gap-1.5 text-white/30 border-l border-white/10 pl-3">
+                        <ChevronLeft className="w-4 h-4 cursor-not-allowed" />
+                        <ChevronRight className="w-4 h-4 cursor-not-allowed" />
+                        <button
+                          type="button"
+                          onClick={() => setIframeKey(k => k + 1)}
+                          className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer ml-1"
+                          title="Reload Page"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
 
-                              {/* Yellow Minimize Button */}
-                              <button
-                                type="button"
-                                onClick={() => setIsSafariMinimized(!isSafariMinimized)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] hover:bg-[#ffcc00] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(255,189,46,0.4)]"
-                                title="Minimize Window"
-                              >
-                                <Minus className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 font-bold" />
-                              </button>
-
-                              {/* Green Expand / Fullscreen Button */}
-                              <button
-                                type="button"
-                                onClick={() => setIsSafariExpanded(!isSafariExpanded)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#27C93F] hover:bg-[#34c759] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(39,201,63,0.4)]"
-                                title={isSafariExpanded ? "Exit Fullscreen" : "Fullscreen Safari Sandbox"}
-                              >
-                                <Maximize2 className="w-2 h-2 opacity-0 group-hover:opacity-100 font-bold" />
-                              </button>
-
-                              {/* Nav Arrows */}
-                              <div className="hidden sm:flex items-center gap-1 ml-2 text-white/30">
-                                <ChevronLeft className="w-4 h-4 cursor-not-allowed" />
-                                <ChevronRight className="w-4 h-4 cursor-not-allowed" />
-                                <button
-                                  type="button"
-                                  onClick={() => setIframeKey(k => k + 1)}
-                                  className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer ml-1"
-                                  title="Reload Page"
-                                >
-                                  <RotateCcw className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Apple Safari URL Bar */}
-                            <div className="flex-1 max-w-xl mx-2 bg-black/75 border border-white/10 hover:border-[#c5a880]/50 rounded-lg py-1.5 px-3 flex items-center justify-between gap-2 shadow-inner transition-colors">
-                              <div className="flex items-center gap-2 text-white/80 font-mono text-[10px] truncate">
-                                <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
-                                <span className="text-[#c5a880] font-bold">https://</span>
-                                <span className="truncate text-white/90">{selectedProject.details.liveUrl?.replace(/^https?:\/\//, '')}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-white/40 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() => setIframeKey(k => k + 1)}
-                                  className="hover:text-white transition-colors"
-                                  title="Refresh Page"
-                                >
-                                  <RefreshCw className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Apple Device Frame Switcher */}
-                            <div className="flex items-center gap-2 shrink-0">
-                              <div className="flex bg-black/60 p-1 rounded-lg border border-white/10">
-                                <button
-                                  type="button"
-                                  onClick={() => setSandboxDevice("desktop")}
-                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
-                                    sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                                  }`}
-                                  title="MacBook Desktop Viewport"
-                                >
-                                  <Monitor className="w-3.5 h-3.5" />
-                                  <span className="hidden md:inline">MacBook</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setSandboxDevice("tablet")}
-                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
-                                    sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                                  }`}
-                                  title="iPad Pro Viewport"
-                                >
-                                  <Tablet className="w-3.5 h-3.5" />
-                                  <span className="hidden md:inline">iPad</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setSandboxDevice("mobile")}
-                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
-                                    sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                                  }`}
-                                  title="iPhone 16 Pro Viewport"
-                                >
-                                  <Smartphone className="w-3.5 h-3.5" />
-                                  <span className="hidden md:inline">iPhone</span>
-                                </button>
-                              </div>
-
-                              <a
-                                href={selectedProject.details.liveUrl!}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hidden lg:flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/15 px-2.5 py-1.5 rounded-lg border border-[#c5a880]/30 font-bold text-[9.5px] font-mono uppercase"
-                              >
-                                <span>LAUNCH TAB</span>
-                                <ExternalLink className="w-3 h-3" />
-                              </a>
-                            </div>
-                          </div>
-
-                          {/* Row 2: Apple Safari Glass Tab Bar */}
-                          <div className="flex items-center gap-2 pt-1.5 border-t border-white/5 font-mono text-[9.5px]">
-                            <div className="bg-[#242430] text-white px-3 py-1 rounded-t-lg border-t border-x border-[#c5a880]/40 flex items-center gap-2 shadow-md">
-                              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                              <span className="font-bold tracking-wide uppercase truncate max-w-[180px] sm:max-w-[250px]">
-                                {selectedProject.title}
-                              </span>
-                              <X 
-                                onClick={() => setLiveMode(false)}
-                                className="w-3 h-3 text-white/40 hover:text-white cursor-pointer ml-1" 
-                              />
-                            </div>
-                            <div className="text-white/30 hover:text-white p-1 cursor-pointer transition-colors text-xs font-bold">
-                              +
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Interactive Sandbox Container Frame */}
-                        <div className="flex-1 w-full h-full relative bg-[#040406] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
-                          <div 
-                            className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
-                              sandboxDevice === "desktop"
-                                ? "w-full rounded-none"
-                                : sandboxDevice === "tablet"
-                                ? "w-[820px] max-w-full rounded-2xl border-[5px] border-[#1e1e28] shadow-[0_0_60px_rgba(0,0,0,0.95)]"
-                                : "w-[360px] max-w-full rounded-[38px] border-[6px] border-[#1a1a24] shadow-[0_0_60px_rgba(197,168,128,0.25)]"
+                      {/* Showcase Mode Switcher (Media vs Live Site) */}
+                      {hasLiveSite && (
+                        <div className="flex bg-black/60 p-0.5 rounded-lg border border-white/10 ml-2">
+                          <button
+                            type="button"
+                            onClick={() => setLiveMode(false)}
+                            className={`px-3 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all uppercase cursor-pointer ${
+                              !liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
                             }`}
                           >
-                            {/* Mobile Smartphone Notch */}
-                            {sandboxDevice === "mobile" && (
-                              <div className="w-full bg-[#1a1a24] py-1 flex justify-center shrink-0 rounded-t-[32px]">
-                                <div className="w-24 h-3.5 bg-black rounded-full flex items-center justify-center gap-2">
-                                  <div className="w-2 h-2 rounded-full bg-zinc-800" />
-                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-950" />
-                                </div>
-                              </div>
-                            )}
-
-                            <iframe
-                              key={`sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                              src={selectedProject.details.liveUrl!}
-                              title={`${selectedProject.title} Apple Safari Sandbox`}
-                              className="w-full flex-1 border-0 bg-black rounded-b-[28px]"
-                              loading="lazy"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                            />
-
-                            {/* Mobile Home Bar */}
-                            {sandboxDevice === "mobile" && (
-                              <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[32px]">
-                                <div className="w-28 h-1 bg-white/40 rounded-full" />
-                              </div>
-                            )}
-                          </div>
+                            MEDIA BRIEF
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setLiveMode(true)}
+                            className={`px-3 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all uppercase flex items-center gap-1.5 cursor-pointer ${
+                              liveMode ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                            }`}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span>LIVE SANDBOX</span>
+                          </button>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-black">
-                          {currentMedia?.type === "video" ? (
-                            currentMedia.url.includes("vimeo.com") || currentMedia.url.includes("youtube.com") || currentMedia.url.includes("youtu.be") ? (
-                              <iframe
-                                src={getVideoEmbedUrl(currentMedia.url)}
-                                className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                                title={selectedProject.title}
-                              />
-                            ) : (
-                              <video
-                                src={currentMedia.url}
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
-                                key={`modal-video-${activeSlide}`}
-                              />
-                            )
-                          ) : (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img
-                              src={currentMedia?.url}
-                              alt={selectedProject.title}
-                              className="w-full h-full object-cover opacity-80 transition-all duration-300 scale-100"
-                              key={`modal-image-${activeSlide}`}
-                            />
-                          )}
-                        </div>
+                      )}
+                    </div>
 
-                        {mediaItems.length > 1 && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveSlide(prev => (prev === 0 ? mediaItems.length - 1 : prev - 1));
-                              }}
-                              className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
-                            >
-                              <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveSlide(prev => (prev === mediaItems.length - 1 ? 0 : prev + 1));
-                              }}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white/10 bg-black/60 text-white/50 hover:text-white hover:bg-black/90 flex items-center justify-center cursor-pointer transition-all z-20 shadow-lg backdrop-blur-md"
-                            >
-                              <ChevronRight className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </>
-                    )}
-
-                    {!liveMode && (
-                      <div className="absolute bottom-6 left-8 right-8 z-20 flex flex-col gap-2 pointer-events-none">
-                        <span className="font-mono text-[9px] tracking-[0.3em] text-[#c5a880] uppercase">
-                          CASE STUDY BRIEF
+                    {/* Center: Apple Safari Address Bar */}
+                    <div className="flex-1 max-w-lg mx-2 bg-black/80 border border-white/10 hover:border-[#c5a880]/50 rounded-xl py-1.5 px-3.5 flex items-center justify-between gap-2 shadow-inner transition-colors">
+                      <div className="flex items-center gap-2 text-white/80 font-mono text-[10px] truncate">
+                        <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <span className="text-[#c5a880] font-bold">https://</span>
+                        <span className="truncate text-white/90 font-medium">
+                          {selectedProject.details?.liveUrl ? selectedProject.details.liveUrl.replace(/^https?:\/\//, '') : `${selectedProject.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.visionatrix.com`}
                         </span>
-                        <h4 className="font-outfit text-2xl font-bold tracking-[0.05em] text-white uppercase leading-tight">
-                          {selectedProject.title}
-                        </h4>
                       </div>
-                    )}
+                      <button
+                        type="button"
+                        onClick={() => setIframeKey(k => k + 1)}
+                        className="text-white/40 hover:text-white transition-colors"
+                        title="Reload"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* Right: Device Selector & Close Button */}
+                    <div className="flex items-center gap-3 shrink-0">
+                      {hasLiveSite && liveMode && (
+                        <div className="hidden sm:flex bg-black/60 p-0.5 rounded-lg border border-white/10">
+                          <button
+                            type="button"
+                            onClick={() => setSandboxDevice("desktop")}
+                            className={`p-1.5 rounded transition-all cursor-pointer ${
+                              sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                            }`}
+                            title="MacBook Desktop View"
+                          >
+                            <Monitor className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSandboxDevice("tablet")}
+                            className={`p-1.5 rounded transition-all cursor-pointer ${
+                              sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                            }`}
+                            title="iPad Pro View"
+                          >
+                            <Tablet className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSandboxDevice("mobile")}
+                            className={`p-1.5 rounded transition-all cursor-pointer ${
+                              sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                            }`}
+                            title="iPhone 16 Pro View"
+                          >
+                            <Smartphone className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+
+                      {hasLiveSite && (
+                        <a
+                          href={selectedProject.details.liveUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hidden md:flex items-center gap-1.5 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/15 px-3 py-1.5 rounded-lg border border-[#c5a880]/30 font-bold text-[9.5px] font-mono uppercase"
+                        >
+                          <span>LAUNCH TAB</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+
+                      <button
+                        onClick={() => {
+                          setSelectedProject(null);
+                          if (!showAllDrawer) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (window as any).lenis?.start();
+                          }
+                        }}
+                        className="text-white/40 hover:text-white transition-colors p-1"
+                        aria-label="Close"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 );
               })()}
 
-              {/* Right Side: Editorial Content Section */}
-              <div 
-                data-lenis-prevent
-                className="p-6 md:p-10 lg:p-12 overflow-y-auto flex-1 min-h-0 modal-scrollbar flex flex-col gap-8"
-              >
-                <div className="flex flex-col gap-3">
-                  <span className="font-mono text-[9px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
-                    {selectedProject.category}
-                  </span>
-                  <h3 className="font-outfit text-3xl md:text-4xl font-extrabold tracking-[0.05em] text-white uppercase leading-none">
-                    {selectedProject.title}
-                  </h3>
-                  <p className="font-mono text-[10px] sm:text-xs text-white/70 italic leading-relaxed border-l-2 border-[#c5a880] pl-3 py-1">
-                    &ldquo;{selectedProject.tagline}&rdquo;
-                  </p>
-                </div>
+              {/* Main Body Split Panel (Left Canvas + Right Details Sidebar) */}
+              <div className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden relative">
+                
+                {/* LEFT MAIN CANVAS: Entire Interactive Sandbox or Media Carousel */}
+                <div className="flex-1 h-full relative bg-[#040407] flex items-center justify-center overflow-hidden">
+                  {liveMode && selectedProject.details?.liveUrl ? (
+                    /* Interactive Apple macOS Safari Sandbox Container */
+                    <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4">
+                      <div 
+                        className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
+                          sandboxDevice === "desktop"
+                            ? "w-full rounded-none"
+                            : sandboxDevice === "tablet"
+                            ? "w-[840px] max-w-full rounded-2xl border-[6px] border-[#1e1e28] shadow-[0_0_80px_rgba(0,0,0,0.95)]"
+                            : "w-[360px] max-w-full rounded-[40px] border-[6px] border-[#1a1a24] shadow-[0_0_70px_rgba(197,168,128,0.25)]"
+                        }`}
+                      >
+                        {sandboxDevice === "mobile" && (
+                          <div className="w-full bg-[#1a1a24] py-1 flex justify-center shrink-0 rounded-t-[34px]">
+                            <div className="w-24 h-3.5 bg-black rounded-full flex items-center justify-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-zinc-800" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-950" />
+                            </div>
+                          </div>
+                        )}
 
-                <div className="grid grid-cols-2 gap-y-5 gap-x-8 border-y border-white/5 py-6 text-xs">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase font-bold">CLIENT</span>
-                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.client}</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase font-bold">TIMELINE</span>
-                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.timeline}</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase font-bold">ROLE</span>
-                    <span className="text-white/95 font-outfit text-sm font-medium tracking-wide">{selectedProject.details.role}</span>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-[#555566] font-mono text-[9px] tracking-[0.2em] uppercase font-bold">ENGINE & DEV</span>
-                    <span className="text-[#c5a880] font-outfit text-sm font-bold tracking-wide">{selectedProject.details.engine}</span>
-                  </div>
-                </div>
+                        <iframe
+                          key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
+                          src={selectedProject.details.liveUrl}
+                          title={`${selectedProject.title} Apple Safari Sandbox`}
+                          className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
+                          loading="lazy"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                        />
 
-                <div className="flex flex-col gap-3">
-                  <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase font-bold">PROJECT OVERVIEW</span>
-                  <p className="font-sans text-xs sm:text-sm text-[#9999aa] leading-relaxed">
-                    {selectedProject.description}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <span className="font-mono text-[9px] tracking-[0.2em] text-[#555566] uppercase font-bold flex items-center gap-2">
-                    <BarChart3 className="w-3.5 h-3.5 text-[#c5a880]" />
-                    <span>PERFORMANCE METRICS</span>
-                  </span>
-                  
-                  <div className="flex flex-col gap-3">
-                    {selectedProject.metrics.map((metric, index) => (
-                      <div key={index} className="bg-white/[0.01] border border-white/5 rounded-xl p-4 flex justify-between items-center">
-                        <span className="font-mono text-[9px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
-                        <span className="font-mono text-xs text-[#c5a880] font-bold">{metric.value}</span>
+                        {sandboxDevice === "mobile" && (
+                          <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[34px]">
+                            <div className="w-28 h-1 bg-white/40 rounded-full" />
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ) : (
+                    /* Standard Media Carousel Showcase */
+                    <div className="relative w-full h-full overflow-hidden bg-black flex items-center justify-center">
+                      <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
+                      
+                      <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center">
+                        {selectedProject.details?.videoUrl ? (
+                          selectedProject.details.videoUrl.includes("vimeo.com") || selectedProject.details.videoUrl.includes("youtube.com") || selectedProject.details.videoUrl.includes("youtu.be") ? (
+                            <iframe
+                              src={getVideoEmbedUrl(selectedProject.details.videoUrl)}
+                              className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                              title={selectedProject.title}
+                            />
+                          ) : (
+                            <video
+                              src={selectedProject.details.videoUrl}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
+                            />
+                          )
+                        ) : (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={selectedProject.image}
+                            alt={selectedProject.title}
+                            className="w-full h-full object-cover opacity-85 transition-all duration-300"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-6 border-t border-white/5">
-                  <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+                {/* RIGHT SIDEBAR: Project Specs & Editorial Details Drawer */}
+                <div 
+                  data-lenis-prevent
+                  className="w-full lg:w-[400px] xl:w-[440px] bg-[#0c0c12] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col justify-between p-6 lg:p-8 overflow-y-auto scrollbar-thin shrink-0 select-text"
+                >
+                  <div className="flex flex-col gap-6">
+                    {/* Header Badge & Title */}
+                    <div className="flex flex-col gap-2.5 border-b border-white/10 pb-5">
+                      <span className="font-mono text-[9px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
+                        {selectedProject.category}
+                      </span>
+                      <h3 className="font-outfit text-2xl lg:text-3xl font-extrabold tracking-[0.04em] text-white uppercase leading-tight">
+                        {selectedProject.title}
+                      </h3>
+                      <p className="font-mono text-[10px] text-white/70 italic leading-relaxed border-l-2 border-[#c5a880] pl-3 py-1 mt-1">
+                        &ldquo;{selectedProject.tagline}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Credentials Matrix Grid */}
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 border-b border-white/10 pb-6 text-xs font-mono">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#666677] text-[8.5px] tracking-widest uppercase font-bold">CLIENT</span>
+                        <span className="text-white font-outfit text-xs font-semibold">{selectedProject.details?.client || "Visionatrix Client"}</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#666677] text-[8.5px] tracking-widest uppercase font-bold">TIMELINE</span>
+                        <span className="text-white font-outfit text-xs font-semibold">{selectedProject.details?.timeline || "Production 2026"}</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#666677] text-[8.5px] tracking-widest uppercase font-bold">ROLE</span>
+                        <span className="text-white font-outfit text-xs font-semibold">{selectedProject.details?.role || "Full-Stack Dev"}</span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#666677] text-[8.5px] tracking-widest uppercase font-bold">ENGINE & STACK</span>
+                        <span className="text-[#c5a880] font-outfit text-xs font-bold">{selectedProject.details?.engine || "Next.js / WebGL"}</span>
+                      </div>
+                    </div>
+
+                    {/* Project Overview Paragraph */}
+                    <div className="flex flex-col gap-2.5">
+                      <span className="font-mono text-[9px] tracking-[0.2em] text-[#666677] uppercase font-bold">PROJECT OVERVIEW</span>
+                      <p className="font-sans text-xs text-[#a0a0b0] leading-relaxed font-light">
+                        {selectedProject.description}
+                      </p>
+                    </div>
+
+                    {/* Specification Metrics */}
+                    <div className="flex flex-col gap-3">
+                      <span className="font-mono text-[9px] tracking-[0.2em] text-[#666677] uppercase font-bold flex items-center gap-2">
+                        <BarChart3 className="w-3.5 h-3.5 text-[#c5a880]" />
+                        <span>PERFORMANCE SPECS</span>
+                      </span>
+                      
+                      <div className="flex flex-col gap-2">
+                        {selectedProject.metrics.map((metric, index) => (
+                          <div key={index} className="bg-white/[0.02] border border-white/5 rounded-lg p-3 flex justify-between items-center">
+                            <span className="font-mono text-[8.5px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
+                            <span className="font-mono text-xs text-[#c5a880] font-bold">{metric.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sidebar Footer Action Buttons */}
+                  <div className="flex flex-col gap-3 mt-8 pt-6 border-t border-white/10">
                     {selectedProject.details?.liveUrl && (
                       <a
                         href={selectedProject.details.liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full sm:w-auto px-5 py-3 bg-[#c5a880] hover:bg-white text-black font-outfit text-xs font-bold tracking-[0.18em] uppercase rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(197,168,128,0.35)] flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                        className="w-full py-3 bg-[#c5a880] hover:bg-white text-black font-outfit text-xs font-bold tracking-[0.18em] uppercase rounded-xl transition-all duration-300 shadow-[0_0_20px_rgba(197,168,128,0.35)] flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                       >
                         <Globe className="w-4 h-4" />
                         <span>LAUNCH LIVE WEBSITE</span>
@@ -829,35 +763,38 @@ export default function WorksSection() {
                       </a>
                     )}
 
-                    <a
-                      href="#contact"
-                      onClick={() => {
-                        setSelectedProject(null);
-                        setShowAllDrawer(false);
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (window as any).lenis?.start();
-                      }}
-                      className="w-full sm:w-auto font-mono text-[10px] tracking-[0.16em] text-[#c5a880] hover:text-white flex items-center justify-center gap-1.5 transition-colors duration-300 py-2"
-                    >
-                      <span>START SIMILAR PROJECT</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href="#contact"
+                        onClick={() => {
+                          setSelectedProject(null);
+                          setShowAllDrawer(false);
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          (window as any).lenis?.start();
+                        }}
+                        className="flex-1 text-center py-2.5 border border-white/10 hover:border-white/30 text-[#c5a880] hover:text-white font-mono text-[9.5px] tracking-wider uppercase rounded-xl transition-colors"
+                      >
+                        START PROJECT
+                      </a>
+                      <button
+                        onClick={() => {
+                          setSelectedProject(null);
+                          if (!showAllDrawer) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (window as any).lenis?.start();
+                          }
+                        }}
+                        className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-mono text-[9.5px] tracking-wider uppercase rounded-xl border border-white/5 transition-colors cursor-pointer"
+                      >
+                        CLOSE BRIEF
+                      </button>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setSelectedProject(null);
-                      if (!showAllDrawer) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (window as any).lenis?.start();
-                      }
-                    }}
-                    className="w-full sm:w-auto px-6 py-3 border border-white/10 hover:border-white/30 bg-black/40 text-white/70 hover:text-white font-outfit text-xs font-bold tracking-[0.2em] rounded-xl transition-all duration-300 cursor-pointer"
-                  >
-                    CLOSE BRIEFCASE
-                  </button>
                 </div>
+
               </div>
+
             </motion.div>
           </motion.div>
         )}
