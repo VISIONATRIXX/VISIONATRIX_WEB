@@ -119,129 +119,134 @@ const initialProjects: Project[] = [
       liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "LOAD PERFORMANCE", value: "< 0.4s Edge" },
-      { label: "LIGHTHOUSE SCORE", value: "100 / 100" },
+      { label: "LOAD PERFORMANCE", value: "< 0.4s Edge Speed" },
+      { label: "SEO OPTIMIZATION", value: "100 / 100 Score" },
       { label: "STATUS", value: "LIVE HOSTED 🟢" }
     ]
   },
   {
     id: "02",
-    title: "LUMINA CINEMATIC",
-    category: "VFX & Automotive CGI",
-    categories: ["CGI", "VIDEO", "VFX"],
-    subtitle: "02 / LUMINA ELECTRIC GT",
+    title: "ARAVALLI NEWS",
+    category: "Digital News & Media Platform",
+    categories: ["WEB DEV", "APPS"],
+    subtitle: "02 / MEDIA NETWORK",
     year: "2026",
     image: "/work_omnis_interactive.webp",
-    tagline: "Crafting photo-realistic carbon fiber weaves, micro-bezel lighting, and fluid dynamics.",
-    description: "A hyper-detailed digital showroom and promotional film showcasing the aerodynamic profiles of Lumina's new electric vehicle. Rendered with custom lighting rigs and simulated dust particles.",
+    tagline: "High-traffic real-time news portal engineered for sub-second page loads and dynamic content delivery.",
+    description: "A high-performance digital news network engineered with Next.js edge server rendering. Features real-time article publishing feeds, categorized news channels, custom dark theme aesthetic, and SEO optimization for peak organic reach.",
     bgGradient: "from-zinc-900 via-[#1c1212] to-[#050507]",
     details: {
-      role: "CGI Director & Simulation Lead",
-      client: "Lumina Motors",
-      engine: "Octane Render / Houdini / Resolve",
-      timeline: "Q2 2026",
-      videoUrl: null
+      role: "Full-Stack Web Developer",
+      client: "Aravalli Media Group",
+      engine: "Next.js / TypeScript / Tailwind / Supabase",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "RENDER QUALITY", value: "8K Projections" },
-      { label: "SIMULATION PARTICLES", value: "3.5 Million" },
-      { label: "GRID COMPILATION", value: "120 FPS Capture" }
+      { label: "PAGE SPEED", value: "< 0.5s Edge Speed" },
+      { label: "MOBILE ADAPTIVE", value: "100% Fluid Layout" },
+      { label: "SEO OPTIMIZATION", value: "Fully Indexable" }
     ]
   },
   {
     id: "03",
-    title: "KINETIC GRID",
-    category: "Procedural Spatial Digital Twin",
-    categories: ["VR", "CGI", "WEB DEV"],
-    subtitle: "03 / TOKYO URBAN PLAN",
-    year: "2025",
+    title: "JAIMIN FILMS",
+    category: "Cinematic Studio & Production Web App",
+    categories: ["WEB DEV", "VIDEO", "VFX"],
+    subtitle: "03 / FILM STUDIO PORTAL",
+    year: "2026",
     image: "/work_aura_configurator.webp",
-    tagline: "Procedural mapping interfaces connecting municipal energy signals with real-time WebGL layout grids.",
-    description: "A high-frequency digital twin mapping regional power grids and municipal traffic networks. Integrates real-time API telemetry to dynamically color-code traffic loads and grid efficiency.",
+    tagline: "Immersive video portfolio & cinematic production showcase engineered with smooth motion physics.",
+    description: "An ultra-sleek digital showcase platform designed for Jaimin Films. Highlights high-definition commercial films, director cuts, and video portfolios with seamless video streaming and dynamic project filtering.",
     bgGradient: "from-blue-950 via-slate-900 to-[#050507]",
     details: {
-      role: "Spatial Systems Architect",
-      client: "Tokyo Smart Urban Systems",
-      engine: "Unreal Engine 5 / WebGL Maps",
-      timeline: "Q4 2025",
-      videoUrl: null
+      role: "Creative Web Architect",
+      client: "Jaimin Films",
+      engine: "Next.js / React / Framer Motion / Video CDN",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "MAPPED NODES", value: "45,000 Realtime" },
-      { label: "LATENCY TARGET", value: "<12ms Stream" },
-      { label: "GEOMETRY COUNT", value: "15 Million Polys" }
+      { label: "VIDEO STREAMING", value: "4K Master Playback" },
+      { label: "UI ACCELERATION", value: "Hardware Accelerated" },
+      { label: "RESPONSIVENESS", value: "All Breakpoints" }
     ]
   },
   {
     id: "04",
-    title: "HOROLOGIST VR",
-    category: "Spatial XR Horology",
-    categories: ["VR", "VFX", "APPS"],
-    subtitle: "04 / AP HOROLOGY VOLUMETRIC",
+    title: "BHUMI INFRASTRUCTURE",
+    category: "Corporate Infrastructure & Real Estate Platform",
+    categories: ["WEB DEV", "APPS"],
+    subtitle: "04 / INFRASTRUCTURE PORTAL",
     year: "2026",
     image: "/work_omnis_interactive.webp",
-    tagline: "Bespoke mechanical timepiece disassembly and interaction simulator built for spatial headsets.",
-    description: "An immersive Horology simulation platform that allows watch enthusiasts to inspect and disassemble complex luxury watch movements in high-fidelity volumetric environments.",
+    tagline: "Enterprise real estate & construction portfolio showcasing landmark engineering projects.",
+    description: "A robust corporate web platform engineered for Bhumi Infrastructure. Built to present major civil engineering projects, spatial site blueprints, corporate credentials, and direct client inquiry workflows.",
     bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
     details: {
-      role: "Lead XR Developer",
-      client: "Audemars Piguet Spec",
-      engine: "Unity / OpenXR / HDRP",
-      timeline: "Q1 2026",
-      videoUrl: null
+      role: "Lead Web Developer",
+      client: "Bhumi Infrastructure",
+      engine: "Next.js / TailwindCSS / Supabase",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "TRACKING ACCURACY", value: "0.1mm Precision" },
-      { label: "RENDER RESOLUTION", value: "4K Per Eye" },
-      { label: "INTERACTIVE PARTS", value: "180 Components" }
+      { label: "SECURITY", value: "SSL Encrypted" },
+      { label: "PERFORMANCE", value: "Sub-Second Edge" },
+      { label: "LEAD CONVERSION", value: "Integrated Forms" }
     ]
   },
   {
     id: "05",
-    title: "SYNAPSE CREATIVE LAB",
-    category: "AI Production & Storyboarding",
-    categories: ["AI SHOOTS", "VIDEO"],
-    subtitle: "05 / SYNAPSE STORYBOARD",
+    title: "MAITRI VISUALIZATION",
+    category: "3D Architectural Visualization Portal",
+    categories: ["WEB DEV", "CGI", "APPS"],
+    subtitle: "05 / SPATIAL VISUALS PORTAL",
     year: "2026",
     image: "/work_aura_configurator.webp",
-    tagline: "AI-assisted commercial storyboard rendering and neural prompt-engineering workflows.",
-    description: "An automated design-delivery studio mapping agency concepts into high-resolution cinematic storyboards without human facial drift or temporal inconsistencies.",
+    tagline: "Photorealistic 3D architectural render gallery & digital spatial walkthrough showcase.",
+    description: "A high-end architectural gallery platform designed for Maitri Visualization. Displays 3D spatial renders, interior walkthroughs, and interactive project catalogs with crystal-clear visual clarity.",
     bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
     details: {
-      role: "Prompt Engineer & Workflow Dev",
-      client: "Synapse Creative Group",
-      engine: "ComfyUI / Stable Diffusion / Flux",
-      timeline: "Q2 2026",
-      videoUrl: null
+      role: "Full-Stack Web Developer",
+      client: "Maitri Visualization",
+      engine: "Next.js / WebGL Gallery / Tailwind",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "GENERATION SPEED", value: "8s / Frame" },
-      { label: "UPSCALER NODES", value: "Magnific 4K Custom" },
-      { label: "TEMPORAL STABILIZATION", value: "IP-Adapter Lora" }
+      { label: "VISUAL ACCURACY", value: "High-Res Image Assets" },
+      { label: "LOAD SPEED", value: "Optimized WebP Edge" },
+      { label: "CROSS-PLATFORM", value: "Mobile & Desktop" }
     ]
   },
   {
     id: "06",
-    title: "VORTEX SOUND LAB",
-    category: "Acoustic VFX Fluid Simulator",
-    categories: ["VFX", "WEB DEV"],
-    subtitle: "06 / NYX ACOUSTIC PORTAL",
-    year: "2025",
+    title: "BHAVDIP FILMS",
+    category: "Creative Video Studio & Production Showcase",
+    categories: ["WEB DEV", "VIDEO"],
+    subtitle: "06 / CINEMATIC STUDIO",
+    year: "2026",
     image: "/work_omnis_interactive.webp",
-    tagline: "Generating interactive, sound-responsive WebGL liquid streams representing audio frequencies.",
-    description: "An audiovisual exploration portal mapping client audio signals directly into custom GLSL Navier-Stokes fluid equations. Tracks 256 acoustic frequencies for realtime animation.",
+    tagline: "Dynamic media platform highlighting director reels, wedding films, and brand commercials.",
+    description: "A sleek media portal engineered for Bhavdip Films. Features embedded high-bitrate video showcases, categorized portfolio reels, and streamlined client consultation booking.",
     bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
     details: {
-      role: "Fluid Shader Engineer",
-      client: "NYX Sound Lab",
-      engine: "GLSL / React Three Fiber",
-      timeline: "Q3 2025",
-      videoUrl: null
+      role: "Web Developer & Designer",
+      client: "Bhavdip Films",
+      engine: "Next.js / Tailwind / Motion",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "AURAL BINS", value: "256 Frequencies" },
-      { label: "SIMULATION RESOLUTION", value: "512x512 Grid" },
-      { label: "GLSL SAMPLERS", value: "Dynamic Noise" }
+      { label: "MEDIA PLAYER", value: "Seamless Video Stream" },
+      { label: "DESIGN SYSTEM", value: "Custom Dark Aesthetic" },
+      { label: "STATUS", value: "LIVE PRODUCTION 🟢" }
     ]
   }
 ];
