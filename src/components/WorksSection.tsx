@@ -340,12 +340,17 @@ export default function WorksSection() {
           
           {/* ROW 1: 🌐 WEB & SAAS PLATFORMS */}
           <div className="w-full flex flex-col gap-4">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-emerald-400 uppercase font-bold">
-                ROW 01 // 🌐 WEB & SAAS PLATFORMS (SAFARI SANDBOX READY)
-              </span>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 to-transparent" />
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
+                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
+                  01 <span className="text-emerald-400 font-mono font-normal">/</span> WEB & SAAS PLATFORMS
+                </span>
+                <span className="hidden sm:inline-flex bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-emerald-300 font-bold uppercase tracking-wider">
+                  SAFARI SANDBOX READY
+                </span>
+              </div>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 via-white/10 to-transparent" />
             </div>
 
             <div className="w-full overflow-hidden flex items-center">
@@ -361,14 +366,19 @@ export default function WorksSection() {
             </div>
           </div>
 
-          {/* ROW 2: 🎬 VIDEO EDITING, REELS & UGC SHOWCASE */}
+          {/* ROW 2: 🎬 CINEMATIC & UGC MEDIA PRODUCTION */}
           <div className="w-full flex flex-col gap-4">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#c5a880] shadow-[0_0_8px_#c5a880]" />
-              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase font-bold">
-                ROW 02 // 🎬 VIDEO EDITING, REELS & UGC SHOWCASE
-              </span>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 to-transparent" />
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#c5a880] shadow-[0_0_10px_#c5a880]" />
+                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
+                  02 <span className="text-[#c5a880] font-mono font-normal">/</span> CINEMATIC & UGC MEDIA PRODUCTION
+                </span>
+                <span className="hidden sm:inline-flex bg-[#c5a880]/15 border border-[#c5a880]/40 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-[#c5a880] font-bold uppercase tracking-wider">
+                  4K MASTER REELS
+                </span>
+              </div>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 via-white/10 to-transparent" />
             </div>
 
             <div className="w-full overflow-hidden flex items-center">
@@ -386,12 +396,17 @@ export default function WorksSection() {
 
           {/* ROW 3: ⚡ UNREAL ENGINE & 3D AUTOMATION */}
           <div className="w-full flex flex-col gap-4">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]" />
-              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-cyan-400 uppercase font-bold">
-                ROW 03 // ⚡ UNREAL ENGINE & 3D AUTOMATION
-              </span>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 to-transparent" />
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#38bdf8]" />
+                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
+                  03 <span className="text-cyan-400 font-mono font-normal">/</span> UNREAL ENGINE & 3D AUTOMATION
+                </span>
+                <span className="hidden sm:inline-flex bg-cyan-950/40 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-cyan-300 font-bold uppercase tracking-wider">
+                  PIXEL STREAMING & CGI
+                </span>
+              </div>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 via-white/10 to-transparent" />
             </div>
 
             <div className="w-full overflow-hidden flex items-center">
