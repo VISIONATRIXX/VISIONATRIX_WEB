@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -384,10 +384,10 @@ export default function WorksSection() {
         {/* ------------------------------------------------------------- */}
         {/* 3 CATEGORIZED SHOWCASE ROWS */}
         {/* ------------------------------------------------------------- */}
-        <div className="w-full flex flex-col gap-10 overflow-hidden py-4 z-10">
+        <div className="w-full flex flex-col gap-12 overflow-hidden py-6 z-10">
           
           {/* ROW 1: 🌐 WEB & SAAS PLATFORMS */}
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
@@ -395,13 +395,13 @@ export default function WorksSection() {
                   01 <span className="text-emerald-400 font-mono font-normal">/</span> WEB & SAAS PLATFORMS
                 </span>
                 <span className="hidden sm:inline-flex bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-emerald-300 font-bold uppercase tracking-wider">
-                  SAFARI SANDBOX READY
+                  INTERACTIVE LIVE DEPLOYMENTS
                 </span>
               </div>
               <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center">
+            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
               <div ref={row1Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
                 {dupRow1.map((project, idx) => (
                   <MarqueeProjectCard
@@ -415,7 +415,7 @@ export default function WorksSection() {
           </div>
 
           {/* ROW 2: 🎬 CINEMATIC & UGC MEDIA PRODUCTION */}
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#c5a880] shadow-[0_0_10px_#c5a880]" />
@@ -423,13 +423,13 @@ export default function WorksSection() {
                   02 <span className="text-[#c5a880] font-mono font-normal">/</span> CINEMATIC & UGC MEDIA PRODUCTION
                 </span>
                 <span className="hidden sm:inline-flex bg-[#c5a880]/15 border border-[#c5a880]/40 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-[#c5a880] font-bold uppercase tracking-wider">
-                  4K MASTER REELS
+                  COMMERCIAL & UGC ADS
                 </span>
               </div>
               <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center">
+            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
               <div ref={row2Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
                 {dupRow2.map((project, idx) => (
                   <MarqueeProjectCard
@@ -443,7 +443,7 @@ export default function WorksSection() {
           </div>
 
           {/* ROW 3: ⚡ UNREAL ENGINE & 3D AUTOMATION */}
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-6">
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#38bdf8]" />
@@ -451,13 +451,13 @@ export default function WorksSection() {
                   03 <span className="text-cyan-400 font-mono font-normal">/</span> UNREAL ENGINE & 3D AUTOMATION
                 </span>
                 <span className="hidden sm:inline-flex bg-cyan-950/40 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-cyan-300 font-bold uppercase tracking-wider">
-                  PIXEL STREAMING & CGI
+                  REAL-TIME 3D AUTOMATION
                 </span>
               </div>
               <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 via-white/10 to-transparent" />
             </div>
 
-            <div className="w-full overflow-hidden flex items-center">
+            <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
               <div ref={row3Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
                 {dupRow3.map((project, idx) => (
                   <MarqueeProjectCard
