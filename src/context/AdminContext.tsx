@@ -99,11 +99,14 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 // Pre-loaded Datasets
 // -------------------------------------------------------------
 const initialProjects: Project[] = [
+  // ---------------------------------------------------------------------------
+  // ROW 1: 🌐 WEB & SAAS PROJECTS
+  // ---------------------------------------------------------------------------
   {
     id: "01",
     title: "YUVRAJ RATHOD STUDIO",
     category: "Full-Stack Web & Creative Tech",
-    categories: ["WEB DEV", "APPS", "VFX"],
+    categories: ["WEB DEV", "APPS", "FULLSTACK"],
     subtitle: "01 / LIVE PORTFOLIO PLATFORM",
     year: "2026",
     image: "",
@@ -153,7 +156,7 @@ const initialProjects: Project[] = [
     id: "03",
     title: "VISORA",
     category: "AI Visual Context Engine & MCP Component Patcher",
-    categories: ["AI AGENT", "MCP SERVER", "VISUAL EDITING", "REACT"],
+    categories: ["WEB DEV", "AI AGENT", "MCP SERVER", "REACT"],
     subtitle: "03 / AI VISUAL ENGINE",
     year: "2026",
     image: "",
@@ -224,11 +227,15 @@ const initialProjects: Project[] = [
       { label: "FRAMEWORK", value: "Next.js 14 / Supabase" }
     ]
   },
+
+  // ---------------------------------------------------------------------------
+  // ROW 2: 🎬 VIDEO EDITING, REELS & UGC SHOWCASE
+  // ---------------------------------------------------------------------------
   {
     id: "06",
     title: "JAIMIN FILMS",
     category: "Cinematic Film Studio & Video Production Showcase",
-    categories: ["FILM STUDIO", "VIDEO PORTFOLIO", "4K STREAMING", "NEXT.JS"],
+    categories: ["FILM STUDIO", "VIDEO PORTFOLIO", "4K STREAMING", "UGC"],
     subtitle: "06 / FILM STUDIO PORTAL",
     year: "2026",
     image: "",
@@ -240,13 +247,162 @@ const initialProjects: Project[] = [
       client: "Jaimin Films Studio",
       engine: "Next.js / React / Framer Motion / Video CDN",
       timeline: "2026",
-      videoUrl: null,
-      liveUrl: "https://jaimin-films.vercel.app/"
+      videoUrl: "https://player.vimeo.com/video/76979871"
     },
     metrics: [
       { label: "VIDEO STREAMING", value: "4K Master Playback" },
       { label: "UI ACCELERATION", value: "Hardware Accelerated" },
       { label: "RESPONSIVENESS", value: "All Breakpoints" }
+    ]
+  },
+  {
+    id: "07",
+    title: "UGC VIRAL AD ENGINE",
+    category: "High-Converting E-Commerce UGC & Ad Reels Showcase",
+    categories: ["VIDEO EDITING", "UGC", "AD REELS", "COMMERCIAL"],
+    subtitle: "07 / VIRAL UGC ADS",
+    year: "2026",
+    image: "",
+    tagline: "High-converting UGC video ads, motion graphics, and short-form reel campaigns for direct-to-consumer brands.",
+    description: "A specialized video production & UGC editing showcase. Focuses on high-retention fast-paced cuts, captions, sound design, color grading, and viral hooks engineered for TikTok, Instagram Reels, and YouTube Shorts ad campaigns.",
+    bgGradient: "from-[#201015] via-[#12080a] to-[#050507]",
+    details: {
+      role: "Lead Video Editor & UGC Strategist",
+      client: "D2C E-Commerce Brands",
+      engine: "Premiere Pro / After Effects / CapCut Pro / DaVinci",
+      timeline: "2026",
+      videoUrl: "https://player.vimeo.com/video/76979871"
+    },
+    metrics: [
+      { label: "HOOK RETENTION", value: "85% 3-Second Retention" },
+      { label: "ROAS IMPACT", value: "3.4x Average ROAS" },
+      { label: "FORMAT", value: "9:16 Vertical & 16:9 Master" }
+    ]
+  },
+  {
+    id: "08",
+    title: "BHAVDIP FILMS",
+    category: "Creative Video Studio & Production Showcase",
+    categories: ["VIDEO EDITING", "FILM STUDIO", "COMMERCIAL", "REELS"],
+    subtitle: "08 / CINEMATIC STUDIO",
+    year: "2026",
+    image: "",
+    tagline: "Dynamic media platform highlighting director reels, wedding films, and brand commercials.",
+    description: "A sleek media portal engineered for Bhavdip Films. Features embedded high-bitrate video showcases, categorized portfolio reels, and streamlined client consultation booking.",
+    bgGradient: "from-emerald-950 via-slate-950 to-[#050507]",
+    details: {
+      role: "Web Developer & Designer",
+      client: "Bhavdip Films",
+      engine: "Next.js / Tailwind / Motion",
+      timeline: "2026",
+      videoUrl: "https://player.vimeo.com/video/76979871"
+    },
+    metrics: [
+      { label: "MEDIA PLAYER", value: "Seamless Video Stream" },
+      { label: "DESIGN SYSTEM", value: "Custom Dark Aesthetic" },
+      { label: "STATUS", value: "LIVE PRODUCTION 🟢" }
+    ]
+  },
+
+  // ---------------------------------------------------------------------------
+  // ROW 3: ⚡ UNREAL ENGINE & 3D AUTOMATION
+  // ---------------------------------------------------------------------------
+  {
+    id: "09",
+    title: "UNREAL ENGINE 5 AUTOMATION",
+    category: "Unreal Engine 5 Real-time Virtual Production & Pixel Streaming",
+    categories: ["UNREAL ENGINE", "AUTOMATION", "CGI", "3D"],
+    subtitle: "09 / UNREAL ENGINE 5 AUTOMATION",
+    year: "2026",
+    image: "",
+    tagline: "Real-time Unreal Engine 5 virtual studio, automated rendering pipelines, and Pixel Streaming cloud architecture.",
+    description: "An enterprise Unreal Engine 5 automation showcase. Features automated camera sequencing, Python rendering automation scripts, Nanite & Lumen dynamic lighting rigs, and WebRTC Pixel Streaming for real-time 3D interactive web experiences.",
+    bgGradient: "from-sky-950 via-blue-950 to-[#050507]",
+    details: {
+      role: "Unreal Engine & 3D Technical Director",
+      client: "Visionatrix 3D Labs",
+      engine: "Unreal Engine 5.4 / C++ / Python / Pixel Streaming",
+      timeline: "2026",
+      videoUrl: null
+    },
+    metrics: [
+      { label: "RENDER ENGINE", value: "Unreal Engine 5 Lumen / Nanite" },
+      { label: "STREAMING", value: "WebRTC 60FPS Low-Latency" },
+      { label: "AUTOMATION", value: "Python Render Queue" }
+    ]
+  },
+  {
+    id: "10",
+    title: "MERCEDES AMG GT AURA CONFIGURATOR",
+    category: "Interactive 3D WebGL Car Configurator & Real-time Physics",
+    categories: ["CGI", "UNREAL ENGINE", "3D", "AUTOMATION"],
+    subtitle: "10 / 3D AUTOMOTIVE CONFIGURATOR",
+    year: "2026",
+    image: "",
+    tagline: "Photorealistic 3D car configurator featuring real-time ray-traced materials and spatial ambient acoustics.",
+    description: "An immersive 3D automotive configurator developed with WebGL and Unreal Engine asset pipelines. Allows users to customize body paint, interior trims, alloy wheels, and inspect realistic 3D lighting shaders in real time.",
+    bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
+    details: {
+      role: "3D WebGL Technical Lead",
+      client: "Mercedes AMG Concept Studio",
+      engine: "WebGL / Three.js / Unreal Engine Asset Pipeline",
+      timeline: "2026",
+      videoUrl: null
+    },
+    metrics: [
+      { label: "3D SHADERS", value: "Physically Based Rendering (PBR)" },
+      { label: "FRAME RATE", value: "Locked 60 FPS" },
+      { label: "INTERACTION", value: "360° Real-time Inspection" }
+    ]
+  },
+  {
+    id: "11",
+    title: "MAITRI VISUALIZATION",
+    category: "3D Architectural Visualization & Spatial Walkthrough Portal",
+    categories: ["3D", "CGI", "SPATIAL", "AUTOMATION"],
+    subtitle: "11 / SPATIAL VISUALS PORTAL",
+    year: "2026",
+    image: "",
+    tagline: "Photorealistic 3D architectural render gallery & digital spatial walkthrough showcase.",
+    description: "A high-end architectural gallery platform designed for Maitri Visualization. Displays 3D spatial renders, interior walkthroughs, and interactive project catalogs with crystal-clear visual clarity.",
+    bgGradient: "from-[#1b1712] via-neutral-900 to-[#050507]",
+    details: {
+      role: "Full-Stack Web Developer",
+      client: "Maitri Visualization",
+      engine: "Next.js / WebGL Gallery / Tailwind",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
+    },
+    metrics: [
+      { label: "VISUAL ACCURACY", value: "High-Res Image Assets" },
+      { label: "LOAD SPEED", value: "Optimized WebP Edge" },
+      { label: "CROSS-PLATFORM", value: "Mobile & Desktop" }
+    ]
+  },
+  {
+    id: "12",
+    title: "BHUMI INFRASTRUCTURE",
+    category: "Corporate Infrastructure & Real Estate Platform",
+    categories: ["3D", "AUTOMATION", "WEB DEV"],
+    subtitle: "12 / INFRASTRUCTURE PORTAL",
+    year: "2026",
+    image: "",
+    tagline: "Enterprise real estate & construction portfolio showcasing landmark engineering projects.",
+    description: "A robust corporate web platform engineered for Bhumi Infrastructure. Built to present major civil engineering projects, spatial site blueprints, corporate credentials, and direct client inquiry workflows.",
+    bgGradient: "from-stone-900 via-zinc-950 to-[#050507]",
+    details: {
+      role: "Lead Web Developer",
+      client: "Bhumi Infrastructure",
+      engine: "Next.js / TailwindCSS / Supabase",
+      timeline: "2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
+    },
+    metrics: [
+      { label: "SECURITY", value: "SSL Encrypted" },
+      { label: "PERFORMANCE", value: "Sub-Second Edge" },
+      { label: "LEAD CONVERSION", value: "Integrated Forms" }
     ]
   }
 ];

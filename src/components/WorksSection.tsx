@@ -151,15 +151,34 @@ export default function WorksSection() {
 
   const { projects, isLoaded } = useAdmin();
 
-  // Divide projects into 3 groups for the 3 marquee rows
-  const row1Projects = projects.slice(0, Math.ceil(projects.length / 3));
-  const row2Projects = projects.slice(Math.ceil(projects.length / 3), Math.ceil((projects.length * 2) / 3));
-  const row3Projects = projects.slice(Math.ceil((projects.length * 2) / 3));
+  // Divide projects into 3 distinct marquee rows:
+  // Row 1: Web & SaaS Platforms
+  // Row 2: Video Editing, Reels & UGC Showcase
+  // Row 3: Unreal Engine & 3D Automation
+  const row1Projects = projects.filter(p => 
+    Boolean(p.details?.liveUrl) || 
+    p.categories.some(c => ["WEB", "SAAS", "POS", "APP", "DEV", "FULLSTACK"].some(k => c.toUpperCase().includes(k))) ||
+    p.category.toUpperCase().includes("WEB") || p.category.toUpperCase().includes("SAAS")
+  );
 
-  // If list is small, duplicate for infinite seamless marquee loop
-  const dupRow1 = [...row1Projects, ...row1Projects, ...row1Projects, ...row1Projects];
-  const dupRow2 = [...row2Projects, ...row2Projects, ...row2Projects, ...row2Projects];
-  const dupRow3 = [...row3Projects, ...row3Projects, ...row3Projects, ...row3Projects];
+  const row2Projects = projects.filter(p => 
+    p.categories.some(c => ["VIDEO", "FILM", "UGC", "REEL", "COMMERCIAL", "MEDIA", "STUDIO", "AD"].some(k => c.toUpperCase().includes(k))) ||
+    p.category.toUpperCase().includes("VIDEO") || p.category.toUpperCase().includes("FILM") || p.category.toUpperCase().includes("UGC") || p.category.toUpperCase().includes("REEL")
+  );
+
+  const row3Projects = projects.filter(p => 
+    p.categories.some(c => ["UNREAL", "CGI", "3D", "VFX", "AUTOMATION", "SPATIAL", "VR", "CONFIGURATOR"].some(k => c.toUpperCase().includes(k))) ||
+    p.category.toUpperCase().includes("CGI") || p.category.toUpperCase().includes("VFX") || p.category.toUpperCase().includes("3D") || p.category.toUpperCase().includes("UNREAL") || p.category.toUpperCase().includes("AUTOMATION")
+  );
+
+  // Fallbacks if list is small to ensure endless infinite marquee loop
+  const list1 = row1Projects.length > 0 ? row1Projects : projects;
+  const list2 = row2Projects.length > 0 ? row2Projects : projects;
+  const list3 = row3Projects.length > 0 ? row3Projects : projects;
+
+  const dupRow1 = [...list1, ...list1, ...list1, ...list1];
+  const dupRow2 = [...list2, ...list2, ...list2, ...list2];
+  const dupRow3 = [...list3, ...list3, ...list3, ...list3];
 
   const categories = [
     "ALL",
@@ -245,7 +264,7 @@ export default function WorksSection() {
         <div className="absolute left-[5%] bottom-[15%] w-[45vw] h-[45vw] bg-[#c5a880]/[0.01] blur-[200px] rounded-full" />
       </div>
 
-      <ScrollAnimatedWrapper enableY={false} enableScale={false} className="w-full flex flex-col gap-16">
+      <ScrollAnimatedWrapper enableY={false} enableScale={false} className="w-full flex flex-col gap-12">
         
         {/* Clean Header Section */}
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex flex-col md:flex-row md:items-end justify-between gap-6 z-10">
@@ -257,7 +276,7 @@ export default function WorksSection() {
               FEATURED PROJECTS
             </h2>
             <p className="text-xs md:text-sm text-[#9999aa] leading-relaxed mt-1 font-sans">
-              Explore our interactive portfolio spanning Web GL, AI Automation, Unreal Engine 5, Architectural BIM, and Spatial AR/VR. Hover any project to inspect, or click to view full case details.
+              Explore our organized portfolio featuring 3 dedicated showcases: Live Web & SaaS Apps, Video Editing & UGC Ads, and Unreal Engine 5 Automation.
             </p>
           </div>
 
@@ -277,47 +296,76 @@ export default function WorksSection() {
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* 3-ROW INTERACTIVE SCROLL MARQUEE SHOWCASE */}
-        {/* Line 1: LEFT | Line 2: RIGHT | Line 3: LEFT */}
+        {/* 3 CATEGORIZED SHOWCASE ROWS */}
         {/* ------------------------------------------------------------- */}
-        <div className="w-full flex flex-col gap-6 md:gap-8 overflow-hidden py-4 z-10">
+        <div className="w-full flex flex-col gap-10 overflow-hidden py-4 z-10">
           
-          {/* ROW 1: Moves Left ← */}
-          <div className="w-full overflow-hidden flex items-center">
-            <div ref={row1Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
-              {dupRow1.map((project, idx) => (
-                <MarqueeProjectCard
-                  key={`r1-${project.id}-${idx}`}
-                  project={project}
-                  onOpenDetails={handleOpenProject}
-                />
-              ))}
+          {/* ROW 1: 🌐 WEB & SAAS PLATFORMS */}
+          <div className="w-full flex flex-col gap-4">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-emerald-400 uppercase font-bold">
+                ROW 01 // 🌐 WEB & SAAS PLATFORMS (SAFARI SANDBOX READY)
+              </span>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 to-transparent" />
+            </div>
+
+            <div className="w-full overflow-hidden flex items-center">
+              <div ref={row1Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+                {dupRow1.map((project, idx) => (
+                  <MarqueeProjectCard
+                    key={`r1-${project.id}-${idx}`}
+                    project={project}
+                    onOpenDetails={handleOpenProject}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* ROW 2: Moves Right → */}
-          <div className="w-full overflow-hidden flex items-center">
-            <div ref={row2Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
-              {dupRow2.map((project, idx) => (
-                <MarqueeProjectCard
-                  key={`r2-${project.id}-${idx}`}
-                  project={project}
-                  onOpenDetails={handleOpenProject}
-                />
-              ))}
+          {/* ROW 2: 🎬 VIDEO EDITING, REELS & UGC SHOWCASE */}
+          <div className="w-full flex flex-col gap-4">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#c5a880] shadow-[0_0_8px_#c5a880]" />
+              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-[#c5a880] uppercase font-bold">
+                ROW 02 // 🎬 VIDEO EDITING, REELS & UGC SHOWCASE
+              </span>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 to-transparent" />
+            </div>
+
+            <div className="w-full overflow-hidden flex items-center">
+              <div ref={row2Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+                {dupRow2.map((project, idx) => (
+                  <MarqueeProjectCard
+                    key={`r2-${project.id}-${idx}`}
+                    project={project}
+                    onOpenDetails={handleOpenProject}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* ROW 3: Moves Left ← */}
-          <div className="w-full overflow-hidden flex items-center">
-            <div ref={row3Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
-              {dupRow3.map((project, idx) => (
-                <MarqueeProjectCard
-                  key={`r3-${project.id}-${idx}`}
-                  project={project}
-                  onOpenDetails={handleOpenProject}
-                />
-              ))}
+          {/* ROW 3: ⚡ UNREAL ENGINE & 3D AUTOMATION */}
+          <div className="w-full flex flex-col gap-4">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]" />
+              <span className="font-mono text-[10px] md:text-xs tracking-[0.25em] text-cyan-400 uppercase font-bold">
+                ROW 03 // ⚡ UNREAL ENGINE & 3D AUTOMATION
+              </span>
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 to-transparent" />
+            </div>
+
+            <div className="w-full overflow-hidden flex items-center">
+              <div ref={row3Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+                {dupRow3.map((project, idx) => (
+                  <MarqueeProjectCard
+                    key={`r3-${project.id}-${idx}`}
+                    project={project}
+                    onOpenDetails={handleOpenProject}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
