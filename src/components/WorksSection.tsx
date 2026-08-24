@@ -21,71 +21,77 @@ function MarqueeProjectCard({
     : null;
   const displayImage = project.image || livePreviewUrl;
 
+  const categoryTags = project.categories && project.categories.length > 0 
+    ? project.categories 
+    : [project.category];
+
   return (
     <div
       onClick={() => onOpenDetails(project)}
-      className="group relative flex-shrink-0 w-[300px] sm:w-[380px] aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)] select-none"
+      className="group relative flex-shrink-0 w-[320px] sm:w-[420px] aspect-[16/10] rounded-[24px] overflow-hidden cursor-pointer bg-[#0e0e14] border border-white/10 shadow-2xl p-2.5 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)] select-none"
     >
-      {/* Real Live Website Page Snapshot / Background Image / Ambient Canvas */}
-      {displayImage ? (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={displayImage}
-          alt={project.title}
-          className="w-full h-full object-cover object-top rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
-          loading="lazy"
-        />
-      ) : (
-        <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all`}>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
-        </div>
-      )}
-
-      {/* Gradient Vignette Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent rounded-2xl pointer-events-none" />
-
-      {/* Top Category Badges */}
-      <div className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between pointer-events-none">
-        <div className="bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5 shadow-md">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880] shadow-[0_0_6px_#c5a880]" />
-          <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
-            {project.category}
-          </span>
-        </div>
-
-        {project.details?.liveUrl && (
-          <div className="bg-[#c5a880]/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-[#c5a880]/50 flex items-center gap-1 shadow-[0_0_12px_rgba(197,168,128,0.3)]">
-            <Globe className="w-3 h-3 text-[#c5a880]" />
-            <span className="font-mono text-[8px] text-[#c5a880] font-bold tracking-widest uppercase">LIVE SITE</span>
+      <div className="w-full h-full relative rounded-[18px] overflow-hidden bg-[#07070b]">
+        {/* Real Live Website Page Snapshot / Background Image / Ambient Canvas */}
+        {displayImage ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={displayImage}
+            alt={project.title}
+            className="w-full h-full object-cover object-top opacity-95 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700 ease-out"
+            loading="lazy"
+          />
+        ) : (
+          <div className={`w-full h-full rounded-[18px] bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5`}>
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
           </div>
         )}
-      </div>
 
-      {/* Bottom Title & Subtitle Info */}
-      <div className="absolute bottom-5 left-5 right-5 z-20 flex flex-col gap-1 pointer-events-none">
-        <span className="font-mono text-[8.5px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
-          {project.subtitle} • {project.year}
-        </span>
-        <h4 className="font-outfit text-lg sm:text-xl font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
-          {project.title}
-        </h4>
-      </div>
+        {/* Top Left Number Pill Badge (Matching Screenshot) */}
+        <div className="absolute top-4 left-4 z-20">
+          <div className="bg-black/45 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/20 shadow-lg flex items-center justify-center">
+            <span className="font-mono text-xs font-bold text-white/90 tracking-wider">
+              {project.id}
+            </span>
+          </div>
+        </div>
 
-      {/* Quick View Hover Indicator */}
-      <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="bg-black/85 backdrop-blur-md border border-[#c5a880] px-4 py-2.5 rounded-full flex items-center gap-2 text-[#c5a880] shadow-2xl">
-          {project.details?.liveUrl ? (
-            <>
-              <Globe className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span className="font-mono text-[9.5px] tracking-widest font-bold uppercase text-white">OPEN SAFARI SANDBOX</span>
-            </>
-          ) : (
-            <>
-              <Eye className="w-3.5 h-3.5" />
-              <span className="font-mono text-[9px] tracking-widest font-bold uppercase">VIEW CASE BRIEF</span>
-            </>
-          )}
+        {/* Bottom Dark Gradient Shadow (Only Bottom 45%) */}
+        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10 pointer-events-none" />
+
+        {/* Bottom Title & Subtitle Info (Matching Screenshot Layout) */}
+        <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 pointer-events-none">
+          <h4 className="font-outfit text-lg sm:text-xl font-extrabold tracking-tight text-white uppercase drop-shadow-md truncate">
+            {project.title} <span className="text-[#c5a880] font-normal text-sm sm:text-base">— {project.category}</span>
+          </h4>
+
+          {/* Category Tag Pills (Matching Screenshot) */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {categoryTags.map((tag, idx) => (
+              <span 
+                key={idx}
+                className="bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/20 font-mono text-[9px] text-white/90 font-medium tracking-wide uppercase shadow-sm"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick View Hover Indicator Overlay */}
+        <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/30 backdrop-blur-[2px]">
+          <div className="bg-black/90 backdrop-blur-md border border-[#c5a880] px-4 py-2.5 rounded-full flex items-center gap-2 text-[#c5a880] shadow-2xl">
+            {project.details?.liveUrl ? (
+              <>
+                <Globe className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span className="font-mono text-[9.5px] tracking-widest font-bold uppercase text-white">OPEN SAFARI SANDBOX</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-3.5 h-3.5" />
+                <span className="font-mono text-[9px] tracking-widest font-bold uppercase">VIEW CASE BRIEF</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
