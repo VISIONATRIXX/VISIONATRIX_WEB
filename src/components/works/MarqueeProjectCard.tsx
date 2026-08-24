@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useCallback, memo } from "react";
 import { Eye, Globe } from "lucide-react";
 import { Project } from "@/context/AdminContext";
 
@@ -9,101 +9,93 @@ interface MarqueeProjectCardProps {
   onOpenDetails: (p: Project) => void;
 }
 
-export default function MarqueeProjectCard({
+// Use direct DOM manipulation for tilt instead of React state to avoid re-renders
+const MarqueeProjectCard = memo(function MarqueeProjectCard({
   project,
   onOpenDetails
 }: MarqueeProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [transformStyle, setTransformStyle] = useState("");
-  const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
 
   const livePreviewUrl = project.details?.liveUrl 
-    ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=1280&h=800`
+    ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
     : null;
   const displayImage = project.image || livePreviewUrl;
 
   const categoryTags = project.categories && project.categories.length > 0 
-    ? project.categories 
+    ? project.categories.slice(0, 3)
     : [project.category];
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
+  // Direct DOM manipulation — zero re-renders on mouse move
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
-    const rotateX = ((y - centerY) / centerY) * -6; // 6deg tilt
-    const rotateY = ((x - centerX) / centerX) * 6;
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+  }, []);
 
-    setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
-    setSpotlightPos({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
-  };
+  const handleMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    if (card) {
+      card.style.transform = "";
+    }
+  }, []);
 
-  const handleMouseLeave = () => {
-    setTransformStyle("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-  };
+  const handleClick = useCallback(() => {
+    onOpenDetails(project);
+  }, [onOpenDetails, project]);
 
   return (
     <div
       ref={cardRef}
-      onClick={() => onOpenDetails(project)}
+      onClick={handleClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ transform: transformStyle, transition: "transform 0.15s ease-out" }}
-      className="group relative flex-shrink-0 w-[320px] sm:w-[420px] aspect-[16/10] rounded-[24px] overflow-hidden cursor-pointer bg-[#0e0e14] border border-white/10 shadow-2xl p-2.5 hover:border-[#c5a880]/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.7)] select-none will-change-transform transform-gpu"
+      className="group relative flex-shrink-0 w-[280px] sm:w-[380px] aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#0e0e14] border border-white/10 p-2 hover:border-[#c5a880]/50 select-none transform-gpu"
+      style={{ transition: "transform 0.2s ease-out, border-color 0.3s" }}
     >
-      {/* Dynamic Cursor Spotlight Highlight */}
-      <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[24px] z-30"
-        style={{
-          background: `radial-gradient(400px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(197, 168, 128, 0.15), transparent 80%)`
-        }}
-      />
-
-      <div className="w-full h-full relative rounded-[18px] overflow-hidden bg-[#07070b]">
-        {/* Real Live Website Page Snapshot / Background Image / Ambient Canvas */}
+      <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#07070b]">
+        {/* Background Image */}
         {displayImage ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={displayImage}
             alt={project.title}
-            className="w-full h-full object-cover object-top opacity-95 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700 ease-out"
+            className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out"
             loading="lazy"
             decoding="async"
           />
         ) : (
-          <div className={`w-full h-full rounded-[18px] bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5`}>
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
-          </div>
+          <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} flex flex-col justify-between relative overflow-hidden`} />
         )}
 
         {/* Top Left Number Pill Badge */}
-        <div className="absolute top-4 left-4 z-20">
-          <div className="bg-black/45 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/20 shadow-lg flex items-center justify-center">
-            <span className="font-mono text-xs font-bold text-white/90 tracking-wider">
+        <div className="absolute top-3 left-3 z-20">
+          <div className="bg-black/50 px-3 py-0.5 rounded-full border border-white/15">
+            <span className="font-mono text-[10px] font-bold text-white/85 tracking-wider">
               {project.id}
             </span>
           </div>
         </div>
 
-        {/* Bottom Dark Gradient Shadow */}
-        <div className="absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10 pointer-events-none" />
+        {/* Bottom Dark Gradient */}
+        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10 pointer-events-none" />
 
-        {/* Bottom Title & Subtitle Info */}
-        <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 pointer-events-none">
-          <h4 className="font-outfit text-lg sm:text-xl font-extrabold tracking-tight text-white uppercase drop-shadow-md truncate">
-            {project.title} <span className="text-[#c5a880] font-normal text-sm sm:text-base">— {project.category}</span>
+        {/* Bottom Title & Tags */}
+        <div className="absolute bottom-3 left-3 right-3 z-20 flex flex-col gap-1.5 pointer-events-none">
+          <h4 className="font-outfit text-base sm:text-lg font-bold tracking-tight text-white uppercase truncate">
+            {project.title} <span className="text-[#c5a880] font-normal text-xs sm:text-sm">— {project.category}</span>
           </h4>
-
-          {/* Category Tag Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1">
             {categoryTags.map((tag, idx) => (
               <span 
                 key={idx}
-                className="bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/20 font-mono text-[9px] text-white/90 font-medium tracking-wide uppercase shadow-sm"
+                className="bg-black/50 px-2 py-0.5 rounded border border-white/15 font-mono text-[8px] text-white/80 font-medium tracking-wide uppercase"
               >
                 {tag}
               </span>
@@ -111,21 +103,21 @@ export default function MarqueeProjectCard({
           </div>
         </div>
 
-        {/* Professional Apple macOS Glassmorphic Hover Indicator Overlay */}
-        <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/40 backdrop-blur-[3px]">
-          <div className="bg-[#0c0c14]/90 backdrop-blur-xl border border-[#c5a880]/70 px-5 py-3 rounded-full flex items-center gap-2.5 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] transform group-hover:scale-105 transition-all duration-300">
+        {/* Hover Overlay — NO backdrop-blur on mobile */}
+        <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none bg-black/40">
+          <div className="bg-[#0c0c14]/90 border border-[#c5a880]/60 px-4 py-2.5 rounded-full flex items-center gap-2 text-white">
             {project.details?.liveUrl ? (
               <>
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
-                <Globe className="w-4 h-4 text-emerald-400" />
-                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.16em] font-extrabold uppercase text-white">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.14em] font-bold uppercase text-white">
                   INTERACTIVE LIVE DEMO
                 </span>
               </>
             ) : (
               <>
-                <Eye className="w-4 h-4 text-[#c5a880]" />
-                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.16em] font-extrabold uppercase text-[#c5a880]">
+                <Eye className="w-3.5 h-3.5 text-[#c5a880]" />
+                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.14em] font-bold uppercase text-[#c5a880]">
                   EXPLORE CASE BRIEF
                 </span>
               </>
@@ -135,4 +127,6 @@ export default function MarqueeProjectCard({
       </div>
     </div>
   );
-}
+});
+
+export default MarqueeProjectCard;

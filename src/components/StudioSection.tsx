@@ -1,9 +1,10 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 
-export default function StudioSection() {
+const StudioSection = memo(function StudioSection() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -47,29 +48,6 @@ export default function StudioSection() {
     }
   };
 
-  const descContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.018,
-        delayChildren: 0.15
-      }
-    }
-  };
-
-  const descWordVariants = {
-    hidden: { y: "105%", opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.9,
-        ease: [0.16, 1, 0.3, 1] as const
-      }
-    }
-  };
-
   return (
     <section 
       id="studio" 
@@ -86,7 +64,7 @@ export default function StudioSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: false, margin: "-100px" }}
+          viewport={{ once: true, margin: "-50px" }}
         >
         {/* Left Side: Metadata Panel */}
         <motion.div 
@@ -149,7 +127,7 @@ export default function StudioSection() {
             variants={titleContainerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, margin: "-100px" }}
+            viewport={{ once: true, margin: "-50px" }}
             className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-[0.06em] leading-[1.2] text-white flex flex-wrap gap-x-3 gap-y-1"
           >
             {"WE ENGINEER DIGITAL LANDMARKS THAT COMMAND HUMAN RESONANCE.".split(" ").map((word, wordIndex) => {
@@ -167,28 +145,21 @@ export default function StudioSection() {
             })}
           </motion.h2>
 
-          {/* Subtext description with fast word stagger reveal */}
+          {/* Subtext description — unified motion paragraph to prevent 40+ nested word spans */}
           <motion.p 
-            variants={descContainerVariants}
+            variants={itemVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, margin: "-120px" }}
-            className="font-sans text-sm sm:text-base md:text-lg leading-relaxed text-[#9999aa] max-w-3xl flex flex-wrap gap-x-1.5 gap-y-0.5"
+            viewport={{ once: true, margin: "-50px" }}
+            className="font-sans text-sm sm:text-base md:text-lg leading-relaxed text-[#9999aa] max-w-3xl"
           >
-            {"Our philosophy is defined by intent, not algorithm. We reject generic, template-driven interfaces to hand-craft high-fidelity, scroll-driven interactive ecosystems that elevate world-class brands into permanent sensory landmarks.".split(" ").map((word, wordIndex) => (
-              <span key={wordIndex} className="inline-block overflow-hidden py-0.5">
-                <motion.span
-                  variants={descWordVariants}
-                  className="inline-block"
-                >
-                  {word}
-                </motion.span>
-              </span>
-            ))}
+            Our philosophy is defined by intent, not algorithm. We reject generic, template-driven interfaces to hand-craft high-fidelity, scroll-driven interactive ecosystems that elevate world-class brands into permanent sensory landmarks.
           </motion.p>
         </div>
         </motion.div>
       </ScrollAnimatedWrapper>
     </section>
   );
-}
+});
+
+export default StudioSection;

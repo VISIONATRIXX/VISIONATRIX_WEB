@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, CheckCircle2, Clock, Paperclip, AlertTriangle } from "lucide-react";
@@ -18,7 +18,7 @@ interface FormData {
   details: string;
 }
 
-export default function ContactSection() {
+const ContactSection = memo(function ContactSection() {
   const { addProposal } = useAdmin();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>();
   const [budgetTier, setBudgetTier] = useState<string>("$15K - $40K");
@@ -31,80 +31,35 @@ export default function ContactSection() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
 
-  // Magnetic button hover and scroll text scaling
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  // Magnetic button hover effect local scope
+  const handleMagneticMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = buttonRef.current;
+    if (!button) return;
+    const rect = button.getBoundingClientRect();
+    const btnX = rect.left + rect.width / 2;
+    const btnY = rect.top + rect.height / 2;
+    const distanceX = e.clientX - btnX;
+    const distanceY = e.clientY - btnY;
+    const distance = Math.hypot(distanceX, distanceY);
+    const threshold = 100;
 
-    gsap.registerPlugin(ScrollTrigger);
+    if (distance < threshold) {
+      const power = (threshold - distance) / threshold;
+      gsap.to(button, {
+        x: distanceX * 0.35 * power,
+        y: distanceY * 0.35 * power,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    }
+  };
 
+  const handleMagneticLeave = () => {
     const button = buttonRef.current;
     if (button) {
-      let rect: DOMRect | null = null;
-
-      const updateRect = () => {
-        rect = button.getBoundingClientRect();
-      };
-
-      // Measure once on init
-      updateRect();
-
-      const handleMouseMove = (e: MouseEvent) => {
-        if (!rect) return;
-        const btnX = rect.left + rect.width / 2;
-        const btnY = rect.top + rect.height / 2;
-        
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        
-        const distanceX = mouseX - btnX;
-        const distanceY = mouseY - btnY;
-        const distance = Math.hypot(distanceX, distanceY);
-        
-        const threshold = 100; // Trigger distance in pixels
-        
-        if (distance < threshold) {
-          const power = (threshold - distance) / threshold;
-          const x = distanceX * 0.35 * power;
-          const y = distanceY * 0.35 * power;
-          
-          gsap.to(button, {
-            x: x,
-            y: y,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-        } else {
-          gsap.to(button, {
-            x: 0,
-            y: 0,
-            duration: 0.5,
-            ease: "power3.out",
-          });
-        }
-      };
-
-      const handleMouseLeave = () => {
-        gsap.to(button, {
-          x: 0,
-          y: 0,
-          duration: 0.5,
-          ease: "power3.out",
-        });
-      };
-
-      window.addEventListener("mousemove", handleMouseMove, { passive: true });
-      window.addEventListener("scroll", updateRect, { passive: true });
-      window.addEventListener("resize", updateRect, { passive: true });
-      button.addEventListener("mouseleave", handleMouseLeave);
-
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("scroll", updateRect);
-        window.removeEventListener("resize", updateRect);
-        button.removeEventListener("mouseleave", handleMouseLeave);
-      };
+      gsap.to(button, { x: 0, y: 0, duration: 0.5, ease: "power3.out" });
     }
-  }, [submitSuccess]);
+  };
 
   // Scroll Trigger to scale the heading text
   useEffect(() => {
@@ -447,6 +402,8 @@ A new Project Proposal has been submitted:
                       ref={buttonRef}
                       type="submit"
                       disabled={isSubmitting}
+                      onMouseMove={handleMagneticMove}
+                      onMouseLeave={handleMagneticLeave}
                       className="w-full py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/30 disabled:text-black/40 disabled:cursor-not-allowed text-black font-semibold font-outfit text-xs tracking-[0.2em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.2)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>{isSubmitting ? "INGESTING DOSSIER..." : "INITIALIZE TICKET PROPOSAL"}</span>
@@ -477,4 +434,6 @@ A new Project Proposal has been submitted:
 
     </section>
   );
-}
+});
+
+export default ContactSection;

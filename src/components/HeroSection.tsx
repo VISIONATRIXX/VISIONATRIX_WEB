@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface HeroSectionProps {
@@ -7,7 +8,7 @@ interface HeroSectionProps {
   triggerEntrance?: boolean;
 }
 
-export default function HeroSection({ onCtaClick, triggerEntrance = false }: HeroSectionProps) {
+const HeroSection = memo(function HeroSection({ onCtaClick, triggerEntrance = false }: HeroSectionProps) {
   const { scrollY } = useScroll();
 
   // Butter-smooth scroll parallax transforms for main content
@@ -203,4 +204,6 @@ export default function HeroSection({ onCtaClick, triggerEntrance = false }: Her
       </motion.div>
     </section>
   );
-}
+});
+
+export default HeroSection;

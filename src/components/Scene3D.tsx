@@ -46,7 +46,7 @@ function SceneContent() {
   // Generate particle positions statically inside useMemo
   const positions = useMemo(() => {
     const nextRandom = createRandomGenerator(42);
-    const count = 700;
+    const count = 400;
     const arr = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       const r = 2.0 + nextRandom() * 2.5;
@@ -155,7 +155,7 @@ function SceneContent() {
 
       {/* Main Visionatrix branding element */}
       <mesh ref={meshRef}>
-        <torusKnotGeometry args={[0.75, 0.22, 160, 16, 2, 5]} />
+        <torusKnotGeometry args={[0.75, 0.22, 100, 12, 2, 5]} />
         <meshStandardMaterial
           color="#c5a880"
           wireframe
@@ -168,13 +168,13 @@ function SceneContent() {
 
       {/* Dynamic orbital track 1 */}
       <mesh ref={ring1Ref}>
-        <torusGeometry args={[1.5, 0.015, 8, 120]} />
+        <torusGeometry args={[1.5, 0.015, 6, 80]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={0.1} wireframe />
       </mesh>
 
       {/* Dynamic orbital track 2 */}
       <mesh ref={ring2Ref} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.9, 0.012, 8, 120]} />
+        <torusGeometry args={[1.9, 0.012, 6, 80]} />
         <meshBasicMaterial color="#c5a880" transparent opacity={0.15} wireframe />
       </mesh>
 
@@ -230,7 +230,7 @@ export default function Scene3D() {
     <div className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none bg-[#0b0b0f]">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         style={{ width: "100%", height: "100%" }}
       >

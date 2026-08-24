@@ -11,8 +11,9 @@ import type Lenis from "lenis";
 // Load Three.js 3D backdrop client-side only
 const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
 
-// Load CustomCursor client-side only
+// Load CustomCursor & FPSProfiler client-side only
 const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
+const FPSProfiler = dynamic(() => import("@/components/FPSProfiler"), { ssr: false });
 
 // Dynamically load all sections below the fold for optimized bundle splitting and Time-to-Interactive (TTI)
 const StudioSection = dynamic(() => import("@/components/StudioSection"), { ssr: false });
@@ -86,12 +87,13 @@ export default function Home() {
       if (isDestroyed) return; // Guard against race condition if component unmounts during import
       
       lenisInstance = new LenisClass({
-        duration: 1.4,
+        duration: 1.1,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
         gestureOrientation: "vertical",
         smoothWheel: true,
-        wheelMultiplier: 1,
+        wheelMultiplier: 1.2,
+        touchMultiplier: 1.5,
       });
 
       // Synchronize ScrollTrigger with Lenis scroll events
@@ -160,6 +162,7 @@ export default function Home() {
   return (
     <>
       <CustomCursor />
+      <FPSProfiler activeSection={activeSection} />
       {/* Intro Loader screen overlay */}
       {showIntro && (
         <IntroLoader 

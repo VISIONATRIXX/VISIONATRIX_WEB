@@ -88,8 +88,8 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
           : "bg-[#0b0b0f]/35 border-b border-transparent py-[26px]"
           }`}
         style={{
-          backdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "blur(8px)",
+          backdropFilter: scrolled ? "blur(12px)" : "blur(4px)",
+          WebkitBackdropFilter: scrolled ? "blur(12px)" : "blur(4px)",
         }}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -198,7 +198,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[9990] lg:hidden bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center"
+            className="fixed inset-0 z-[9990] lg:hidden bg-black/95 backdrop-blur-md flex flex-col justify-center items-center"
           >
             {/* Background design pattern */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Calendar, CheckCircle2, Terminal } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -12,7 +12,7 @@ interface FAQItem {
   answer: string;
 }
 
-export default function FAQSection() {
+const FAQSection = memo(function FAQSection() {
   const [openId, setOpenId] = useState<string | null>("01");
   const [selectedDate, setSelectedDate] = useState<number | null>(15);
   const [clientName, setClientName] = useState("");
@@ -121,32 +121,10 @@ I have requested a Sync Call reservation:
         }}
       />
 
-      {/* 2. Soft breathing gold ambient backdrop glow */}
+      {/* 2. Soft gold ambient backdrop glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <motion.div 
-          className="absolute right-[-10%] top-[10%] w-[60vw] h-[60vw] bg-[#c5a880]/[0.015] blur-[150px] rounded-full"
-          animate={{
-            scale: [1, 1.15, 1],
-            opacity: [0.7, 0.9, 0.7],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div 
-          className="absolute left-[-15%] bottom-[-10%] w-[50vw] h-[50vw] bg-[#c5a880]/[0.008] blur-[140px] rounded-full"
-          animate={{
-            scale: [1.1, 1, 1.1],
-            opacity: [0.6, 0.8, 0.6],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        <div className="absolute right-[-10%] top-[10%] w-[60vw] h-[60vw] bg-[#c5a880]/[0.015] blur-[150px] rounded-full" />
+        <div className="absolute left-[-15%] bottom-[-10%] w-[50vw] h-[50vw] bg-[#c5a880]/[0.008] blur-[140px] rounded-full" />
       </div>
 
       <ScrollAnimatedWrapper className="z-10 w-full flex items-center justify-center">
@@ -260,7 +238,7 @@ I have requested a Sync Call reservation:
             </div>
 
             {/* Calendar Box */}
-            <div className="bg-[#121217]/70 backdrop-blur-xl rounded-sm p-5 sm:p-6 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[350px] w-full">
+            <div className="bg-[#121217]/85 rounded-sm p-5 sm:p-6 border border-white/5 shadow-2xl relative flex flex-col justify-center min-h-[350px] w-full">
               {/* Scanline Glow Top Highlight */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#c5a880]/20 to-transparent pointer-events-none" />
 
@@ -422,4 +400,6 @@ I have requested a Sync Call reservation:
       </ScrollAnimatedWrapper>
     </section>
   );
-}
+});
+
+export default FAQSection;

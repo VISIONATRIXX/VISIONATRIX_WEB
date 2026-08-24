@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, memo } from "react";
 import { motion, useScroll, useTransform, useSpring, MotionStyle } from "framer-motion";
 
 interface ScrollAnimatedWrapperProps {
@@ -11,7 +11,7 @@ interface ScrollAnimatedWrapperProps {
   enableOpacity?: boolean;
 }
 
-export default function ScrollAnimatedWrapper({
+export default memo(function ScrollAnimatedWrapper({
   children,
   className = "",
   enableY = true,
@@ -19,28 +19,6 @@ export default function ScrollAnimatedWrapper({
   enableOpacity = true,
 }: ScrollAnimatedWrapperProps) {
   const ref = useRef<HTMLDivElement>(null);
-  
-  // Track scroll position of the element relative to the viewport
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-
-  // Smooth out the scroll values using springs for butter-smooth 60 FPS performance
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 26,
-    restDelta: 0.001
-  });
-
-  // Professional Luxury transforms:
-  // - Entering: start end (0.0) -> center (0.25)
-  // - Fully active / visible in viewport center (0.25 to 0.75)
-  // - Exiting: center (0.75) -> end start (1.0)
-  const opacityVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [0.4, 1, 1, 0.4]);
-  const scaleVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [0.94, 1, 1, 0.94]);
-  const yVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [40, 0, 0, -40]);
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -51,26 +29,77 @@ export default function ScrollAnimatedWrapper({
     return () => mql.removeEventListener("change", handler);
   }, []);
 
-  // Decoupled custom styling
-  const style: MotionStyle = {};
-  if (!isMobile) {
-    if (enableOpacity) style.opacity = opacityVal;
-    if (enableScale) style.scale = scaleVal;
-    if (enableY) style.y = yVal;
-  } else {
-    // Explicitly reset on mobile to avoid values getting stuck in faded state (e.g. opacity 0.4)
-    style.opacity = 1;
-    style.scale = 1;
-    style.y = 0;
+  // On mobile, skip all scroll tracking — render plain div for zero overhead
+  if (isMobile) {
+    return (
+      <div ref={ref} className={`w-full ${className}`}>
+        {children}
+      </div>
+    );
   }
 
   return (
-    <motion.div
+    <DesktopScrollWrapper
       ref={ref}
-      style={style}
-      className={`w-full ${className}`}
+      className={className}
+      enableY={enableY}
+      enableScale={enableScale}
+      enableOpacity={enableOpacity}
     >
       {children}
-    </motion.div>
+    </DesktopScrollWrapper>
   );
+});
+
+// Separate desktop-only component to avoid loading scroll hooks on mobile
+import { forwardRef } from "react";
+
+interface DesktopScrollWrapperProps {
+  children: React.ReactNode;
+  className: string;
+  enableY: boolean;
+  enableScale: boolean;
+  enableOpacity: boolean;
 }
+
+const DesktopScrollWrapper = forwardRef<HTMLDivElement, DesktopScrollWrapperProps>(
+  function DesktopScrollWrapper({ children, className, enableY, enableScale, enableOpacity }, ref) {
+    const innerRef = useRef<HTMLDivElement>(null);
+    
+    const { scrollYProgress } = useScroll({
+      target: innerRef,
+      offset: ["start end", "end start"],
+    });
+
+    // Lighter spring config — less computation per frame
+    const smoothProgress = useSpring(scrollYProgress, {
+      stiffness: 60,
+      damping: 20,
+      restDelta: 0.002
+    });
+
+    const opacityVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [0.4, 1, 1, 0.4]);
+    const scaleVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [0.96, 1, 1, 0.96]);
+    const yVal = useTransform(smoothProgress, [0, 0.25, 0.75, 1], [30, 0, 0, -30]);
+
+    const style: MotionStyle = {};
+    if (enableOpacity) style.opacity = opacityVal;
+    if (enableScale) style.scale = scaleVal;
+    if (enableY) style.y = yVal;
+
+    return (
+      <motion.div
+        ref={(node) => {
+          // Merge refs
+          (innerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          if (typeof ref === "function") ref(node);
+          else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }}
+        style={style}
+        className={`w-full ${className}`}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+);

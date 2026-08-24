@@ -1,20 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { useAdmin } from "@/context/AdminContext";
 
-interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  rating: number;
-}
 
-export default function FeedbackSection() {
+const FeedbackSection = memo(function FeedbackSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const { testimonials: rawTestimonials } = useAdmin();
   const testimonials = rawTestimonials.filter(t => t.isActive);
@@ -175,4 +168,6 @@ export default function FeedbackSection() {
       </ScrollAnimatedWrapper>
     </section>
   );
-}
+});
+
+export default FeedbackSection;

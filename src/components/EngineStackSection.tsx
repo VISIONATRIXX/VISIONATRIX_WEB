@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, JSX } from "react";
+import { useState, JSX, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Film, Code, Gamepad2, Compass } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
@@ -19,7 +19,7 @@ interface EngineStackCategory {
   tools: Tool[];
 }
 
-export default function EngineStackSection() {
+const EngineStackSection = memo(function EngineStackSection() {
   const [activeTab, setActiveTab] = useState("ai_automation");
 
   const categories: EngineStackCategory[] = [
@@ -606,4 +606,6 @@ export default function EngineStackSection() {
     </ScrollAnimatedWrapper>
   </section>
   );
-}
+});
+
+export default EngineStackSection;

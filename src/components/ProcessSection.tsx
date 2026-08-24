@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -50,7 +50,7 @@ const steps: TimelineStep[] = [
   }
 ];
 
-export default function ProcessSection() {
+const ProcessSection = memo(function ProcessSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const activeLineRef = useRef<HTMLDivElement>(null);
@@ -271,4 +271,6 @@ export default function ProcessSection() {
       </div>
     </section>
   );
-}
+});
+
+export default ProcessSection;

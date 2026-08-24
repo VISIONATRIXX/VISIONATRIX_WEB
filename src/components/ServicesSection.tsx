@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Code, Bot, Camera, PenTool, Home, MousePointerClick, Activity } from "lucide-react";
@@ -98,13 +98,16 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
     
     let animationId: number;
     let isIntersecting = false;
-    let width = canvas.width = canvas.offsetWidth;
-    let height = canvas.height = canvas.offsetHeight;
+    let width = canvas.width = canvas.clientWidth || 300;
+    let height = canvas.height = canvas.clientHeight || 200;
     
-    const resizeObserver = new ResizeObserver(() => {
-      if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth;
-      height = canvas.height = canvas.offsetHeight;
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (!canvas || !entries[0]) return;
+      const { width: w, height: h } = entries[0].contentRect;
+      if (w > 0 && h > 0) {
+        width = canvas.width = w;
+        height = canvas.height = h;
+      }
     });
     resizeObserver.observe(canvas);
     
@@ -162,10 +165,7 @@ function CanvasSimulator({ type, mousePos, isHovered }: CanvasSimulatorProps) {
   );
 }
 
-// -------------------------------------------------------------
-// Component: ServicesSection
-// -------------------------------------------------------------
-export default function ServicesSection({ onInquiryClick, isIntroCompleted = false }: ServicesSectionProps) {
+const ServicesSection = memo(function ServicesSection({ onInquiryClick, isIntroCompleted = false }: ServicesSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -561,6 +561,8 @@ export default function ServicesSection({ onInquiryClick, isIntroCompleted = fal
 
       </div>
     </ScrollAnimatedWrapper>
-  </section>
+    </section>
   );
-}
+});
+
+export default ServicesSection;

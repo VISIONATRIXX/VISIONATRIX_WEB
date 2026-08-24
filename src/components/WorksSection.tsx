@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Grid, ArrowRight, Layers } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
@@ -10,7 +10,7 @@ import MarqueeProjectCard from "./works/MarqueeProjectCard";
 import AllProjectsDrawer from "./works/AllProjectsDrawer";
 import SafariSandboxModal from "./works/SafariSandboxModal";
 
-export default function WorksSection() {
+const WorksSection = memo(function WorksSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showAllDrawer, setShowAllDrawer] = useState(false);
   const [activeCategory, setActiveCategory] = useState("ALL");
@@ -108,9 +108,9 @@ export default function WorksSection() {
   const list2 = row2Projects.length > 0 ? row2Projects : projects;
   const list3 = row3Projects.length > 0 ? row3Projects : projects;
 
-  const dupRow1 = [...list1, ...list1, ...list1, ...list1];
-  const dupRow2 = [...list2, ...list2, ...list2, ...list2];
-  const dupRow3 = [...list3, ...list3, ...list3, ...list3];
+  const dupRow1 = [...list1, ...list1, ...list1];
+  const dupRow2 = [...list2, ...list2, ...list2];
+  const dupRow3 = [...list3, ...list3, ...list3];
 
   const categories = [
     "ALL",
@@ -126,7 +126,7 @@ export default function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
-  // Ultra-Smooth 120FPS Hardware-Accelerated GSAP Scroll Velocity Controller
+  // Smooth GSAP Scroll Velocity Controller — pauses when section is off-screen
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -134,6 +134,7 @@ export default function WorksSection() {
     const section = sectionRef.current;
     if (!section) return;
 
+    let isVisible = false;
     let targetVelocity = 0;
     let currentVelocity = 0;
 
@@ -141,32 +142,38 @@ export default function WorksSection() {
     let x2 = -1200;
     let x3 = 0;
 
-    // Measure page scroll velocity seamlessly
+    // IntersectionObserver to pause ticker when section is off-screen
+    const io = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { rootMargin: "200px" }
+    );
+    io.observe(section);
+
+    // Measure page scroll velocity
     const st = ScrollTrigger.create({
       trigger: section,
       start: "top bottom",
       end: "bottom top",
       onUpdate: (self) => {
-        targetVelocity = self.getVelocity() * 0.035;
+        targetVelocity = self.getVelocity() * 0.025;
       }
     });
 
-    // Hardware GPU Ticker running on requestAnimationFrame (60-120FPS)
+    // GPU Ticker — only processes when visible
     const updateTicker = (_time: number, deltaTime: number) => {
-      // Smooth lerp velocity dampening
-      currentVelocity += (targetVelocity - currentVelocity) * 0.08;
-      targetVelocity *= 0.92;
+      if (!isVisible) return;
 
-      const delta = (deltaTime / 16) * 0.85;
-      const move = (0.8 + Math.abs(currentVelocity)) * delta;
+      currentVelocity += (targetVelocity - currentVelocity) * 0.06;
+      targetVelocity *= 0.94;
+
+      const delta = (deltaTime / 16) * 0.7;
+      const move = (0.6 + Math.abs(currentVelocity)) * delta;
       const dir = currentVelocity < 0 ? -1 : 1;
 
-      // Update marquee positions
       x1 -= move * (dir > 0 ? 1 : 0.7);
       x2 += move * 0.85 * (dir > 0 ? 1 : 0.7);
       x3 -= move * 1.1 * (dir > 0 ? 1 : 0.7);
 
-      // Infinite loop wrap threshold
       const wrapX = 2200;
       if (Math.abs(x1) >= wrapX) x1 = 0;
       if (x2 >= 0) x2 = -wrapX;
@@ -180,6 +187,7 @@ export default function WorksSection() {
     gsap.ticker.add(updateTicker);
 
     return () => {
+      io.disconnect();
       st.kill();
       gsap.ticker.remove(updateTicker);
     };
@@ -249,7 +257,7 @@ export default function WorksSection() {
             </div>
 
             <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
-              <div ref={row1Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+              <div ref={row1Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow1.map((project, idx) => (
                   <MarqueeProjectCard
                     key={`r1-${project.id}-${idx}`}
@@ -277,7 +285,7 @@ export default function WorksSection() {
             </div>
 
             <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
-              <div ref={row2Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+              <div ref={row2Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow2.map((project, idx) => (
                   <MarqueeProjectCard
                     key={`r2-${project.id}-${idx}`}
@@ -305,7 +313,7 @@ export default function WorksSection() {
             </div>
 
             <div className="w-full overflow-hidden flex items-center py-4 md:py-6">
-              <div ref={row3Ref} className="flex gap-6 md:gap-8 w-max will-change-transform">
+              <div ref={row3Ref} className="flex gap-4 md:gap-6 w-max">
                 {dupRow3.map((project, idx) => (
                   <MarqueeProjectCard
                     key={`r3-${project.id}-${idx}`}
@@ -368,4 +376,6 @@ export default function WorksSection() {
       />
     </section>
   );
-}
+});
+
+export default WorksSection;

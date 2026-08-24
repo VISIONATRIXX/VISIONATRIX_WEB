@@ -30,7 +30,7 @@ export default function AllProjectsDrawer({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[11000] bg-black/95 backdrop-blur-2xl overflow-y-auto p-6 md:p-12 lg:p-16 flex flex-col gap-10"
+          className="fixed inset-0 z-[11000] bg-black/95 backdrop-blur-sm overflow-y-auto p-6 md:p-12 lg:p-16 flex flex-col gap-10"
         >
           {/* Header Controls */}
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/10 pb-6">
@@ -80,7 +80,7 @@ export default function AllProjectsDrawer({
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => {
               const livePreviewUrl = project.details?.liveUrl 
-                ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=1280&h=800`
+                ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
                 : null;
               const displayImage = project.image || livePreviewUrl;
 
@@ -106,7 +106,7 @@ export default function AllProjectsDrawer({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
 
-                  <div className="absolute top-5 left-5 z-20 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
+                  <div className="absolute top-5 left-5 z-20 bg-black/70 px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880]" />
                     <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
                       {project.category}
