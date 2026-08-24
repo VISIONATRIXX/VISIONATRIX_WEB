@@ -16,6 +16,10 @@ function MarqueeProjectCard({
   project: Project; 
   onOpenDetails: (p: Project) => void 
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transformStyle, setTransformStyle] = useState("");
+  const [spotlightPos, setSpotlightPos] = useState({ x: 50, y: 50 });
+
   const livePreviewUrl = project.details?.liveUrl 
     ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=1280&h=800`
     : null;
@@ -25,11 +29,43 @@ function MarqueeProjectCard({
     ? project.categories 
     : [project.category];
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -6; // 6deg tilt
+    const rotateY = ((x - centerX) / centerX) * 6;
+
+    setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+    setSpotlightPos({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
+  };
+
+  const handleMouseLeave = () => {
+    setTransformStyle("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+  };
+
   return (
     <div
+      ref={cardRef}
       onClick={() => onOpenDetails(project)}
-      className="group relative flex-shrink-0 w-[320px] sm:w-[420px] aspect-[16/10] rounded-[24px] overflow-hidden cursor-pointer bg-[#0e0e14] border border-white/10 shadow-2xl p-2.5 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_15px_40px_rgba(0,0,0,0.6)] select-none"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ transform: transformStyle, transition: "transform 0.15s ease-out" }}
+      className="group relative flex-shrink-0 w-[320px] sm:w-[420px] aspect-[16/10] rounded-[24px] overflow-hidden cursor-pointer bg-[#0e0e14] border border-white/10 shadow-2xl p-2.5 hover:border-[#c5a880]/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.7)] select-none will-change-transform transform-gpu"
     >
+      {/* Dynamic Cursor Spotlight Highlight */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[24px] z-30"
+        style={{
+          background: `radial-gradient(400px circle at ${spotlightPos.x}% ${spotlightPos.y}%, rgba(197, 168, 128, 0.15), transparent 80%)`
+        }}
+      />
+
       <div className="w-full h-full relative rounded-[18px] overflow-hidden bg-[#07070b]">
         {/* Real Live Website Page Snapshot / Background Image / Ambient Canvas */}
         {displayImage ? (
@@ -39,6 +75,7 @@ function MarqueeProjectCard({
             alt={project.title}
             className="w-full h-full object-cover object-top opacity-95 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-700 ease-out"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className={`w-full h-full rounded-[18px] bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between relative overflow-hidden border border-white/5`}>
@@ -194,7 +231,7 @@ export default function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
-  // GSAP ScrollTrigger Scroll-Driven Animation for 3 Rows: Line 1 LEFT, Line 2 RIGHT, Line 3 LEFT
+  // Ultra-Smooth 120FPS Hardware-Accelerated GSAP Scroll Velocity Controller
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -202,53 +239,54 @@ export default function WorksSection() {
     const section = sectionRef.current;
     if (!section) return;
 
-    // Line 1: Scroll Left
-    if (row1Ref.current) {
-      gsap.to(row1Ref.current, {
-        xPercent: -35,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.2,
-        }
-      });
-    }
+    let targetVelocity = 0;
+    let currentVelocity = 0;
 
-    // Line 2: Scroll Right
-    if (row2Ref.current) {
-      gsap.fromTo(row2Ref.current,
-        { xPercent: -30 },
-        {
-          xPercent: 5,
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1.2,
-          }
-        }
-      );
-    }
+    let x1 = 0;
+    let x2 = -1200;
+    let x3 = 0;
 
-    // Line 3: Scroll Left
-    if (row3Ref.current) {
-      gsap.to(row3Ref.current, {
-        xPercent: -35,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1.2,
-        }
-      });
-    }
+    // Measure page scroll velocity seamlessly
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: "top bottom",
+      end: "bottom top",
+      onUpdate: (self) => {
+        targetVelocity = self.getVelocity() * 0.035;
+      }
+    });
+
+    // Hardware GPU Ticker running on requestAnimationFrame (60-120FPS)
+    const updateTicker = (_time: number, deltaTime: number) => {
+      // Smooth lerp velocity dampening
+      currentVelocity += (targetVelocity - currentVelocity) * 0.08;
+      targetVelocity *= 0.92;
+
+      const delta = (deltaTime / 16) * 0.85;
+      const move = (0.8 + Math.abs(currentVelocity)) * delta;
+      const dir = currentVelocity < 0 ? -1 : 1;
+
+      // Update marquee positions
+      x1 -= move * (dir > 0 ? 1 : 0.7);
+      x2 += move * 0.85 * (dir > 0 ? 1 : 0.7);
+      x3 -= move * 1.1 * (dir > 0 ? 1 : 0.7);
+
+      // Infinite loop wrap threshold
+      const wrapX = 2200;
+      if (Math.abs(x1) >= wrapX) x1 = 0;
+      if (x2 >= 0) x2 = -wrapX;
+      if (Math.abs(x3) >= wrapX) x3 = 0;
+
+      if (row1Ref.current) gsap.set(row1Ref.current, { x: x1, force3D: true });
+      if (row2Ref.current) gsap.set(row2Ref.current, { x: x2, force3D: true });
+      if (row3Ref.current) gsap.set(row3Ref.current, { x: x3, force3D: true });
+    };
+
+    gsap.ticker.add(updateTicker);
 
     return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
+      st.kill();
+      gsap.ticker.remove(updateTicker);
     };
   }, [projects.length]);
 
