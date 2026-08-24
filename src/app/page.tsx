@@ -169,7 +169,7 @@ export default function Home() {
   return (
     <>
       <CustomCursor />
-      <FPSProfiler activeSection={activeSection} enabled={false} />
+      <FPSProfiler activeSection={activeSection} enabled={true} />
       {/* Intro Loader screen overlay */}
       {showIntro && (
         <IntroLoader 
