@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers, Globe, Monitor, Smartphone, RefreshCw, Lock, Maximize2 } from "lucide-react";
+import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers, Globe, Monitor, Smartphone, RefreshCw, Lock, Maximize2, Minimize2, Share2, RotateCcw, Compass, Tablet, Minus } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -100,6 +100,8 @@ export default function WorksSection() {
   const [liveMode, setLiveMode] = useState(false);
   const [sandboxDevice, setSandboxDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [iframeKey, setIframeKey] = useState(0);
+  const [isSafariExpanded, setIsSafariExpanded] = useState(false);
+  const [isSafariMinimized, setIsSafariMinimized] = useState(false);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
@@ -487,76 +489,147 @@ export default function WorksSection() {
 
                     {/* Live Website Interactive View vs Media View */}
                     {liveMode && hasLiveSite ? (
-                      <div className="absolute inset-0 z-20 flex flex-col bg-[#050508] select-none">
-                        {/* Simulated Browser Address & Controls Bar Header */}
-                        <div className="bg-[#0e0e13] border-b border-white/10 px-4 py-2 flex items-center justify-between font-mono text-[10px] text-white/50 shrink-0">
-                          {/* Traffic light dots + URL address bar */}
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                              <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                      <div className="absolute inset-0 z-20 flex flex-col bg-[#08080c] select-none">
+                        {/* Authentic Apple macOS Safari Window Bar Header */}
+                        <div className="bg-[#16161d] border-b border-white/10 px-4 py-2.5 flex flex-col gap-2 shrink-0 shadow-2xl">
+                          {/* Row 1: Traffic Lights + URL Bar + Viewport Controls + Fullscreen Button */}
+                          <div className="flex items-center justify-between gap-3">
+                            
+                            {/* Apple Window Controls (Red, Yellow, Green Traffic Lights) */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              {/* Red Close Button */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLiveMode(false);
+                                  setIsSafariExpanded(false);
+                                }}
+                                className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] hover:bg-[#ff3b30] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(255,95,86,0.4)]"
+                                title="Close Safari Sandbox"
+                              >
+                                <X className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 font-bold" />
+                              </button>
+
+                              {/* Yellow Minimize Button */}
+                              <button
+                                type="button"
+                                onClick={() => setIsSafariMinimized(!isSafariMinimized)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] hover:bg-[#ffcc00] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(255,189,46,0.4)]"
+                                title="Minimize Window"
+                              >
+                                <Minus className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 font-bold" />
+                              </button>
+
+                              {/* Green Expand / Fullscreen Button */}
+                              <button
+                                type="button"
+                                onClick={() => setIsSafariExpanded(!isSafariExpanded)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#27C93F] hover:bg-[#34c759] flex items-center justify-center text-black/80 transition-all cursor-pointer group shadow-[0_0_8px_rgba(39,201,63,0.4)]"
+                                title={isSafariExpanded ? "Exit Fullscreen" : "Fullscreen Safari Sandbox"}
+                              >
+                                <Maximize2 className="w-2 h-2 opacity-0 group-hover:opacity-100 font-bold" />
+                              </button>
+
+                              {/* Nav Arrows */}
+                              <div className="hidden sm:flex items-center gap-1 ml-2 text-white/30">
+                                <ChevronLeft className="w-4 h-4 cursor-not-allowed" />
+                                <ChevronRight className="w-4 h-4 cursor-not-allowed" />
+                                <button
+                                  type="button"
+                                  onClick={() => setIframeKey(k => k + 1)}
+                                  className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer ml-1"
+                                  title="Reload Page"
+                                >
+                                  <RotateCcw className="w-3 h-3" />
+                                </button>
+                              </div>
                             </div>
 
-                            <button
-                              type="button"
-                              onClick={() => setIframeKey(k => k + 1)}
-                              className="p-1 text-white/40 hover:text-white transition-colors cursor-pointer"
-                              title="Reload Sandbox"
-                            >
-                              <RefreshCw className="w-3 h-3" />
-                            </button>
+                            {/* Apple Safari URL Bar */}
+                            <div className="flex-1 max-w-xl mx-2 bg-black/75 border border-white/10 hover:border-[#c5a880]/50 rounded-lg py-1.5 px-3 flex items-center justify-between gap-2 shadow-inner transition-colors">
+                              <div className="flex items-center gap-2 text-white/80 font-mono text-[10px] truncate">
+                                <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+                                <span className="text-[#c5a880] font-bold">https://</span>
+                                <span className="truncate text-white/90">{selectedProject.details.liveUrl?.replace(/^https?:\/\//, '')}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-white/40 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => setIframeKey(k => k + 1)}
+                                  className="hover:text-white transition-colors"
+                                  title="Refresh Page"
+                                >
+                                  <RefreshCw className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
 
-                            <div className="bg-black/60 px-3 py-1 rounded border border-white/10 flex items-center gap-2 text-white/80 text-[9px] font-mono truncate max-w-[200px] sm:max-w-[340px]">
-                              <Lock className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
-                              <span className="truncate">{selectedProject.details.liveUrl}</span>
+                            {/* Apple Device Frame Switcher */}
+                            <div className="flex items-center gap-2 shrink-0">
+                              <div className="flex bg-black/60 p-1 rounded-lg border border-white/10">
+                                <button
+                                  type="button"
+                                  onClick={() => setSandboxDevice("desktop")}
+                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
+                                    sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                                  }`}
+                                  title="MacBook Desktop Viewport"
+                                >
+                                  <Monitor className="w-3.5 h-3.5" />
+                                  <span className="hidden md:inline">MacBook</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setSandboxDevice("tablet")}
+                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
+                                    sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                                  }`}
+                                  title="iPad Pro Viewport"
+                                >
+                                  <Tablet className="w-3.5 h-3.5" />
+                                  <span className="hidden md:inline">iPad</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setSandboxDevice("mobile")}
+                                  className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider font-bold transition-all flex items-center gap-1 uppercase cursor-pointer ${
+                                    sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                                  }`}
+                                  title="iPhone 16 Pro Viewport"
+                                >
+                                  <Smartphone className="w-3.5 h-3.5" />
+                                  <span className="hidden md:inline">iPhone</span>
+                                </button>
+                              </div>
+
+                              <a
+                                href={selectedProject.details.liveUrl!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hidden lg:flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/15 px-2.5 py-1.5 rounded-lg border border-[#c5a880]/30 font-bold text-[9.5px] font-mono uppercase"
+                              >
+                                <span>LAUNCH TAB</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
                             </div>
                           </div>
 
-                          {/* Device Viewport Selector */}
-                          <div className="flex items-center gap-1 bg-black/60 p-0.5 rounded-lg border border-white/10">
-                            <button
-                              type="button"
-                              onClick={() => setSandboxDevice("desktop")}
-                              className={`p-1.5 rounded transition-all cursor-pointer ${
-                                sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                              }`}
-                              title="Desktop Viewport (100% Fluid)"
-                            >
-                              <Monitor className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setSandboxDevice("tablet")}
-                              className={`p-1.5 rounded transition-all cursor-pointer ${
-                                sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                              }`}
-                              title="Tablet Viewport (768px)"
-                            >
-                              <Layers className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setSandboxDevice("mobile")}
-                              className={`p-1.5 rounded transition-all cursor-pointer ${
-                                sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
-                              }`}
-                              title="Mobile Smartphone Mockup (390px)"
-                            >
-                              <Smartphone className="w-3.5 h-3.5" />
-                            </button>
+                          {/* Row 2: Apple Safari Glass Tab Bar */}
+                          <div className="flex items-center gap-2 pt-1.5 border-t border-white/5 font-mono text-[9.5px]">
+                            <div className="bg-[#242430] text-white px-3 py-1 rounded-t-lg border-t border-x border-[#c5a880]/40 flex items-center gap-2 shadow-md">
+                              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                              <span className="font-bold tracking-wide uppercase truncate max-w-[180px] sm:max-w-[250px]">
+                                {selectedProject.title}
+                              </span>
+                              <X 
+                                onClick={() => setLiveMode(false)}
+                                className="w-3 h-3 text-white/40 hover:text-white cursor-pointer ml-1" 
+                              />
+                            </div>
+                            <div className="text-white/30 hover:text-white p-1 cursor-pointer transition-colors text-xs font-bold">
+                              +
+                            </div>
                           </div>
-
-                          {/* Open Tab Link */}
-                          <a
-                            href={selectedProject.details.liveUrl!}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hidden sm:flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/10 px-2.5 py-1 rounded border border-[#c5a880]/20 font-bold text-[9px]"
-                          >
-                            <span>OPEN TAB</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
                         </div>
 
                         {/* Interactive Sandbox Container Frame */}
@@ -566,14 +639,14 @@ export default function WorksSection() {
                               sandboxDevice === "desktop"
                                 ? "w-full rounded-none"
                                 : sandboxDevice === "tablet"
-                                ? "w-[768px] max-w-full rounded-xl border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.9)]"
-                                : "w-[360px] max-w-full rounded-[36px] border-[6px] border-[#1a1a24] shadow-[0_0_60px_rgba(197,168,128,0.2)]"
+                                ? "w-[820px] max-w-full rounded-2xl border-[5px] border-[#1e1e28] shadow-[0_0_60px_rgba(0,0,0,0.95)]"
+                                : "w-[360px] max-w-full rounded-[38px] border-[6px] border-[#1a1a24] shadow-[0_0_60px_rgba(197,168,128,0.25)]"
                             }`}
                           >
-                            {/* Mobile Smartphone Frame Notch */}
+                            {/* Mobile Smartphone Notch */}
                             {sandboxDevice === "mobile" && (
-                              <div className="w-full bg-[#1a1a24] py-1 flex justify-center shrink-0">
-                                <div className="w-24 h-3 bg-black rounded-full flex items-center justify-center gap-2">
+                              <div className="w-full bg-[#1a1a24] py-1 flex justify-center shrink-0 rounded-t-[32px]">
+                                <div className="w-24 h-3.5 bg-black rounded-full flex items-center justify-center gap-2">
                                   <div className="w-2 h-2 rounded-full bg-zinc-800" />
                                   <div className="w-1.5 h-1.5 rounded-full bg-blue-950" />
                                 </div>
@@ -583,8 +656,8 @@ export default function WorksSection() {
                             <iframe
                               key={`sandbox-iframe-${iframeKey}-${sandboxDevice}`}
                               src={selectedProject.details.liveUrl!}
-                              title={`${selectedProject.title} Interactive Sandbox`}
-                              className="w-full flex-1 border-0 rounded-b-[30px] bg-black"
+                              title={`${selectedProject.title} Apple Safari Sandbox`}
+                              className="w-full flex-1 border-0 bg-black rounded-b-[28px]"
                               loading="lazy"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
@@ -592,7 +665,7 @@ export default function WorksSection() {
 
                             {/* Mobile Home Bar */}
                             {sandboxDevice === "mobile" && (
-                              <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[30px]">
+                              <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[32px]">
                                 <div className="w-28 h-1 bg-white/40 rounded-full" />
                               </div>
                             )}
@@ -778,6 +851,182 @@ export default function WorksSection() {
                 </div>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Apple macOS Safari Browser Window Sandbox Modal */}
+      <AnimatePresence>
+        {isSafariExpanded && selectedProject?.details?.liveUrl && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col p-2 sm:p-6 overflow-hidden select-none font-sans"
+          >
+            <div className="w-full h-full bg-[#0c0c12] border border-[#c5a880]/30 rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.95)] flex flex-col overflow-hidden relative">
+              
+              {/* Apple macOS Safari Header */}
+              <div className="bg-[#181822] border-b border-white/10 px-5 py-3 flex flex-col gap-2.5 shrink-0 shadow-xl">
+                <div className="flex items-center justify-between gap-4">
+                  {/* Traffic Lights */}
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsSafariExpanded(false)}
+                      className="w-3.5 h-3.5 rounded-full bg-[#FF5F56] hover:bg-[#ff3b30] flex items-center justify-center text-black/80 font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(255,95,86,0.5)]"
+                      title="Exit Fullscreen"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsSafariExpanded(false)}
+                      className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] hover:bg-[#ffcc00] flex items-center justify-center text-black/80 font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(255,189,46,0.5)]"
+                      title="Minimize"
+                    >
+                      <Minus className="w-2.5 h-2.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsSafariExpanded(false)}
+                      className="w-3.5 h-3.5 rounded-full bg-[#27C93F] hover:bg-[#34c759] flex items-center justify-center text-black/80 font-bold transition-all cursor-pointer shadow-[0_0_8px_rgba(39,201,63,0.5)]"
+                      title="Exit Fullscreen"
+                    >
+                      <Minimize2 className="w-2.5 h-2.5" />
+                    </button>
+
+                    <div className="hidden sm:flex items-center gap-2 ml-3 text-white/40">
+                      <ChevronLeft className="w-4 h-4 cursor-not-allowed" />
+                      <ChevronRight className="w-4 h-4 cursor-not-allowed" />
+                      <button
+                        type="button"
+                        onClick={() => setIframeKey(k => k + 1)}
+                        className="p-1 text-white/50 hover:text-white transition-colors cursor-pointer ml-1"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Safari URL Bar */}
+                  <div className="flex-1 max-w-2xl bg-black/80 border border-white/10 hover:border-[#c5a880]/50 rounded-xl py-1.5 px-4 flex items-center justify-between gap-3 shadow-inner">
+                    <div className="flex items-center gap-2 text-xs font-mono truncate">
+                      <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span className="text-[#c5a880] font-bold">https://</span>
+                      <span className="truncate text-white font-medium">{selectedProject.details.liveUrl.replace(/^https?:\/\//, '')}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setIframeKey(k => k + 1)}
+                        className="text-white/40 hover:text-white transition-colors p-1"
+                        title="Reload"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Device Selector & Actions */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex bg-black/60 p-1 rounded-xl border border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => setSandboxDevice("desktop")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider font-bold transition-all flex items-center gap-1.5 uppercase cursor-pointer ${
+                          sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                        }`}
+                      >
+                        <Monitor className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">MacBook</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSandboxDevice("tablet")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider font-bold transition-all flex items-center gap-1.5 uppercase cursor-pointer ${
+                          sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                        }`}
+                      >
+                        <Tablet className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">iPad</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSandboxDevice("mobile")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono tracking-wider font-bold transition-all flex items-center gap-1.5 uppercase cursor-pointer ${
+                          sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                        }`}
+                      >
+                        <Smartphone className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline">iPhone</span>
+                      </button>
+                    </div>
+
+                    <a
+                      href={selectedProject.details.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-[#c5a880] hover:text-white bg-[#c5a880]/15 px-3 py-1.5 rounded-xl border border-[#c5a880]/30 font-bold text-xs font-mono uppercase transition-colors"
+                    >
+                      <span>LAUNCH TAB</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Tab Bar */}
+                <div className="flex items-center gap-2 pt-1 border-t border-white/5 font-mono text-xs">
+                  <div className="bg-[#2a2a38] text-white px-4 py-1 rounded-t-xl border-t border-x border-[#c5a880]/40 flex items-center gap-2 shadow-md">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-bold tracking-wide uppercase truncate max-w-[280px]">
+                      {selectedProject.title}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Fullscreen Sandbox Device Viewport Frame */}
+              <div className="flex-1 w-full h-full relative bg-[#040407] flex items-center justify-center p-4 overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
+                    sandboxDevice === "desktop"
+                      ? "w-full rounded-none"
+                      : sandboxDevice === "tablet"
+                      ? "w-[920px] max-w-full rounded-2xl border-[6px] border-[#1e1e28] shadow-[0_0_80px_rgba(0,0,0,0.95)]"
+                      : "w-[400px] max-w-full rounded-[44px] border-[8px] border-[#1a1a24] shadow-[0_0_80px_rgba(197,168,128,0.3)]"
+                  }`}
+                >
+                  {sandboxDevice === "mobile" && (
+                    <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-t-[36px]">
+                      <div className="w-28 h-4 bg-black rounded-full flex items-center justify-center gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
+                        <div className="w-2 h-2 rounded-full bg-blue-950" />
+                      </div>
+                    </div>
+                  )}
+
+                  <iframe
+                    key={`fullscreen-sandbox-${iframeKey}-${sandboxDevice}`}
+                    src={selectedProject.details.liveUrl}
+                    title={`${selectedProject.title} Fullscreen Safari Sandbox`}
+                    className="w-full flex-1 border-0 bg-black rounded-b-[32px]"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                  />
+
+                  {sandboxDevice === "mobile" && (
+                    <div className="w-full bg-[#1a1a24] py-2 flex justify-center shrink-0 rounded-b-[36px]">
+                      <div className="w-32 h-1 bg-white/40 rounded-full" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
