@@ -178,8 +178,9 @@ export default function AdminPage() {
     metrics: [{ label: "", value: "" }, { label: "", value: "" }, { label: "", value: "" }]
   });
 
+  const [adminCategoryFilter, setAdminCategoryFilter] = useState("ALL");
+
   const openProjectModal = (mode: "add" | "edit", data?: Project) => {
-    setProjectActiveTab("general");
     setProjectFormMode("basic");
     setLocalTags([]);
     setCustomTagInput("");
@@ -950,27 +951,97 @@ export default function AdminPage() {
                   </button>
                 </div>
 
+                {/* Category Filter Pills Bar */}
+                <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase">
+                  {["ALL", "WEB & SAAS", "VIDEO & UGC", "UNREAL & 3D"].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setAdminCategoryFilter(cat)}
+                      className={`px-3.5 py-1.5 rounded border transition-all cursor-pointer font-bold ${
+                        adminCategoryFilter === cat
+                          ? "bg-[#c5a880] text-black border-[#c5a880] shadow-[0_0_12px_rgba(197,168,128,0.3)]"
+                          : "bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/30"
+                      }`}
+                    >
+                      {cat} ({
+                        cat === "ALL" 
+                          ? projects.length 
+                          : projects.filter(p => {
+                              if (cat === "WEB & SAAS") return Boolean(p.details?.liveUrl) || p.categories.some(c => ["WEB", "SAAS", "POS", "APP", "DEV"].some(k => c.toUpperCase().includes(k))) || p.category.toUpperCase().includes("WEB");
+                              if (cat === "VIDEO & UGC") return p.categories.some(c => ["VIDEO", "FILM", "UGC", "REEL", "MEDIA"].some(k => c.toUpperCase().includes(k))) || p.category.toUpperCase().includes("VIDEO");
+                              return p.categories.some(c => ["UNREAL", "3D", "CGI", "AUTOMATION"].some(k => c.toUpperCase().includes(k))) || p.category.toUpperCase().includes("CGI") || p.category.toUpperCase().includes("3D");
+                            }).length
+                      })
+                    </button>
+                  ))}
+                </div>
+
                 {/* Portfolio Lists Table */}
                 <div className="border border-white/5 bg-[#0b0b0f] rounded-lg overflow-hidden">
                   <div className="flex items-center justify-between bg-[#121217] px-5 py-3 border-b border-white/5 text-[9px] font-mono tracking-widest text-white/40 uppercase">
-                    <div className="flex-1 max-w-[80px]">ID</div>
+                    <div className="flex-1 max-w-[60px]">ID</div>
                     <div className="flex-1 max-w-[280px]">PROJECT TITLE</div>
-                    <div className="flex-1 max-w-[180px]">CATEGORY</div>
-                    <div className="flex-1 max-w-[100px]">YEAR</div>
-                    <div className="w-[100px] text-right">ACTIONS</div>
+                    <div className="flex-1 max-w-[200px]">CATEGORY</div>
+                    <div className="flex-1 max-w-[80px]">YEAR</div>
+                    <div className="w-[120px] text-right">ACTIONS</div>
                   </div>
 
                   <div className="flex flex-col">
-                    {projects.map((p, index) => (
+                    {projects
+                      .filter(p => {
+                        if (adminCategoryFilter === "ALL") return true;
+                        if (adminCategoryFilter === "WEB & SAAS") {
+                          return Boolean(p.details?.liveUrl) || 
+                            p.categories.some(c => ["WEB", "SAAS", "POS", "APP", "DEV", "FULLSTACK"].some(k => c.toUpperCase().includes(k))) ||
+                            p.category.toUpperCase().includes("WEB") || p.category.toUpperCase().includes("SAAS");
+                        }
+                        if (adminCategoryFilter === "VIDEO & UGC") {
+                          return p.categories.some(c => ["VIDEO", "FILM", "UGC", "REEL", "COMMERCIAL", "MEDIA"].some(k => c.toUpperCase().includes(k))) ||
+                            p.category.toUpperCase().includes("VIDEO") || p.category.toUpperCase().includes("FILM") || p.category.toUpperCase().includes("UGC");
+                        }
+                        if (adminCategoryFilter === "UNREAL & 3D") {
+                          return p.categories.some(c => ["UNREAL", "CGI", "3D", "VFX", "AUTOMATION", "SPATIAL"].some(k => c.toUpperCase().includes(k))) ||
+                            p.category.toUpperCase().includes("CGI") || p.category.toUpperCase().includes("3D") || p.category.toUpperCase().includes("UNREAL");
+                        }
+                        return true;
+                      })
+                      .map((p, index) => (
                       <div 
                         key={`admin-proj-${p.id || index}-${index}`}
-                        className="flex items-center justify-between px-5 py-4 border-b border-white/[0.03] text-xs hover:bg-white/[0.01] transition-colors"
+                        className="flex items-center justify-between px-5 py-4 border-b border-white/[0.03] text-xs hover:bg-white/[0.02] transition-colors group"
                       >
-                        <div className="flex-1 max-w-[80px] font-mono text-white/30 font-bold">{p.id}</div>
-                        <div className="flex-1 max-w-[280px] font-semibold text-white uppercase tracking-wider">{p.title}</div>
-                        <div className="flex-1 max-w-[180px] text-white/60">{p.category}</div>
-                        <div className="flex-1 max-w-[100px] font-mono text-white/50">{p.year}</div>
-                        <div className="w-[100px] flex items-center justify-end gap-2">
+                        <div className="flex-1 max-w-[60px] font-mono text-white/30 font-bold">{p.id}</div>
+                        
+                        {/* Clickable Title to Launch Project Demo / Image */}
+                        <div 
+                          onClick={() => {
+                            const targetUrl = p.details?.liveUrl || p.image;
+                            if (targetUrl) window.open(targetUrl, "_blank");
+                          }}
+                          className="flex-1 max-w-[280px] font-semibold text-white uppercase tracking-wider hover:text-[#c5a880] cursor-pointer flex items-center gap-2 transition-all"
+                          title="Click to launch project demo"
+                        >
+                          <span className="truncate">{p.title}</span>
+                          {p.details?.liveUrl && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" title="Live Site Demo Ready" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 max-w-[200px] text-white/60 truncate">{p.category}</div>
+                        <div className="flex-1 max-w-[80px] font-mono text-white/50">{p.year}</div>
+                        
+                        {/* Action Buttons */}
+                        <div className="w-[120px] flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              const targetUrl = p.details?.liveUrl || p.image;
+                              if (targetUrl) window.open(targetUrl, "_blank");
+                            }}
+                            className="p-1.5 border border-white/5 hover:border-emerald-500/40 rounded text-white/50 hover:text-emerald-400 hover:bg-emerald-950/20 transition-all cursor-pointer"
+                            title="Launch Live Preview / Open Project"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
                           <button
                             onClick={() => openProjectModal("edit", p)}
                             className="p-1.5 border border-white/5 hover:border-[#c5a880]/30 rounded text-white/50 hover:text-[#c5a880] hover:bg-[#c5a880]/5 transition-all cursor-pointer"
