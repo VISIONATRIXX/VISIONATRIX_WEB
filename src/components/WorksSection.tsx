@@ -114,18 +114,23 @@ function MarqueeProjectCard({
           </div>
         </div>
 
-        {/* Quick View Hover Indicator Overlay */}
-        <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/30 backdrop-blur-[2px]">
-          <div className="bg-black/90 backdrop-blur-md border border-[#c5a880] px-4 py-2.5 rounded-full flex items-center gap-2 text-[#c5a880] shadow-2xl">
+        {/* Professional Apple macOS Glassmorphic Hover Indicator Overlay */}
+        <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-black/40 backdrop-blur-[3px]">
+          <div className="bg-[#0c0c14]/90 backdrop-blur-xl border border-[#c5a880]/70 px-5 py-3 rounded-full flex items-center gap-2.5 text-white shadow-[0_15px_40px_rgba(0,0,0,0.8)] transform group-hover:scale-105 transition-all duration-300">
             {project.details?.liveUrl ? (
               <>
-                <Globe className="w-4 h-4 text-emerald-400 animate-pulse" />
-                <span className="font-mono text-[9.5px] tracking-widest font-bold uppercase text-white">OPEN SAFARI SANDBOX</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#34d399]" />
+                <Globe className="w-4 h-4 text-emerald-400" />
+                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.16em] font-extrabold uppercase text-white">
+                  LAUNCH SAFARI SANDBOX
+                </span>
               </>
             ) : (
               <>
-                <Eye className="w-3.5 h-3.5" />
-                <span className="font-mono text-[9px] tracking-widest font-bold uppercase">VIEW CASE BRIEF</span>
+                <Eye className="w-4 h-4 text-[#c5a880]" />
+                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.16em] font-extrabold uppercase text-[#c5a880]">
+                  EXPLORE CASE BRIEF
+                </span>
               </>
             )}
           </div>
@@ -652,22 +657,27 @@ export default function WorksSection() {
                     </div>
 
                     {/* Center: Apple Safari Address Bar */}
-                    <div className="flex-1 max-w-lg mx-2 bg-black/80 border border-white/10 hover:border-[#c5a880]/50 rounded-xl py-1.5 px-3.5 flex items-center justify-between gap-2 shadow-inner transition-colors">
-                      <div className="flex items-center gap-2 text-white/80 font-mono text-[10px] truncate">
-                        <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+                    <div className="flex-1 max-w-xl mx-2 bg-[#0a0a10] border border-white/15 hover:border-[#c5a880]/60 rounded-xl py-1.5 px-4 flex items-center justify-between gap-3 shadow-inner transition-colors">
+                      <div className="flex items-center gap-2.5 text-white/90 font-mono text-[10.5px] truncate">
+                        <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span className="text-[#c5a880] font-bold">https://</span>
-                        <span className="truncate text-white/90 font-medium">
-                          {selectedProject.details?.liveUrl ? selectedProject.details.liveUrl.replace(/^https?:\/\//, '') : `${selectedProject.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.visionatrix.com`}
+                        <span className="truncate text-white font-bold tracking-wide">
+                          {selectedProject.details?.liveUrl ? selectedProject.details.liveUrl.replace(/^https?:\/\//, '') : `${selectedProject.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.visionatrix.online`}
                         </span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setIframeKey(k => k + 1)}
-                        className="text-white/40 hover:text-white transition-colors"
-                        title="Reload"
-                      >
-                        <RefreshCw className="w-3 h-3" />
-                      </button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="hidden sm:inline-flex text-[8px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 rounded-full font-bold">
+                          256-BIT SSL 🟢
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setIframeKey(k => k + 1)}
+                          className="text-white/50 hover:text-white transition-colors p-1"
+                          title="Refresh Sandbox Page"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     {/* Right: Device Selector & Close Button */}
