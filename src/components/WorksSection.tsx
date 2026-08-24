@@ -61,9 +61,18 @@ function MarqueeProjectCard({
 
       {/* Quick View Hover Indicator */}
       <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="bg-black/85 backdrop-blur-md border border-[#c5a880] px-4 py-2 rounded-full flex items-center gap-2 text-[#c5a880] shadow-2xl">
-          <Eye className="w-3.5 h-3.5" />
-          <span className="font-mono text-[9px] font-bold tracking-[0.2em] uppercase">INSPECT CASE BRIEF</span>
+        <div className="bg-black/85 backdrop-blur-md border border-[#c5a880] px-4 py-2.5 rounded-full flex items-center gap-2 text-[#c5a880] shadow-2xl">
+          {project.details?.liveUrl ? (
+            <>
+              <Globe className="w-4 h-4 text-emerald-400 animate-pulse" />
+              <span className="font-mono text-[9.5px] tracking-widest font-bold uppercase text-white">OPEN SAFARI SANDBOX</span>
+            </>
+          ) : (
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span className="font-mono text-[9px] tracking-widest font-bold uppercase">VIEW CASE BRIEF</span>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -102,6 +111,19 @@ export default function WorksSection() {
   const [iframeKey, setIframeKey] = useState(0);
   const [isSafariExpanded, setIsSafariExpanded] = useState(false);
   const [isSafariMinimized, setIsSafariMinimized] = useState(false);
+
+  const handleOpenProject = (p: Project) => {
+    setSelectedProject(p);
+    if (p.details?.liveUrl) {
+      setLiveMode(true);
+      setIsSafariExpanded(true);
+    } else {
+      setLiveMode(false);
+      setIsSafariExpanded(false);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).lenis?.stop();
+  };
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
@@ -248,11 +270,7 @@ export default function WorksSection() {
                 <MarqueeProjectCard
                   key={`r1-${project.id}-${idx}`}
                   project={project}
-                  onOpenDetails={(p) => {
-                    setSelectedProject(p);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (window as any).lenis?.stop();
-                  }}
+                  onOpenDetails={handleOpenProject}
                 />
               ))}
             </div>
@@ -265,11 +283,7 @@ export default function WorksSection() {
                 <MarqueeProjectCard
                   key={`r2-${project.id}-${idx}`}
                   project={project}
-                  onOpenDetails={(p) => {
-                    setSelectedProject(p);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (window as any).lenis?.stop();
-                  }}
+                  onOpenDetails={handleOpenProject}
                 />
               ))}
             </div>
@@ -282,11 +296,7 @@ export default function WorksSection() {
                 <MarqueeProjectCard
                   key={`r3-${project.id}-${idx}`}
                   project={project}
-                  onOpenDetails={(p) => {
-                    setSelectedProject(p);
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (window as any).lenis?.stop();
-                  }}
+                  onOpenDetails={handleOpenProject}
                 />
               ))}
             </div>
@@ -372,9 +382,7 @@ export default function WorksSection() {
               {filteredProjects.map((project) => (
                 <div
                   key={`all-${project.id}`}
-                  onClick={() => {
-                    setSelectedProject(project);
-                  }}
+                  onClick={() => handleOpenProject(project)}
                   className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
