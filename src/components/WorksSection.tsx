@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers, Globe, Monitor, Smartphone } from "lucide-react";
+import { X, BarChart3, ChevronLeft, ChevronRight, ExternalLink, Grid, ArrowRight, Eye, Layers, Globe, Monitor, Smartphone, RefreshCw, Lock, Maximize2 } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -98,6 +98,8 @@ export default function WorksSection() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [activeSlide, setActiveSlide] = useState(0);
   const [liveMode, setLiveMode] = useState(false);
+  const [sandboxDevice, setSandboxDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [iframeKey, setIframeKey] = useState(0);
 
   const sectionRef = useRef<HTMLDivElement>(null);
   const row1Ref = useRef<HTMLDivElement>(null);
@@ -485,42 +487,116 @@ export default function WorksSection() {
 
                     {/* Live Website Interactive View vs Media View */}
                     {liveMode && hasLiveSite ? (
-                      <div className="absolute inset-0 z-20 flex flex-col bg-[#050508]">
-                        {/* Simulated Browser Address Bar Header */}
-                        <div className="bg-[#101015] border-b border-white/10 px-4 py-2 flex items-center justify-between font-mono text-[10px] text-white/50">
-                          <div className="flex items-center gap-2">
+                      <div className="absolute inset-0 z-20 flex flex-col bg-[#050508] select-none">
+                        {/* Simulated Browser Address & Controls Bar Header */}
+                        <div className="bg-[#0e0e13] border-b border-white/10 px-4 py-2 flex items-center justify-between font-mono text-[10px] text-white/50 shrink-0">
+                          {/* Traffic light dots + URL address bar */}
+                          <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1.5">
                               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                               <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                             </div>
-                            <div className="bg-black/60 px-3 py-1 rounded border border-white/10 flex items-center gap-2 text-white/80 text-[9px] font-mono truncate max-w-[280px] sm:max-w-[400px]">
-                              <Globe className="w-3 h-3 text-[#c5a880] shrink-0" />
+
+                            <button
+                              type="button"
+                              onClick={() => setIframeKey(k => k + 1)}
+                              className="p-1 text-white/40 hover:text-white transition-colors cursor-pointer"
+                              title="Reload Sandbox"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                            </button>
+
+                            <div className="bg-black/60 px-3 py-1 rounded border border-white/10 flex items-center gap-2 text-white/80 text-[9px] font-mono truncate max-w-[200px] sm:max-w-[340px]">
+                              <Lock className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
                               <span className="truncate">{selectedProject.details.liveUrl}</span>
                             </div>
                           </div>
 
+                          {/* Device Viewport Selector */}
+                          <div className="flex items-center gap-1 bg-black/60 p-0.5 rounded-lg border border-white/10">
+                            <button
+                              type="button"
+                              onClick={() => setSandboxDevice("desktop")}
+                              className={`p-1.5 rounded transition-all cursor-pointer ${
+                                sandboxDevice === "desktop" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                              }`}
+                              title="Desktop Viewport (100% Fluid)"
+                            >
+                              <Monitor className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSandboxDevice("tablet")}
+                              className={`p-1.5 rounded transition-all cursor-pointer ${
+                                sandboxDevice === "tablet" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                              }`}
+                              title="Tablet Viewport (768px)"
+                            >
+                              <Layers className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSandboxDevice("mobile")}
+                              className={`p-1.5 rounded transition-all cursor-pointer ${
+                                sandboxDevice === "mobile" ? "bg-[#c5a880] text-black shadow-md" : "text-white/40 hover:text-white"
+                              }`}
+                              title="Mobile Smartphone Mockup (390px)"
+                            >
+                              <Smartphone className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+
+                          {/* Open Tab Link */}
                           <a
                             href={selectedProject.details.liveUrl!}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/10 px-2.5 py-1 rounded border border-[#c5a880]/20 font-bold"
+                            className="hidden sm:flex items-center gap-1 text-[#c5a880] hover:text-white transition-colors bg-[#c5a880]/10 px-2.5 py-1 rounded border border-[#c5a880]/20 font-bold text-[9px]"
                           >
-                            <span>OPEN IN NEW TAB</span>
+                            <span>OPEN TAB</span>
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </div>
 
-                        {/* Interactive Responsive Iframe Container */}
-                        <div className="flex-1 w-full h-full relative bg-black">
-                          <iframe
-                            src={selectedProject.details.liveUrl!}
-                            title={`${selectedProject.title} Live Preview`}
-                            className="w-full h-full border-0 select-none"
-                            loading="lazy"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                          />
+                        {/* Interactive Sandbox Container Frame */}
+                        <div className="flex-1 w-full h-full relative bg-[#040406] flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
+                              sandboxDevice === "desktop"
+                                ? "w-full rounded-none"
+                                : sandboxDevice === "tablet"
+                                ? "w-[768px] max-w-full rounded-xl border border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.9)]"
+                                : "w-[360px] max-w-full rounded-[36px] border-[6px] border-[#1a1a24] shadow-[0_0_60px_rgba(197,168,128,0.2)]"
+                            }`}
+                          >
+                            {/* Mobile Smartphone Frame Notch */}
+                            {sandboxDevice === "mobile" && (
+                              <div className="w-full bg-[#1a1a24] py-1 flex justify-center shrink-0">
+                                <div className="w-24 h-3 bg-black rounded-full flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-zinc-800" />
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-950" />
+                                </div>
+                              </div>
+                            )}
+
+                            <iframe
+                              key={`sandbox-iframe-${iframeKey}-${sandboxDevice}`}
+                              src={selectedProject.details.liveUrl!}
+                              title={`${selectedProject.title} Interactive Sandbox`}
+                              className="w-full flex-1 border-0 rounded-b-[30px] bg-black"
+                              loading="lazy"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                            />
+
+                            {/* Mobile Home Bar */}
+                            {sandboxDevice === "mobile" && (
+                              <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[30px]">
+                                <div className="w-28 h-1 bg-white/40 rounded-full" />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ) : (

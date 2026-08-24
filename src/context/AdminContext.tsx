@@ -101,26 +101,27 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 const initialProjects: Project[] = [
   {
     id: "01",
-    title: "AETHERIA INTERACTIVE",
-    category: "WebGL & Creative Tech",
-    categories: ["WEB DEV", "VFX", "CGI"],
-    subtitle: "01 / AETHERIA METAVERSE",
+    title: "YUVRAJ RATHOD STUDIO",
+    category: "Full-Stack Web & Creative Tech",
+    categories: ["WEB DEV", "APPS", "VFX"],
+    subtitle: "01 / LIVE PORTFOLIO PLATFORM",
     year: "2026",
     image: "/work_aura_configurator.webp",
-    tagline: "Engineering physically accurate WebGL simulations and fluid dynamics rendering at 90 FPS.",
-    description: "An interactive real-time spatial portal built for Aetheria. Simulates gravity fields, aerodynamic drag, and complex raytraced light-refractions directly in standard browser environments.",
+    tagline: "Ultra-responsive creative portfolio showcasing full-stack digital products, 3D WebGL visuals, and custom web architecture.",
+    description: "An elite creative studio and full-stack developer portfolio platform built by Yuvraj Rathod. Engineered with high-frequency micro-interactions, dark aesthetic design tokens, smooth Lenis scrolling physics, and real-time interactive sandboxing.",
     bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
     details: {
-      role: "Creative Developer",
-      client: "Aetheria Studio",
-      engine: "Three.js / WebGL / React Fiber",
-      timeline: "Q1 2026",
-      videoUrl: null
+      role: "Lead Full-Stack Architect",
+      client: "Yuvraj Rathod Studio",
+      engine: "Next.js 15 / React / Tailwind / GSAP",
+      timeline: "Live Production 2026",
+      videoUrl: null,
+      liveUrl: "https://yuvrajrathod.online/"
     },
     metrics: [
-      { label: "FPS METRICS", value: "90 FPS Locked" },
-      { label: "LIGHT SAMPLES", value: "2048 Samples" },
-      { label: "INTERACTION LATENCY", value: "< 8ms" }
+      { label: "LOAD PERFORMANCE", value: "< 0.4s Edge" },
+      { label: "LIGHTHOUSE SCORE", value: "100 / 100" },
+      { label: "STATUS", value: "LIVE HOSTED 🟢" }
     ]
   },
   {
