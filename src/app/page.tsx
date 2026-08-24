@@ -28,7 +28,6 @@ const Footer = dynamic(() => import("@/components/Footer"), { ssr: false });
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
-  const [startAnimations, setStartAnimations] = useState(false);
   const [triggerHeroEntrance, setTriggerHeroEntrance] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   
@@ -174,14 +173,10 @@ export default function Home() {
       {showIntro && (
         <IntroLoader 
           onStartDismiss={() => {
-            setStartAnimations(true);
-            setTimeout(() => {
-              setTriggerHeroEntrance(true);
-            }, 1200);
+            setTriggerHeroEntrance(true);
           }}
           onComplete={() => {
             setShowIntro(false);
-            setStartAnimations(true);
             setTriggerHeroEntrance(true);
           }}
         />
@@ -189,8 +184,8 @@ export default function Home() {
 
       {/* Main layout */}
       <div className="relative w-full min-h-screen bg-[#050507] overflow-x-hidden">
-        {/* Persistent 3D WebGL background */}
-        {startAnimations && <Scene3D />}
+        {/* Persistent 3D WebGL background — pre-warmed for 120 FPS performance */}
+        <Scene3D />
 
         {/* Header Sticky Navigation */}
         {!showIntro && (
@@ -203,8 +198,7 @@ export default function Home() {
         )}
 
         {/* Core Sections Container */}
-        {startAnimations && (
-          <main className={`snap-container ${showIntro ? "pointer-events-none h-screen overflow-hidden" : "w-full"}`}>
+        <main className={`snap-container ${showIntro ? "pointer-events-none h-screen overflow-hidden" : "w-full"}`}>
             {/* 1. Home Section */}
             <HeroSection onCtaClick={scrollToSection} triggerEntrance={triggerHeroEntrance} />
 
@@ -238,7 +232,6 @@ export default function Home() {
               <Footer onLinkClick={scrollToSection} />
             </div>
           </main>
-        )}
       </div>
     </>
   );
