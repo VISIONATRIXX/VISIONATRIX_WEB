@@ -28,7 +28,7 @@ interface FPSProfilerProps {
   enabled?: boolean;
 }
 
-export default function FPSProfiler({ activeSection, enabled = false }: FPSProfilerProps) {
+export default function FPSProfiler({ activeSection, enabled = true }: FPSProfilerProps) {
   const [fps, setFps] = useState<number>(60);
   const [frameTime, setFrameTime] = useState<number>(16.6);
   const [isRecording, setIsRecording] = useState<boolean>(false);
