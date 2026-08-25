@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, 
@@ -19,6 +20,7 @@ import {
   Minus 
 } from "lucide-react";
 import { Project } from "@/context/AdminContext";
+import { getProjectVideoUrl, getVideoEmbedUrl } from "@/utils/media";
 
 interface SafariSandboxModalProps {
   selectedProject: Project | null;
@@ -38,28 +40,6 @@ interface SafariSandboxModalProps {
   showAllDrawer: boolean;
 }
 
-const getVideoEmbedUrl = (url: string) => {
-  if (url.includes("vimeo.com")) {
-    const reg = /video\/(\d+)/;
-    const match = url.match(reg);
-    const id = match ? match[1] : url.split("/").pop()?.split("?")[0];
-    return `https://player.vimeo.com/video/${id}?autoplay=1&loop=1&muted=1&background=1&autopause=0`;
-  }
-  if (url.includes("youtube.com") || url.includes("youtu.be")) {
-    let id = "";
-    if (url.includes("youtu.be")) {
-      id = url.split("/").pop()?.split("?")[0] || "";
-    } else if (url.includes("embed/")) {
-      id = url.split("embed/")[1].split("?")[0];
-    } else {
-      const match = url.match(/[?&]v=([^&#]+)/);
-      id = match ? match[1] : "";
-    }
-    return `https://www.youtube.com/embed/${id}?autoplay=1&loop=1&playlist=${id}&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3`;
-  }
-  return url;
-};
-
 export default function SafariSandboxModal({
   selectedProject,
   projects,
@@ -77,6 +57,51 @@ export default function SafariSandboxModal({
   onSelectProject,
   showAllDrawer
 }: SafariSandboxModalProps) {
+  const [isMetadataVertical, setIsMetadataVertical] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    setIsMetadataVertical(false);
+  }, [selectedProject?.id]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedProject) return;
+
+      const activeEl = document.activeElement;
+      const isInput = activeEl && (
+        activeEl.tagName === "INPUT" ||
+        activeEl.tagName === "TEXTAREA" ||
+        activeEl.getAttribute("contenteditable") === "true"
+      );
+
+      if (isInput) return;
+
+      if (e.code === "Space" || e.key === " ") {
+        // Prevent default spacebar scrolling
+        e.preventDefault();
+
+        const video = videoRef.current;
+        if (video) {
+          if (video.paused) {
+            video.play().catch(err => console.log("Play failed:", err));
+          } else {
+            video.pause();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedProject]);
+
+  const isVerticalCategory = selectedProject?.category?.toUpperCase() === "AI SHOOTS" || 
+    (selectedProject?.categories || []).some(c => ["AI SHOOTS", "UGC", "VERTICAL", "MOBILE"].includes(c.toUpperCase()));
+  const isVertical = isVerticalCategory || isMetadataVertical;
+
   return (
     <>
       {/* CASE STUDY BRIEFCASE MODAL OVERLAY */}
@@ -350,34 +375,128 @@ export default function SafariSandboxModal({
                     <div className="relative w-full h-full overflow-hidden bg-black flex items-center justify-center">
                       <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
                       
-                      <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center">
-                        {selectedProject.details?.videoUrl ? (
-                          selectedProject.details.videoUrl.includes("vimeo.com") || selectedProject.details.videoUrl.includes("youtube.com") || selectedProject.details.videoUrl.includes("youtu.be") ? (
-                            <iframe
-                              src={getVideoEmbedUrl(selectedProject.details.videoUrl)}
-                              className="w-full h-full border-0 aspect-video pointer-events-none scale-[1.02]"
-                              allow="autoplay; fullscreen; picture-in-picture"
-                              allowFullScreen
-                              title={selectedProject.title}
+                      <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center overflow-hidden">
+                        {(() => {
+                          const videoUrl = getProjectVideoUrl(selectedProject);
+                          if (videoUrl) {
+                            const isEmbed = videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be");
+
+                            if (isVertical) {
+                              return (
+                                <div className="relative w-full h-full flex items-center justify-center p-4">
+                                  {/* Ambient blurred glow background */}
+                                  {isEmbed ? (
+                                    <iframe
+                                      src={getVideoEmbedUrl(videoUrl)}
+                                      className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
+                                      allow="autoplay; fullscreen"
+                                      title={`${selectedProject.title} Blur Background`}
+                                    />
+                                  ) : (
+                                    <video
+                                      src={videoUrl}
+                                      autoPlay
+                                      loop
+                                      muted
+                                      playsInline
+                                      className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
+                                    />
+                                  )}
+
+                                  {/* Center Luxury Frame holding the vertical video */}
+                                  <div className="relative aspect-[9/16] h-[82vh] max-h-[690px] max-w-[90%] md:max-w-[390px] border border-[#c5a880]/30 rounded-2xl overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)] bg-black z-10">
+                                    {isEmbed ? (
+                                      <iframe
+                                        src={getVideoEmbedUrl(videoUrl)}
+                                        className="w-full h-full border-0 scale-[1.01]"
+                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allowFullScreen
+                                        title={selectedProject.title}
+                                      />
+                                    ) : (
+                                      <video
+                                        ref={videoRef}
+                                        src={videoUrl}
+                                        autoPlay
+                                        loop
+                                        playsInline
+                                        controls
+                                        onLoadedMetadata={(e) => {
+                                          const video = e.currentTarget;
+                                          if (video.videoWidth < video.videoHeight) {
+                                            setIsMetadataVertical(true);
+                                          }
+                                        }}
+                                        className="w-full h-full object-cover relative z-10"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            // Standard landscape video view with ambient glow background & perfect aspect fit
+                            return (
+                              <div className="relative w-full h-full flex items-center justify-center p-4">
+                                {/* Ambient blurred glow background */}
+                                {isEmbed ? (
+                                  <iframe
+                                    src={getVideoEmbedUrl(videoUrl)}
+                                    className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
+                                    allow="autoplay; fullscreen"
+                                    title={`${selectedProject.title} Landscape Blur`}
+                                  />
+                                ) : (
+                                  <video
+                                    src={videoUrl}
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
+                                  />
+                                )}
+
+                                {/* Centered perfectly fitting landscape frame */}
+                                <div className="relative aspect-video w-full max-w-[95%] md:max-w-[1000px] max-h-[80vh] border border-[#c5a880]/30 rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95)] bg-black z-10">
+                                  {isEmbed ? (
+                                    <iframe
+                                      src={getVideoEmbedUrl(videoUrl)}
+                                      className="w-full h-full border-0 scale-[1.01]"
+                                      allow="autoplay; fullscreen; picture-in-picture"
+                                      allowFullScreen
+                                      title={selectedProject.title}
+                                    />
+                                  ) : (
+                                    <video
+                                      ref={videoRef}
+                                      src={videoUrl}
+                                      autoPlay
+                                      loop
+                                      playsInline
+                                      controls
+                                      onLoadedMetadata={(e) => {
+                                        const video = e.currentTarget;
+                                        if (video.videoWidth < video.videoHeight) {
+                                          setIsMetadataVertical(true);
+                                        }
+                                      }}
+                                      className="w-full h-full object-contain relative z-10"
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+                          return (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img
+                              src={selectedProject.image}
+                              alt={selectedProject.title}
+                              className="w-full h-full object-cover opacity-85 transition-all duration-300"
                             />
-                          ) : (
-                            <video
-                              src={selectedProject.details.videoUrl}
-                              autoPlay
-                              loop
-                              muted
-                              playsInline
-                              className="w-full h-full object-cover opacity-90 transition-opacity duration-300"
-                            />
-                          )
-                        ) : (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            src={selectedProject.image}
-                            alt={selectedProject.title}
-                            className="w-full h-full object-cover opacity-85 transition-all duration-300"
-                          />
-                        )}
+                          );
+                        })()}
                       </div>
                     </div>
                   )}
@@ -430,23 +549,7 @@ export default function SafariSandboxModal({
                       </p>
                     </div>
 
-                    {/* Specification Metrics */}
-                    <div className="flex flex-col gap-3">
-                      <span className="font-mono text-[9px] tracking-[0.2em] text-[#666677] uppercase font-bold flex items-center gap-2">
-                        <BarChart3 className="w-3.5 h-3.5 text-[#c5a880]" />
-                        <span>PERFORMANCE SPECS</span>
-                      </span>
-                      
-                      <div className="flex flex-col gap-2">
-                        {selectedProject.metrics.map((metric, index) => (
-                          <div key={index} className="bg-white/[0.02] border border-white/5 rounded-lg p-3 flex justify-between items-center">
-                            <span className="font-mono text-[8.5px] tracking-wider text-[#9999aa] uppercase">{metric.label}</span>
-                            <span className="font-mono text-xs text-[#c5a880] font-bold">{metric.value}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
-                  </div>
 
                   {/* Sidebar Footer Action Buttons */}
                   <div className="flex flex-col gap-3 mt-8 pt-6 border-t border-white/10">

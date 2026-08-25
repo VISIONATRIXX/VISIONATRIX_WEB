@@ -28,8 +28,19 @@ const nextConfig: NextConfig = {
             value: "max-age=63072000; includeSubDomains; preload",
           },
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: blob: https: http:",
+              "media-src 'self' blob: https:",
+              "frame-src 'self' https://player.vimeo.com https://www.youtube.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.r2.cloudflarestorage.com https://*.r2.dev",
+              "object-src 'none'",
+              "base-uri 'self'"
+            ].join("; "),
           },
         ],
       },

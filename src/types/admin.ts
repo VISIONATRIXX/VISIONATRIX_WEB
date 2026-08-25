@@ -74,6 +74,7 @@ export interface AdminContextType {
   addProject: (p: Omit<Project, "id">) => void;
   updateProject: (id: string, p: Project) => void;
   deleteProject: (id: string) => void;
+  reorderProjects: (newOrder: Project[]) => void;
   
   // Services CRUD
   updateService: (id: string, s: ServiceItem) => void;

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useCallback, memo } from "react";
-import { Eye, Globe } from "lucide-react";
+import { Eye, Globe, Play } from "lucide-react";
 import { Project } from "@/context/AdminContext";
+import { getProjectVideoUrl, getVideoEmbedUrl } from "@/utils/media";
 
 interface MarqueeProjectCardProps {
   project: Project;
@@ -16,10 +17,11 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
 }: MarqueeProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  const videoUrl = getProjectVideoUrl(project);
   const livePreviewUrl = project.details?.liveUrl 
     ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
     : null;
-  const displayImage = project.image || livePreviewUrl;
+  const displayImage = (!videoUrl && project.image) ? project.image : livePreviewUrl;
 
   const categoryTags = project.categories && project.categories.length > 0 
     ? project.categories.slice(0, 3)
@@ -50,6 +52,8 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
     onOpenDetails(project);
   }, [onOpenDetails, project]);
 
+  const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
+
   return (
     <div
       ref={cardRef}
@@ -60,8 +64,26 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
       style={{ transition: "transform 0.2s ease-out, border-color 0.3s" }}
     >
       <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#07070b]">
-        {/* Background Image */}
-        {displayImage ? (
+        {/* Background Image / Video Media */}
+        {videoUrl ? (
+          isEmbedVideo ? (
+            <iframe
+              src={getVideoEmbedUrl(videoUrl)}
+              className="w-full h-full border-0 object-cover pointer-events-none scale-[1.05]"
+              allow="autoplay; fullscreen"
+              title={project.title}
+            />
+          ) : (
+            <video
+              src={videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out"
+            />
+          )
+        ) : displayImage ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={displayImage}
@@ -112,6 +134,13 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
                 <Globe className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="font-outfit text-[10px] sm:text-xs tracking-[0.14em] font-bold uppercase text-white">
                   INTERACTIVE LIVE DEMO
+                </span>
+              </>
+            ) : videoUrl ? (
+              <>
+                <Play className="w-3.5 h-3.5 text-[#c5a880] fill-[#c5a880]" />
+                <span className="font-outfit text-[10px] sm:text-xs tracking-[0.14em] font-bold uppercase text-[#c5a880]">
+                  WATCH SHOWCASE VIDEO
                 </span>
               </>
             ) : (

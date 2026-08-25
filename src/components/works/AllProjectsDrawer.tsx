@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Project } from "@/context/AdminContext";
+import { getProjectVideoUrl, getVideoEmbedUrl } from "@/utils/media";
 
 interface AllProjectsDrawerProps {
   isOpen: boolean;
@@ -79,10 +80,12 @@ export default function AllProjectsDrawer({
           {/* Grid of Filtered Projects */}
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => {
+              const videoUrl = getProjectVideoUrl(project);
               const livePreviewUrl = project.details?.liveUrl 
                 ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
                 : null;
-              const displayImage = project.image || livePreviewUrl;
+              const displayImage = (!videoUrl && project.image) ? project.image : livePreviewUrl;
+              const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
 
               return (
                 <div
@@ -90,7 +93,25 @@ export default function AllProjectsDrawer({
                   onClick={() => onSelectProject(project)}
                   className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
                 >
-                  {displayImage ? (
+                  {videoUrl ? (
+                    isEmbedVideo ? (
+                      <iframe
+                        src={getVideoEmbedUrl(videoUrl)}
+                        className="w-full h-full border-0 object-cover pointer-events-none rounded-xl scale-[1.05]"
+                        allow="autoplay; fullscreen"
+                        title={project.title}
+                      />
+                    ) : (
+                      <video
+                        src={videoUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
+                      />
+                    )
+                  ) : displayImage ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={displayImage}

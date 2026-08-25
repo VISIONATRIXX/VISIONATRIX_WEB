@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAdmin, Project, ServiceItem, Testimonial, Proposal } from "@/context/AdminContext";
 import { supabase } from "@/utils/supabase";
+import { getProjectVideoUrl, isVideoUrl, getVideoEmbedUrl } from "@/utils/media";
 import { 
   Lock, 
   Unlock, 
@@ -33,6 +34,8 @@ import {
   ChevronRight,
   Clock,
   UserCheck,
+  User,
+  GripVertical,
   Upload
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,6 +56,7 @@ export default function AdminPage() {
     addProject,
     updateProject,
     deleteProject,
+    reorderProjects,
     updateService,
     addTestimonial,
     updateTestimonial,
@@ -80,7 +84,51 @@ export default function AdminPage() {
   const [projectFormMode, setProjectFormMode] = useState<"basic" | "advanced">("basic");
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [testimonialModal, setTestimonialModal] = useState<{ isOpen: boolean; mode: "add" | "edit"; data?: Testimonial }>({ isOpen: false, mode: "add" });
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    type: "project" | "testimonial" | "proposal" | "cache-reset";
+    id: string;
+    title: string;
+  }>({
+    isOpen: false,
+    type: "project",
+    id: "",
+    title: ""
+  });
+
   const [serviceEditor, setServiceEditor] = useState<ServiceItem | null>(null);
+
+  // Drag and Drop reordering state & handlers
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    // Reorder the local projects array
+    const reordered = [...projects];
+    const [draggedItem] = reordered.splice(draggedIndex, 1);
+    reordered.splice(targetIndex, 0, draggedItem);
+
+    // Persist the new order
+    reorderProjects(reordered);
+    setDraggedIndex(null);
+    addHudLog("Re-sequenced showcase portfolio items", "info");
+  };
 
   const [customTagInput, setCustomTagInput] = useState("");
   const [localTags, setLocalTags] = useState<string[]>([]);
@@ -98,6 +146,14 @@ export default function AdminPage() {
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<{
+    isUploading: boolean;
+    percentage: number;
+    fileName: string;
+    loadedMB: string;
+    totalMB: string;
+    type: "video" | "image" | "gallery";
+  } | null>(null);
 
   const budgetTiers = ["$5K - $15K", "$15K - $40K", "$40K - $100K", "$100K+"];
 
@@ -110,13 +166,17 @@ export default function AdminPage() {
 
   // Run on mount to check credentials session & seed default logs
   useEffect(() => {
-    // Check local session
-    if (typeof window !== "undefined") {
-      const activeSession = sessionStorage.getItem("visionatrix_admin_session");
-      if (activeSession === "authorized_141104") {
-        setIsAuthenticated(true);
-      }
-    }
+    // Validate existing session cookie via server
+    fetch("/api/admin/verify")
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => {
+        // No valid session — expected
+      });
 
     setHudLogs([
       { id: "1", text: "Secure CRM & CMS state layer initialized.", type: "success", time: new Date().toTimeString().split(" ")[0] },
@@ -137,29 +197,46 @@ export default function AdminPage() {
   }, []);
 
   // Passcode verification
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
     setIsVerifying(true);
 
-    // Simulate clean visual fade delay
-    setTimeout(() => {
-      if (passcode === "141104") {
+    try {
+      const res = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode })
+      });
+      
+      const data = await res.json();
+      
+      // Simulate clean visual fade delay for premium feel
+      await new Promise(resolve => setTimeout(resolve, 450));
+
+      if (res.ok && data.success) {
         setIsAuthenticated(true);
-        sessionStorage.setItem("visionatrix_admin_session", "authorized_141104");
         addHudLog("Administrator authenticated successfully.", "success");
       } else {
-        setAuthError("INCORRECT SECURITY PASSCODE");
+        setAuthError(data.error || "INCORRECT SECURITY PASSCODE");
         addHudLog("Unauthorized access attempt rejected.", "error");
       }
+    } catch (err) {
+      setAuthError("VERIFICATION CONNECTION FAILURE");
+      addHudLog("Auth server connection failed.", "error");
+    } finally {
       setIsVerifying(false);
-    }, 450);
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/verify", { method: "DELETE" });
+    } catch {
+      // Silently proceed with local logout
+    }
     setIsAuthenticated(false);
     setPasscode("");
-    sessionStorage.removeItem("visionatrix_admin_session");
     addHudLog("Administrator session terminated safely.", "info");
   };
 
@@ -198,7 +275,8 @@ export default function AdminPage() {
           role: data.details?.role || "",
           engine: data.details?.engine || "",
           videoUrl: data.details?.videoUrl || "",
-          images: data.details?.images || []
+          images: data.details?.images || [],
+          liveUrl: data.details?.liveUrl || ""
         }
       });
     } else {
@@ -239,53 +317,124 @@ export default function AdminPage() {
     }
   };
 
+  // Helper upload function using XMLHttpRequest for real-time progress & Cloudflare R2 signed URL support
+  const uploadFileWithProgress = async (
+    file: File,
+    type: "video" | "image" | "gallery",
+    onProgress?: (percent: number, loadedMB: string, totalMB: string) => void
+  ): Promise<string> => {
+    const totalBytes = file.size;
+    const totalMB = (totalBytes / (1024 * 1024)).toFixed(1);
+
+    if (onProgress) onProgress(0, "0.0", totalMB);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Fetch presigned upload URL from Next.js server route
+        const response = await fetch("/api/upload/presigned", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fileName: file.name,
+            contentType: file.type || "application/octet-stream",
+          }),
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || "Failed to generate Cloudflare R2 presigned URL.");
+        }
+
+        const { signedUrl, publicUrl } = await response.json();
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", signedUrl, true);
+        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && e.total > 0) {
+            const percent = Math.min(100, Math.round((e.loaded / e.total) * 100));
+            const loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+            if (onProgress) onProgress(percent, loadedMB, totalMB);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            if (onProgress) onProgress(100, totalMB, totalMB);
+            resolve(publicUrl);
+          } else {
+            let msg = "Cloudflare R2 upload failed.";
+            try {
+              const res = JSON.parse(xhr.responseText);
+              msg = res.message || res.error || msg;
+            } catch (_) {}
+            reject(new Error(msg || `R2 upload failed with status ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error during R2 upload. Please check connection."));
+        xhr.send(file);
+      } catch (err: any) {
+        reject(err);
+      }
+    });
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploadError("");
+    const fileMBNum = file.size / (1024 * 1024);
+    if (fileMBNum > 500) {
+      alert(`File size (${fileMBNum.toFixed(1)} MB) exceeds maximum limit of 500MB. Please select a smaller video.`);
+      e.target.value = "";
+      return;
+    }
+
     if (type === "image") {
       setIsUploadingImage(true);
     } else {
       setIsUploadingVideo(true);
     }
 
+    setUploadProgress({
+      isUploading: true,
+      percentage: 0,
+      fileName: file.name,
+      loadedMB: "0.0",
+      totalMB: fileMBNum.toFixed(1),
+      type
+    });
+
     try {
-      const fileExt = file.name.split(".").pop();
-      const baseName = file.name.substring(0, file.name.lastIndexOf(".")).replace(/[^a-zA-Z0-9]/g, "_");
-      const fileName = `${Date.now()}_${baseName}.${fileExt}`;
-      const filePath = `uploads/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("portfolio")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
-      
-      if (!data?.publicUrl) {
-        throw new Error("Failed to retrieve public URL from storage.");
-      }
+      const publicUrl = await uploadFileWithProgress(
+        file,
+        type,
+        (percent, loadedMB, totalMB) => {
+          setUploadProgress(prev => prev ? { ...prev, percentage: percent, loadedMB, totalMB } : null);
+        }
+      );
 
       if (type === "image") {
-        setProjForm(prev => ({ ...prev, image: data.publicUrl }));
-        addHudLog(`Uploaded project image: "${file.name}"`, "success");
+        setProjForm(prev => ({ ...prev, image: publicUrl }));
+        addHudLog(`Uploaded project image (${fileMBNum.toFixed(1)} MB): "${file.name}"`, "success");
       } else {
         setProjForm(prev => ({
           ...prev,
+          image: publicUrl,
           details: {
             client: prev.details?.client || "",
             timeline: prev.details?.timeline || "",
             role: prev.details?.role || "",
             engine: prev.details?.engine || "",
-            videoUrl: data.publicUrl
+            videoUrl: publicUrl
           }
         }));
-        addHudLog(`Uploaded project video: "${file.name}"`, "success");
+        addHudLog(`Uploaded project video (${fileMBNum.toFixed(1)} MB): "${file.name}"`, "success");
       }
     } catch (err: any) {
       console.error("Upload error:", err);
@@ -298,7 +447,9 @@ export default function AdminPage() {
       } else {
         setIsUploadingVideo(false);
       }
-      // Reset input element value so same file can be re-selected if needed
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1000);
       e.target.value = "";
     }
   };
@@ -309,31 +460,31 @@ export default function AdminPage() {
 
     setUploadError("");
     setIsUploadingGallery(true);
-    addHudLog(`Uploading ${files.length} gallery image(s)...`, "info");
+    addHudLog(`Uploading ${files.length} gallery image(s) to R2...`, "info");
 
     const uploadedUrls: string[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const fileExt = file.name.split(".").pop();
-        const baseName = file.name.substring(0, file.name.lastIndexOf(".")).replace(/[^a-zA-Z0-9]/g, "_");
-        const fileName = `${Date.now()}_gallery_${i}_${baseName}.${fileExt}`;
-        const filePath = `uploads/${fileName}`;
+        
+        setUploadProgress({
+          isUploading: true,
+          percentage: 0,
+          fileName: `Gallery [${i + 1}/${files.length}]: ${file.name}`,
+          loadedMB: "0.0",
+          totalMB: (file.size / (1024 * 1024)).toFixed(1),
+          type: "gallery"
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from("portfolio")
-          .upload(filePath, file, {
-            cacheControl: "3600",
-            upsert: true
-          });
-
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
-        if (data?.publicUrl) {
-          uploadedUrls.push(data.publicUrl);
-        }
+        const publicUrl = await uploadFileWithProgress(
+          file,
+          "gallery",
+          (percent, loadedMB, totalMB) => {
+            setUploadProgress(prev => prev ? { ...prev, percentage: percent, loadedMB, totalMB } : null);
+          }
+        );
+        uploadedUrls.push(publicUrl);
       }
 
       setProjForm(prev => {
@@ -351,7 +502,7 @@ export default function AdminPage() {
         };
       });
 
-      addHudLog(`Uploaded ${uploadedUrls.length} gallery image(s) successfully!`, "success");
+      addHudLog(`Uploaded ${uploadedUrls.length} gallery image(s) successfully to R2!`, "success");
     } catch (err: any) {
       console.error("Gallery upload error:", err);
       const errMsg = err.message || "Upload process failed.";
@@ -359,6 +510,7 @@ export default function AdminPage() {
       addHudLog(`Gallery upload failed: ${errMsg}`, "error");
     } finally {
       setIsUploadingGallery(false);
+      setUploadProgress(null);
       e.target.value = "";
     }
   };
@@ -454,13 +606,15 @@ export default function AdminPage() {
         }))
       : defaultMetrics;
 
+    const detectedVideo = projForm.details?.videoUrl || (isVideoUrl(projForm.image) ? projForm.image : null);
+
     const payload: Omit<Project, "id"> = {
       title: projForm.title.toUpperCase(),
       category: projForm.category,
       categories: projForm.categories || ["CGI"],
       tagline: projForm.tagline || "",
       description: projForm.description || projForm.tagline || "",
-      image: projForm.image || "/work_aura_configurator.png",
+      image: projForm.image || detectedVideo || "/work_aura_configurator.png",
       subtitle: projForm.subtitle || `${projForm.title.toUpperCase()} Spec`,
       year: projForm.year || "2026",
       bgGradient: projForm.bgGradient || "from-slate-900 via-sky-950 to-[#050507]",
@@ -469,8 +623,9 @@ export default function AdminPage() {
         timeline: projForm.details?.timeline || projForm.year || "2026",
         role: projForm.details?.role || "Digital Production",
         engine: projForm.details?.engine || "Realtime WebGL / Octane",
-        videoUrl: projForm.details?.videoUrl || null,
-        images: projForm.details?.images || []
+        videoUrl: detectedVideo,
+        images: projForm.details?.images || [],
+        liveUrl: projForm.details?.liveUrl || null
       },
       metrics: finalMetrics
     };
@@ -483,6 +638,25 @@ export default function AdminPage() {
       addHudLog(`New portfolio item created: "${payload.title}"`, "success");
     }
     setProjectModal({ isOpen: false, mode: "add" });
+  };
+
+  const executeDeleteAction = () => {
+    const { type, id, title } = deleteConfirm;
+    if (type === "project") {
+      deleteProject(id);
+      addHudLog(`Purged project: "${title}"`, "warning");
+    } else if (type === "testimonial") {
+      deleteTestimonial(id);
+      addHudLog(`Purged testimonial: ${title}`, "warning");
+    } else if (type === "proposal") {
+      deleteProposal(id);
+      addHudLog(`Deleted CRM proposal from ${title}`, "warning");
+    } else if (type === "cache-reset") {
+      localStorage.clear();
+      addHudLog("Cache Database fully purged.", "warning");
+      window.location.reload();
+    }
+    setDeleteConfirm({ isOpen: false, type: "project", id: "", title: "" });
   };
 
   // TESTIMONIAL CRUD MODAL HANDLING
@@ -912,11 +1086,12 @@ export default function AdminPage() {
                     <div className="border-t border-white/5 pt-4">
                       <button 
                         onClick={() => {
-                          if (confirm("Reset cache state to factory defaults? All manual changes will be purged.")) {
-                            localStorage.clear();
-                            addHudLog("Cache Database fully purged.", "warning");
-                            window.location.reload();
-                          }
+                          setDeleteConfirm({
+                            isOpen: true,
+                            type: "cache-reset",
+                            id: "cache",
+                            title: "Factory Defaults Reset"
+                          });
                         }}
                         className="w-full text-center py-2 border border-red-500/10 hover:border-red-500/30 bg-red-950/5 hover:bg-red-950/15 text-red-400 hover:text-red-300 font-mono tracking-widest text-[8px] font-bold uppercase rounded transition-all cursor-pointer active:scale-95"
                       >
@@ -979,6 +1154,7 @@ export default function AdminPage() {
                 {/* Portfolio Lists Table */}
                 <div className="border border-white/5 bg-[#0b0b0f] rounded-lg overflow-hidden">
                   <div className="flex items-center justify-between bg-[#121217] px-5 py-3 border-b border-white/5 text-[9px] font-mono tracking-widest text-white/40 uppercase">
+                    <div className="w-8 shrink-0" />
                     <div className="flex-1 max-w-[60px]">ID</div>
                     <div className="flex-1 max-w-[280px]">PROJECT TITLE</div>
                     <div className="flex-1 max-w-[200px]">CATEGORY</div>
@@ -1008,23 +1184,37 @@ export default function AdminPage() {
                       .map((p, index) => (
                       <div 
                         key={`admin-proj-${p.id || index}-${index}`}
-                        className="flex items-center justify-between px-5 py-4 border-b border-white/[0.03] text-xs hover:bg-white/[0.02] transition-colors group"
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDragEnd={() => setDraggedIndex(null)}
+                        onDrop={(e) => handleDrop(e, index)}
+                        className={`flex items-center justify-between px-5 py-4 border-b border-white/[0.03] text-xs hover:bg-white/[0.02] transition-all duration-200 group ${
+                          draggedIndex === index 
+                            ? "opacity-35 bg-white/[0.03] border-dashed border-[#c5a880]/30 scale-[0.985]" 
+                            : "cursor-grab active:cursor-grabbing"
+                        }`}
                       >
-                        <div className="flex-1 max-w-[60px] font-mono text-white/30 font-bold">{p.id}</div>
+                        <div className="w-8 shrink-0 text-white/10 group-hover:text-[#c5a880]/50 transition-colors flex items-center justify-start cursor-grab active:cursor-grabbing">
+                          <GripVertical className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 max-w-[60px] font-mono text-white/30 font-bold">{String(index + 1).padStart(2, '0')}</div>
                         
-                        {/* Clickable Title to Launch Project Demo / Image */}
+                        {/* Clickable Title to Launch Project Demo / Image / Video */}
                         <div 
                           onClick={() => {
-                            const targetUrl = p.details?.liveUrl || p.image;
-                            if (targetUrl) window.open(targetUrl, "_blank");
+                            const targetUrl = p.details?.liveUrl || p.details?.videoUrl || p.image;
+                            if (targetUrl && (targetUrl.startsWith("https://") || targetUrl.startsWith("http://"))) window.open(targetUrl, "_blank");
                           }}
                           className="flex-1 max-w-[280px] font-semibold text-white uppercase tracking-wider hover:text-[#c5a880] cursor-pointer flex items-center gap-2 transition-all"
                           title="Click to launch project demo"
                         >
                           <span className="truncate">{p.title}</span>
-                          {p.details?.liveUrl && (
+                          {p.details?.liveUrl ? (
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" title="Live Site Demo Ready" />
-                          )}
+                          ) : p.details?.videoUrl ? (
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#c5a880] animate-pulse shrink-0" title="Showcase Video Ready" />
+                          ) : null}
                         </div>
 
                         <div className="flex-1 max-w-[200px] text-white/60 truncate">{p.category}</div>
@@ -1034,11 +1224,11 @@ export default function AdminPage() {
                         <div className="w-[120px] flex items-center justify-end gap-2">
                           <button
                             onClick={() => {
-                              const targetUrl = p.details?.liveUrl || p.image;
-                              if (targetUrl) window.open(targetUrl, "_blank");
+                              const targetUrl = p.details?.liveUrl || p.details?.videoUrl || p.image;
+                              if (targetUrl && (targetUrl.startsWith("https://") || targetUrl.startsWith("http://"))) window.open(targetUrl, "_blank");
                             }}
                             className="p-1.5 border border-white/5 hover:border-emerald-500/40 rounded text-white/50 hover:text-emerald-400 hover:bg-emerald-950/20 transition-all cursor-pointer"
-                            title="Launch Live Preview / Open Project"
+                            title="Launch Live Preview / Open Video"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
@@ -1051,10 +1241,12 @@ export default function AdminPage() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`Remove project [${p.title}] permanently?`)) {
-                                deleteProject(p.id);
-                                addHudLog(`Purged project: "${p.title}"`, "warning");
-                              }
+                              setDeleteConfirm({
+                                isOpen: true,
+                                type: "project",
+                                id: p.id,
+                                title: p.title
+                              });
                             }}
                             className="p-1.5 border border-white/5 hover:border-red-500/35 rounded text-white/50 hover:text-red-400 hover:bg-red-950/10 transition-all cursor-pointer"
                             title="Delete project"
@@ -1199,10 +1391,12 @@ export default function AdminPage() {
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(`Remove review by [${t.author}] permanently?`)) {
-                                deleteTestimonial(t.id);
-                                addHudLog(`Purged testimonial: ${t.author}`, "warning");
-                              }
+                              setDeleteConfirm({
+                                isOpen: true,
+                                type: "testimonial",
+                                id: t.id,
+                                title: t.author
+                              });
                             }}
                             className="p-1.5 border border-white/5 hover:border-red-500/35 rounded text-white/50 hover:text-red-400 hover:bg-red-950/10 transition-all cursor-pointer"
                             title="Delete Review"
@@ -1327,10 +1521,12 @@ export default function AdminPage() {
                             ))}
                             <button
                               onClick={() => {
-                                if (confirm(`Remove inquiry proposal from [${p.fullName}] permanently?`)) {
-                                  deleteProposal(p.id);
-                                  addHudLog(`Deleted CRM proposal from ${p.fullName}`, "warning");
-                                }
+                                setDeleteConfirm({
+                                  isOpen: true,
+                                  type: "proposal",
+                                  id: p.id,
+                                  title: p.fullName
+                                });
                               }}
                               className="p-1 border border-white/5 hover:border-red-500/35 rounded text-white/50 hover:text-red-400 hover:bg-red-950/10 transition-all cursor-pointer"
                               title="Delete Lead"
@@ -1519,14 +1715,101 @@ export default function AdminPage() {
                   />
                 </div>
 
+                {/* Project Brief Specifications (Client, Timeline, Role, Engine) */}
+                <div className="bg-[#121217] border border-[#c5a880]/30 p-4.5 rounded-xl flex flex-col gap-4">
+                  <span className="text-[10px] font-mono text-[#c5a880] tracking-widest uppercase font-bold flex items-center gap-2">
+                    <User className="w-3.5 h-3.5" />
+                    PROJECT BRIEF SPECIFICATIONS (CLIENT & COMPANY DETAILS)
+                  </span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
+                        CLIENT / COMPANY NAME *
+                      </label>
+                      <input 
+                        type="text" 
+                        value={projForm.details?.client || ""} 
+                        onChange={(e) => setProjForm({
+                          ...projForm,
+                          details: {
+                            ...projForm.details!,
+                            client: e.target.value
+                          }
+                        })} 
+                        className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
+                        placeholder="e.g. Visionatrix Studio"
+                        required
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
+                        TIMELINE / DURATION
+                      </label>
+                      <input 
+                        type="text" 
+                        value={projForm.details?.timeline || ""} 
+                        onChange={(e) => setProjForm({
+                          ...projForm,
+                          details: {
+                            ...projForm.details!,
+                            timeline: e.target.value
+                          }
+                        })} 
+                        className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
+                        placeholder="e.g. 2026 or Q1 2026"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
+                        AGENCY ROLE / EXPERTISE
+                      </label>
+                      <input 
+                        type="text" 
+                        value={projForm.details?.role || ""} 
+                        onChange={(e) => setProjForm({
+                          ...projForm,
+                          details: {
+                            ...projForm.details!,
+                            role: e.target.value
+                          }
+                        })} 
+                        className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
+                        placeholder="e.g. Digital Production"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
+                        ENGINE & TECHNOLOGY STACK
+                      </label>
+                      <input 
+                        type="text" 
+                        value={projForm.details?.engine || ""} 
+                        onChange={(e) => setProjForm({
+                          ...projForm,
+                          details: {
+                            ...projForm.details!,
+                            engine: e.target.value
+                          }
+                        })} 
+                        className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
+                        placeholder="e.g. Realtime WebGL / Octane"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* 2. Unified Cover Media Asset Uploader */}
                 <div className="bg-[#121217] border border-white/10 p-4.5 rounded-xl flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-mono text-[#c5a880] tracking-widest uppercase font-bold flex items-center gap-2">
                       <Upload className="w-3.5 h-3.5 text-[#c5a880]" />
-                      COVER MEDIA ASSET (IMAGE / VIDEO)
+                      SHOWCASE MEDIA ASSET (VIDEO / IMAGE)
                     </label>
-                    {projForm.image && (
+                    {(projForm.details?.videoUrl || projForm.image) && (
                       <span className="text-[8px] font-mono text-emerald-400 flex items-center gap-1 bg-emerald-950/30 px-2 py-0.5 rounded border border-emerald-800/40">
                         <Check className="w-2.5 h-2.5" /> ASSET READY
                       </span>
@@ -1534,31 +1817,14 @@ export default function AdminPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Image / Video File Upload Button */}
-                    <label className="flex items-center justify-center gap-2 py-3 px-4 bg-[#c5a880]/15 border border-[#c5a880]/30 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white rounded-lg text-xs font-mono font-bold transition-all duration-200 cursor-pointer active:scale-95">
-                      {isUploadingImage ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Upload className="w-4 h-4" />
-                      )}
-                      <span>{isUploadingImage ? "UPLOADING FILE..." : "CHOOSE IMAGE FILE"}</span>
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={(e) => handleFileUpload(e, "image")}
-                        disabled={isUploadingImage}
-                      />
-                    </label>
-
-                    {/* Video File Upload Button */}
-                    <label className="flex items-center justify-center gap-2 py-3 px-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white rounded-lg text-xs font-mono font-bold transition-all duration-200 cursor-pointer active:scale-95">
+                    {/* Primary Video File Upload Button */}
+                    <label className="flex items-center justify-center gap-2 py-3 px-4 bg-[#c5a880]/15 border border-[#c5a880]/40 hover:bg-[#c5a880]/25 hover:border-[#c5a880]/60 text-[#c5a880] hover:text-white rounded-lg text-xs font-mono font-bold transition-all duration-200 cursor-pointer active:scale-95">
                       {isUploadingVideo ? (
                         <RefreshCw className="w-4 h-4 animate-spin text-[#c5a880]" />
                       ) : (
                         <Upload className="w-4 h-4" />
                       )}
-                      <span>{isUploadingVideo ? "UPLOADING VIDEO..." : "CHOOSE MP4 VIDEO"}</span>
+                      <span>{isUploadingVideo ? "UPLOADING VIDEO..." : "CHOOSE & UPLOAD VIDEO FILE (MP4 / WEBM)"}</span>
                       <input 
                         type="file" 
                         accept="video/*" 
@@ -1567,41 +1833,111 @@ export default function AdminPage() {
                         disabled={isUploadingVideo}
                       />
                     </label>
+
+                    {/* Optional Image Upload Button */}
+                    <label className="flex items-center justify-center gap-2 py-3 px-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white/70 hover:text-white rounded-lg text-xs font-mono font-bold transition-all duration-200 cursor-pointer active:scale-95">
+                      {isUploadingImage ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Upload className="w-4 h-4" />
+                      )}
+                      <span>{isUploadingImage ? "UPLOADING IMAGE..." : "CHOOSE IMAGE FILE (OPTIONAL)"}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => handleFileUpload(e, "image")}
+                        disabled={isUploadingImage}
+                      />
+                    </label>
                   </div>
 
-                  {/* Direct Media Link Input */}
+                  {/* Sleek Animated Upload Progress Bar Component */}
+                  {uploadProgress && uploadProgress.isUploading && (
+                    <div className="bg-[#151520] border border-[#c5a880]/50 p-3.5 rounded-xl flex flex-col gap-2 shadow-[0_0_25px_rgba(197,168,128,0.2)] animate-in fade-in duration-200 font-mono">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <div className="flex items-center gap-2 text-[#c5a880] font-bold">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0 text-[#c5a880]" />
+                          <span className="truncate max-w-[240px]">UPLOADING: {uploadProgress.fileName}</span>
+                        </div>
+                        <div className="flex items-center gap-2 font-bold text-white">
+                          <span>{uploadProgress.loadedMB} / {uploadProgress.totalMB} MB</span>
+                          <span className="bg-[#c5a880] text-black px-1.5 py-0.2 rounded text-[9px] font-extrabold">
+                            {uploadProgress.percentage}%
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Progress Outer Bar */}
+                      <div className="w-full h-2.5 bg-black rounded-full overflow-hidden border border-white/10 p-0.5 relative">
+                        {/* Progress Inner Bar with Glowing Gradient */}
+                        <div 
+                          className="h-full bg-gradient-to-r from-[#c5a880] via-emerald-400 to-[#c5a880] rounded-full transition-all duration-150 ease-out relative shadow-[0_0_12px_rgba(197,168,128,0.8)]"
+                          style={{ width: `${uploadProgress.percentage}%` }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between text-[8.5px] text-white/50">
+                        <span>SUPABASE STORAGE DUAL-CHANNEL STREAM</span>
+                        <span className="text-[#c5a880] font-bold">{uploadProgress.percentage === 100 ? "FINISHING UP..." : "TRANSFERRING DATA CHUNKS..."}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Direct Media Link Input (Optional) */}
                   <input 
                     type="text" 
-                    value={projForm.image || ""} 
-                    onChange={(e) => setProjForm({ ...projForm, image: e.target.value })} 
+                    value={projForm.details?.videoUrl || projForm.image || ""} 
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (isVideoUrl(val)) {
+                        setProjForm({ ...projForm, image: val, details: { ...projForm.details!, videoUrl: val } });
+                      } else {
+                        setProjForm({ ...projForm, image: val });
+                      }
+                    }} 
                     className="w-full bg-black/50 border border-white/10 rounded-lg py-2 px-3 focus:border-[#c5a880] outline-none text-xs text-white/70 font-mono"
-                    placeholder="Or paste media URL (e.g. /work_aura_configurator.png or https://...)"
-                    required
+                    placeholder="Or paste direct video/media URL (MP4, YouTube, Vimeo, or image URL)"
                   />
 
                   {/* Instant Media Live Preview */}
                   <div className="border border-white/10 bg-black rounded-lg h-36 flex items-center justify-center overflow-hidden relative">
-                    {projForm.details?.videoUrl ? (
-                      <video 
-                        src={projForm.details.videoUrl} 
-                        className="w-full h-full object-cover" 
-                        autoPlay 
-                        loop 
-                        muted 
-                        playsInline 
-                      />
-                    ) : projForm.image ? (
-                      <img 
-                        src={projForm.image} 
-                        alt="Cover Preview" 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
-                        }}
-                      />
-                    ) : (
-                      <span className="text-[10px] font-mono text-white/20">NO MEDIA SELECTED YET</span>
-                    )}
+                    {(() => {
+                      const currentVideo = projForm.details?.videoUrl || (isVideoUrl(projForm.image) ? projForm.image : null);
+                      if (currentVideo) {
+                        const isEmbed = currentVideo.includes("vimeo.com") || currentVideo.includes("youtube.com") || currentVideo.includes("youtu.be");
+                        return isEmbed ? (
+                          <iframe
+                            src={getVideoEmbedUrl(currentVideo)}
+                            className="w-full h-full border-0 aspect-video scale-[1.02] pointer-events-none"
+                            allow="autoplay; fullscreen"
+                            title="Media Preview"
+                          />
+                        ) : (
+                          <video 
+                            src={currentVideo} 
+                            className="w-full h-full object-cover" 
+                            autoPlay 
+                            loop 
+                            muted 
+                            playsInline 
+                          />
+                        );
+                      }
+                      if (projForm.image) {
+                        return (
+                          <img 
+                            src={projForm.image} 
+                            alt="Cover Preview" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop";
+                            }}
+                          />
+                        );
+                      }
+                      return <span className="text-[10px] font-mono text-white/20">NO MEDIA ASSET SELECTED YET</span>;
+                    })()}
                   </div>
                 </div>
 
@@ -2029,22 +2365,37 @@ export default function AdminPage() {
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
+
+                            const fileMB = (file.size / (1024 * 1024)).toFixed(1);
                             setIsQuickUploadingMedia(true);
+                            setUploadProgress({
+                              isUploading: true,
+                              percentage: 0,
+                              fileName: `Quick Upload: ${file.name}`,
+                              loadedMB: "0.0",
+                              totalMB: fileMB,
+                              type: file.type.startsWith("video/") ? "video" : "image"
+                            });
+
                             try {
-                              const fileExt = file.name.split(".").pop();
-                              const fileName = `${Date.now()}_quick_${file.name.replace(/[^a-zA-Z0-9]/g, "_")}.${fileExt}`;
-                              const filePath = `uploads/${fileName}`;
-                              const { error: upErr } = await supabase.storage.from("portfolio").upload(filePath, file);
-                              if (upErr) throw upErr;
-                              const { data } = supabase.storage.from("portfolio").getPublicUrl(filePath);
-                              if (data?.publicUrl) {
-                                setQuickMediaUrl(data.publicUrl);
-                                addHudLog(`Quick uploaded media: ${file.name}`, "success");
-                              }
+                              const publicUrl = await uploadFileWithProgress(
+                                file,
+                                file.type.startsWith("video/") ? "video" : "image",
+                                (percent, loadedMB, totalMB) => {
+                                  setUploadProgress(prev => prev ? { ...prev, percentage: percent, loadedMB, totalMB } : null);
+                                }
+                              );
+                              setQuickMediaUrl(publicUrl);
+                              addHudLog(`Quick uploaded media to R2 (${fileMB} MB): ${file.name}`, "success");
                             } catch (err: any) {
+                              console.error("Quick upload error:", err);
                               alert("Upload failed: " + err.message);
+                              addHudLog(`Quick upload failed: ${err.message}`, "error");
                             } finally {
                               setIsQuickUploadingMedia(false);
+                              setTimeout(() => {
+                                setUploadProgress(null);
+                              }, 1000);
                             }
                           }}
                           className="hidden"
@@ -2096,6 +2447,96 @@ export default function AdminPage() {
                 </button>
 
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Global Floating Uploader Progress Card (Fixed Bottom-Right Overlay) */}
+      <AnimatePresence>
+        {uploadProgress && uploadProgress.isUploading && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-6 right-6 z-[9999] w-80 bg-black/90 backdrop-blur-md border border-[#c5a880]/50 p-4 rounded-xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] flex flex-col gap-2.5 font-mono text-white select-none"
+          >
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <div className="flex items-center gap-2">
+                <RefreshCw className="w-3.5 h-3.5 text-[#c5a880] animate-spin" />
+                <span className="text-[10px] font-bold text-[#c5a880] tracking-widest uppercase">
+                  R2 OBJECT UPLOAD
+                </span>
+              </div>
+              <span className="text-[9px] bg-[#c5a880]/20 text-[#c5a880] px-1.5 py-0.5 rounded font-extrabold">
+                {uploadProgress.percentage}%
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <div className="text-[10px] text-white/80 truncate font-semibold" title={uploadProgress.fileName}>
+                {uploadProgress.fileName}
+              </div>
+              <div className="text-[9px] text-white/40 flex items-center justify-between">
+                <span>{uploadProgress.loadedMB} MB of {uploadProgress.totalMB} MB</span>
+                <span>{uploadProgress.percentage === 100 ? "FINISHING UP..." : "TRANSFERRING CHUNKS..."}</span>
+              </div>
+            </div>
+
+            {/* Glowing Progress bar */}
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden relative">
+              <div
+                className="h-full bg-gradient-to-r from-[#c5a880] via-emerald-400 to-[#c5a880] rounded-full transition-all duration-150 ease-out shadow-[0_0_8px_rgba(197,168,128,0.7)]"
+                style={{ width: `${uploadProgress.percentage}%` }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Delete Confirmation Modal Overlay */}
+      <AnimatePresence>
+        {deleteConfirm.isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md font-sans select-none">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-[#0b0b0f] border border-red-500/30 rounded-xl w-full max-w-sm overflow-hidden shadow-[0_20px_50px_rgba(239,68,68,0.15)] flex flex-col p-6 text-center"
+            >
+              {/* Alert icon */}
+              <div className="w-12 h-12 rounded-full bg-red-950/40 border border-red-500/20 flex items-center justify-center mx-auto mb-4 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                <Trash className="w-5 h-5 animate-pulse" />
+              </div>
+
+              {/* Title */}
+              <h3 className="font-outfit text-sm font-bold tracking-widest text-white uppercase mb-2">
+                ARE YOU ABSOLUTELY SURE?
+              </h3>
+
+              {/* Description */}
+              <p className="text-xs text-white/60 leading-relaxed font-light mb-6">
+                This action will permanently delete <span className="text-[#c5a880] font-bold">{deleteConfirm.title}</span>. All stored media and references will be lost forever.
+              </p>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirm({ isOpen: false, type: "project", id: "", title: "" })}
+                  className="flex-1 py-2.5 border border-white/10 hover:border-white/20 text-white/50 hover:text-white rounded-lg text-xs font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="button"
+                  onClick={executeDeleteAction}
+                  className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono font-bold tracking-wider uppercase transition-colors cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(220,38,38,0.35)]"
+                >
+                  CONFIRM & DELETE
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

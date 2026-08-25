@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { Film, Sparkles, Box, Layers, Cpu, Smartphone, ScanFace, Eye, Code, Bot, Camera, PenTool, Home, MousePointerClick, Activity } from "lucide-react";
 import { useAdmin } from "@/context/AdminContext";
+import { renderServicesCanvasAnimation } from "./services-canvas";
 
 interface ServiceItem {
   id: string;
@@ -67,10 +68,6 @@ function TextScramble({ text, trigger }: TextScrambleProps) {
 
   return <span>{displayText}</span>;
 }
-
-// -------------------------------------------------------------
-// Component: CanvasSimulator
-import { renderServicesCanvasAnimation } from "./services-canvas";
 
 // -------------------------------------------------------------
 // Component: CanvasSimulator

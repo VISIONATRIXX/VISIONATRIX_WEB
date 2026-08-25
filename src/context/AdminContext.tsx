@@ -12,8 +12,7 @@ import {
 import { 
   initialProjects, 
   initialServices, 
-  initialTestimonials, 
-  initialProposals 
+  initialTestimonials 
 } from "@/data/initialAdminData";
 
 // Re-export types so existing imports from "@/context/AdminContext" continue working seamlessly!
@@ -22,19 +21,43 @@ export type { Project, ServiceItem, Testimonial, Proposal, AdminContextType };
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 // Helper to safely format error objects into strings for clean console output
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const formatErrorMsg = (err: any): string => {
+const formatErrorMsg = (err: unknown): string => {
   if (!err) return "Unknown error";
   if (typeof err === "string") return err;
   if (err instanceof Error) return err.message;
-  return err.message || err.details || JSON.stringify(err);
+  if (typeof err === "object" && "message" in err) {
+    return String((err as { message: unknown }).message);
+  }
+  return JSON.stringify(err);
 };
 
 // -------------------------------------------------------------
 // Database Mappers
 // -------------------------------------------------------------
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapProjectFromDb = (dbProj: any): Project => ({
+interface DbProjectRow {
+  id: string;
+  title: string;
+  category: string;
+  categories?: string[];
+  subtitle?: string;
+  year?: string;
+  image?: string;
+  tagline?: string;
+  description?: string;
+  bg_gradient?: string;
+  details?: {
+    client?: string;
+    timeline?: string;
+    role?: string;
+    engine?: string;
+    videoUrl?: string | null;
+    images?: string[];
+    liveUrl?: string | null;
+  };
+  metrics?: { label: string; value: string }[];
+}
+
+const mapProjectFromDb = (dbProj: DbProjectRow): Project => ({
   id: dbProj.id,
   title: dbProj.title,
   category: dbProj.category,
@@ -57,32 +80,49 @@ const mapProjectFromDb = (dbProj: any): Project => ({
   metrics: dbProj.metrics || []
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapProjectToDb = (proj: any) => ({
+const mapProjectToDb = (proj: Project) => ({
   title: proj.title,
   category: proj.category,
   categories: proj.categories || [],
-  subtitle: proj.subtitle,
-  year: proj.year,
-  image: proj.image,
-  tagline: proj.tagline,
-  description: proj.description,
-  bg_gradient: proj.bgGradient,
-  details: proj.details,
+  subtitle: proj.subtitle || "",
+  year: proj.year || "2026",
+  image: proj.image || "",
+  tagline: proj.tagline || "",
+  description: proj.description || "",
+  bg_gradient: proj.bgGradient || "from-slate-900 via-sky-950 to-[#050507]",
+  details: proj.details || {},
   metrics: proj.metrics
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapServiceFromDb = (dbService: any): ServiceItem => ({
+const mergeWithInitialProjects = (dbProjects: Project[]): Project[] => {
+  if (dbProjects && dbProjects.length > 0) {
+    return dbProjects;
+  }
+  return initialProjects;
+};
+
+interface DbServiceRow {
+  id: string;
+  title: string;
+  description: string;
+  icon_name?: string;
+  hud_title?: string;
+  hud_items?: { label: string; value: string }[];
+  bullets?: string[];
+  tools?: string[];
+  canvas_type?: string;
+}
+
+const mapServiceFromDb = (dbService: DbServiceRow): ServiceItem => ({
   id: dbService.id,
   title: dbService.title,
   description: dbService.description,
-  iconName: dbService.icon_name,
-  hudTitle: dbService.hud_title,
+  iconName: dbService.icon_name || "Sparkles",
+  hudTitle: dbService.hud_title || "",
   hudItems: dbService.hud_items || [],
   bullets: dbService.bullets || [],
   tools: dbService.tools || [],
-  canvasType: dbService.canvas_type
+  canvasType: dbService.canvas_type || "webdev"
 });
 
 const mapServiceToDb = (service: ServiceItem) => ({
@@ -91,38 +131,58 @@ const mapServiceToDb = (service: ServiceItem) => ({
   icon_name: service.iconName,
   hud_title: service.hudTitle,
   hud_items: service.hudItems,
-  bullets: service.bullets || [],
-  tools: service.tools || [],
+  bullets: service.bullets,
+  tools: service.tools,
   canvas_type: service.canvasType
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapTestimonialFromDb = (dbTest: any): Testimonial => ({
+interface DbTestimonialRow {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+  rating: number;
+  is_active?: boolean;
+}
+
+const mapTestimonialFromDb = (dbTest: DbTestimonialRow): Testimonial => ({
   id: dbTest.id,
   quote: dbTest.quote,
   author: dbTest.author,
   role: dbTest.role,
   company: dbTest.company,
   rating: dbTest.rating,
-  isActive: dbTest.is_active
+  isActive: dbTest.is_active ?? true
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapTestimonialToDb = (test: any) => ({
+const mapTestimonialToDb = (test: Testimonial) => ({
   quote: test.quote,
   author: test.author,
   role: test.role,
   company: test.company,
   rating: test.rating,
-  is_active: test.isActive
+  is_active: test.isActive ?? true
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapProposalFromDb = (dbProp: any): Proposal => ({
+interface DbProposalRow {
+  id: string;
+  full_name: string;
+  email: string;
+  organization: string;
+  service: string;
+  details?: string;
+  budget: string;
+  file_name?: string | null;
+  timestamp: string;
+  status: Proposal["status"];
+}
+
+const mapProposalFromDb = (dbProp: DbProposalRow): Proposal => ({
   id: dbProp.id,
   fullName: dbProp.full_name,
   email: dbProp.email,
-  organization: dbProp.organization || "",
+  organization: dbProp.organization,
   service: dbProp.service,
   details: dbProp.details || "",
   budget: dbProp.budget,
@@ -131,8 +191,7 @@ const mapProposalFromDb = (dbProp: any): Proposal => ({
   status: dbProp.status
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapProposalToDb = (prop: any) => ({
+const mapProposalToDb = (prop: Omit<Proposal, "id" | "timestamp" | "status"> & { status?: Proposal["status"] }) => ({
   full_name: prop.fullName,
   email: prop.email,
   organization: prop.organization || null,
@@ -150,61 +209,24 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [services, setServices] = useState<ServiceItem[]>(initialServices);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
-  const [proposals, setProposals] = useState<Proposal[]>(initialProposals);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Hydrate states from Supabase
+  // Hydrate public data from Supabase (read-only via anon key — safe with locked RLS)
   useEffect(() => {
-    async function fetchData() {
+    async function fetchPublicData() {
       try {
-        const [projRes, servRes, testRes, propRes] = await Promise.all([
+        const [projRes, servRes, testRes] = await Promise.all([
           supabase.from("projects").select("*").order("id", { ascending: true }),
           supabase.from("services").select("*").order("id", { ascending: true }),
-          supabase.from("testimonials").select("*").order("id", { ascending: true }),
-          supabase.from("proposals").select("*").order("timestamp", { ascending: false })
+          supabase.from("testimonials").select("*").order("id", { ascending: true })
         ]);
-
-        const errors: string[] = [];
-        if (projRes.error) errors.push(`projects: ${formatErrorMsg(projRes.error)}`);
-        if (servRes.error) errors.push(`services: ${formatErrorMsg(servRes.error)}`);
-        if (testRes.error) errors.push(`testimonials: ${formatErrorMsg(testRes.error)}`);
-        if (propRes.error) errors.push(`proposals: ${formatErrorMsg(propRes.error)}`);
-
-        if (errors.length > 0) {
-          console.warn("Supabase hydration notice (using fallback local data):", errors.join(" | "));
-        }
 
         if (projRes.data && projRes.data.length > 0) {
           const mappedProjs = projRes.data.map(mapProjectFromDb);
-          
-          // Ensure all default initial live projects exist in the list
-          initialProjects.forEach((initP) => {
-            const hasP = mappedProjs.some(
-              p => p.title.toUpperCase() === initP.title.toUpperCase() || 
-                   (initP.details?.liveUrl && p.details?.liveUrl === initP.details.liveUrl)
-            );
-            if (!hasP) {
-              mappedProjs.push(initP);
-            }
-          });
-
-          // Deduplicate by title & re-index unique IDs cleanly
-          const uniqueMap = new Map<string, Project>();
-          mappedProjs.forEach(p => {
-            const key = p.title.toUpperCase().trim();
-            if (!uniqueMap.has(key)) {
-              uniqueMap.set(key, p);
-            }
-          });
-
-          const cleanProjs = Array.from(uniqueMap.values()).map((p, idx) => ({
-            ...p,
-            id: (idx + 1).toString().padStart(2, '0')
-          }));
-
-          setProjects(cleanProjs);
+          setProjects(mergeWithInitialProjects(mappedProjs));
         } else {
-          setProjects(initialProjects);
+          setProjects(mergeWithInitialProjects([]));
         }
         if (servRes.data && servRes.data.length > 0) {
           setServices(servRes.data.map(mapServiceFromDb));
@@ -212,22 +234,34 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         if (testRes.data && testRes.data.length > 0) {
           setTestimonials(testRes.data.map(mapTestimonialFromDb));
         }
-        if (propRes.data && propRes.data.length > 0) {
-          const mappedProps = propRes.data.map(mapProposalFromDb).filter(p => !p.organization?.toLowerCase().includes("aetheria"));
-          setProposals(mappedProps);
-        } else {
-          setProposals([]);
-        }
       } catch (error) {
-        console.warn("Error hydrating data from Supabase (using fallback local data):", formatErrorMsg(error));
+        console.warn("Error hydrating public data from Supabase (using fallback local data):", formatErrorMsg(error));
       } finally {
         setIsLoaded(true);
       }
     }
-    fetchData();
+
+    // Fetch proposals via server API (admin-only, requires session cookie)
+    async function fetchProposals() {
+      try {
+        const res = await fetch("/api/admin/proposals");
+        if (res.ok) {
+          const { data } = await res.json();
+          if (data && data.length > 0) {
+            setProposals(data.map(mapProposalFromDb));
+          }
+        }
+        // If 401, user is not admin — proposals stays empty (expected for public visitors)
+      } catch {
+        // Silently fail — proposals not visible to public
+      }
+    }
+
+    fetchPublicData();
+    fetchProposals();
   }, []);
 
-  // Supabase Realtime subscriptions for live synchronization across all browser tabs and clients
+  // Supabase Realtime subscriptions for live synchronization (public read-only tables)
   useEffect(() => {
     const channel = supabase
       .channel("db-realtime-sync")
@@ -241,7 +275,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               .select("*")
               .order("id", { ascending: true });
             if (error) throw error;
-            setProjects((data || []).map(mapProjectFromDb));
+            const mapped = (data || []).map(mapProjectFromDb);
+            setProjects(mergeWithInitialProjects(mapped));
           } catch (err) {
             console.error("Realtime projects refresh failed:", formatErrorMsg(err));
           }
@@ -252,16 +287,16 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         { event: "*", schema: "public", table: "services" },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            const mapped = mapServiceFromDb(payload.new);
+            const mapped = mapServiceFromDb(payload.new as DbServiceRow);
             setServices(prev => {
               if (prev.some(s => s.id === mapped.id)) return prev;
               return [...prev, mapped];
             });
           } else if (payload.eventType === "UPDATE") {
-            const mapped = mapServiceFromDb(payload.new);
+            const mapped = mapServiceFromDb(payload.new as DbServiceRow);
             setServices(prev => prev.map(s => (s.id === mapped.id ? mapped : s)));
           } else if (payload.eventType === "DELETE") {
-            const oldId = payload.old.id;
+            const oldId = (payload.old as { id: string }).id;
             setServices(prev => prev.filter(s => s.id !== oldId));
           }
         }
@@ -271,36 +306,17 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         { event: "*", schema: "public", table: "testimonials" },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            const mapped = mapTestimonialFromDb(payload.new);
+            const mapped = mapTestimonialFromDb(payload.new as DbTestimonialRow);
             setTestimonials(prev => {
               if (prev.some(t => t.id === mapped.id)) return prev;
               return [...prev, mapped];
             });
           } else if (payload.eventType === "UPDATE") {
-            const mapped = mapTestimonialFromDb(payload.new);
+            const mapped = mapTestimonialFromDb(payload.new as DbTestimonialRow);
             setTestimonials(prev => prev.map(t => (t.id === mapped.id ? mapped : t)));
           } else if (payload.eventType === "DELETE") {
-            const oldId = payload.old.id;
+            const oldId = (payload.old as { id: string }).id;
             setTestimonials(prev => prev.filter(t => t.id !== oldId));
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "proposals" },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            const mapped = mapProposalFromDb(payload.new);
-            setProposals(prev => {
-              if (prev.some(p => p.id === mapped.id)) return prev;
-              return [mapped, ...prev];
-            });
-          } else if (payload.eventType === "UPDATE") {
-            const mapped = mapProposalFromDb(payload.new);
-            setProposals(prev => prev.map(p => (p.id === mapped.id ? mapped : p)));
-          } else if (payload.eventType === "DELETE") {
-            const oldId = payload.old.id;
-            setProposals(prev => prev.filter(p => p.id !== oldId));
           }
         }
       )
@@ -312,199 +328,214 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // -------------------------------------------------------------
-  // Projects CRUD
+  // Projects CRUD — via server API routes (service role key)
   // -------------------------------------------------------------
   const addProject = async (p: Omit<Project, "id">) => {
+    let nextIdNum = 1;
+    if (projects.length > 0) {
+      const ids = projects
+        .map(proj => parseInt(proj.id, 10))
+        .filter(num => !isNaN(num));
+      if (ids.length > 0) {
+        nextIdNum = Math.max(...ids) + 1;
+      }
+    }
+    const nextId = String(nextIdNum).padStart(2, "0");
+
+    const pWithSeqSubtitle = { ...p };
+    if (!p.subtitle || p.subtitle === `${p.title} Spec` || p.subtitle === `${p.title.toUpperCase()} Spec`) {
+      pWithSeqSubtitle.subtitle = `${nextId} / ${p.title}`;
+    }
+
+    const newProj: Project = {
+      ...pWithSeqSubtitle,
+      id: nextId
+    };
+
+    setProjects(prev => [...prev, newProj]);
+
     try {
-      // Calculate the next sequential numeric ID based on the highest integer ID in state
-      let nextIdNum = 1;
-      if (projects.length > 0) {
-        const ids = projects
-          .map(proj => parseInt(proj.id, 10))
-          .filter(num => !isNaN(num));
-        if (ids.length > 0) {
-          nextIdNum = Math.max(...ids) + 1;
-        }
-      }
-      const nextId = String(nextIdNum).padStart(2, "0");
-
-      // Auto-assign the formatted index to the subtitle if not specified
-      const pWithSeqSubtitle = { ...p };
-      if (!p.subtitle || p.subtitle === `${p.title} Spec` || p.subtitle === `${p.title.toUpperCase()} Spec`) {
-        pWithSeqSubtitle.subtitle = `${nextId} / ${p.title}`;
-      }
-
       const dbProj = {
-        ...mapProjectToDb(pWithSeqSubtitle),
+        ...mapProjectToDb(pWithSeqSubtitle as Project),
         id: nextId
       };
 
-      const { data, error } = await supabase
-        .from("projects")
-        .insert([dbProj])
-        .select();
+      const res = await fetch("/api/admin/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dbProj)
+      });
 
-      if (error) throw error;
-      if (data && data[0]) {
-        const newProj = mapProjectFromDb(data[0]);
-        setProjects(prev => [...prev, newProj]);
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to add project on server:", err);
       }
     } catch (error) {
-      console.error("Failed to add project to Supabase:", formatErrorMsg(error));
+      console.error("Failed to add project:", formatErrorMsg(error));
     }
   };
 
   const updateProject = async (id: string, p: Project) => {
+    setProjects(prev => prev.map(item => (item.id === id ? p : item)));
+
     try {
       const dbProj = mapProjectToDb(p);
-      const { error } = await supabase
-        .from("projects")
-        .update(dbProj)
-        .eq("id", id);
 
-      if (error) throw error;
-      setProjects(prev => prev.map(item => (item.id === id ? p : item)));
+      const res = await fetch("/api/admin/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...dbProj })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to update project on server:", err);
+      }
     } catch (error) {
-      console.error("Failed to update project in Supabase:", formatErrorMsg(error));
+      console.error("Failed to update project:", formatErrorMsg(error));
     }
   };
 
   const deleteProject = async (id: string) => {
+    // Optimistically remove from state immediately so UI updates instantly
+    setProjects(prev => prev.filter(item => item.id !== id));
+
     try {
-      // 1. Delete the targeted project row
-      const { error: deleteError } = await supabase
-        .from("projects")
-        .delete()
-        .eq("id", id);
+      const res = await fetch("/api/admin/projects", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
 
-      if (deleteError) throw deleteError;
-
-      // 2. Fetch all remaining projects to re-sequence them
-      const { data: remaining, error: fetchError } = await supabase
-        .from("projects")
-        .select("*");
-
-      if (fetchError) throw fetchError;
-
-      if (remaining && remaining.length > 0) {
-        // Sort remaining projects by their current ID translated to numeric values
-        const sorted = [...remaining].sort((a, b) => {
-          const numA = parseInt(a.id, 10);
-          const numB = parseInt(b.id, 10);
-          if (isNaN(numA) && isNaN(numB)) return a.title.localeCompare(b.title);
-          if (isNaN(numA)) return 1;
-          if (isNaN(numB)) return -1;
-          return numA - numB;
-        });
-
-        // 3. Sequential update of keys and subtitle indexes in Supabase
-        const updatePromises = sorted.map(async (dbProj, idx) => {
-          const newId = String(idx + 1).padStart(2, "0");
-          let updatedSubtitle = dbProj.subtitle || "";
-          
-          // Re-index subtitle if it matches "XX / Title" format
-          const match = updatedSubtitle.match(/^(\d+)\s*\/\s*(.*)$/);
-          if (match) {
-            updatedSubtitle = `${newId} / ${match[2]}`;
-          }
-
-          if (dbProj.id !== newId || dbProj.subtitle !== updatedSubtitle) {
-            await supabase
-              .from("projects")
-              .update({ id: newId, subtitle: updatedSubtitle })
-              .eq("id", dbProj.id);
-          }
-        });
-
-        await Promise.all(updatePromises);
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to delete project on server:", err);
       }
-
-      // 4. Re-fetch all sorted fresh entries to completely hydrate UI state
-      const { data: freshProjects, error: freshError } = await supabase
-        .from("projects")
-        .select("*")
-        .order("id", { ascending: true });
-
-      if (freshError) throw freshError;
-      setProjects((freshProjects || []).map(mapProjectFromDb));
     } catch (error) {
-      console.error("Failed to delete and re-sequence projects in Supabase:", formatErrorMsg(error));
+      console.error("Failed to delete project:", formatErrorMsg(error));
+    }
+  };
+
+  const reorderProjects = async (newOrder: Project[]) => {
+    try {
+      setProjects(newOrder);
+
+      const dbOnlyOrdered = newOrder.filter(p => 
+        !initialProjects.some(initP => initP.title.toUpperCase() === p.title.toUpperCase())
+      );
+
+      if (dbOnlyOrdered.length === 0) return;
+
+      const orderedIds = dbOnlyOrdered.map(p => p.id);
+
+      const { error: rpcError } = await supabase.rpc("reorder_projects", {
+        p_ids: orderedIds
+      });
+
+      if (rpcError) throw rpcError;
+    } catch (error) {
+      console.error("Failed to persist project reordering:", formatErrorMsg(error));
     }
   };
 
   // -------------------------------------------------------------
-  // Services CRUD
+  // Services CRUD — via server API route
   // -------------------------------------------------------------
   const updateService = async (id: string, s: ServiceItem) => {
     try {
       const dbService = mapServiceToDb(s);
-      const { error } = await supabase
-        .from("services")
-        .update(dbService)
-        .eq("id", id);
 
-      if (error) throw error;
+      const res = await fetch("/api/admin/services", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...dbService })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to update service");
+      }
+
       setServices(prev => prev.map(item => (item.id === id ? s : item)));
     } catch (error) {
-      console.error("Failed to update service in Supabase:", formatErrorMsg(error));
+      console.error("Failed to update service:", formatErrorMsg(error));
     }
   };
 
   // -------------------------------------------------------------
-  // Testimonials CRUD
+  // Testimonials CRUD — via server API route
   // -------------------------------------------------------------
   const addTestimonial = async (t: Omit<Testimonial, "id">) => {
     try {
-      const dbTest = mapTestimonialToDb(t);
-      const { data, error } = await supabase
-        .from("testimonials")
-        .insert([dbTest])
-        .select();
+      const dbTest = mapTestimonialToDb(t as Testimonial);
 
-      if (error) throw error;
-      if (data && data[0]) {
-        const newTest = mapTestimonialFromDb(data[0]);
+      const res = await fetch("/api/admin/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dbTest)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to add testimonial");
+      }
+
+      const { data } = await res.json();
+      if (data) {
+        const newTest = mapTestimonialFromDb(data);
         setTestimonials(prev => [...prev, newTest]);
       }
     } catch (error) {
-      console.error("Failed to add testimonial to Supabase:", formatErrorMsg(error));
+      console.error("Failed to add testimonial:", formatErrorMsg(error));
     }
   };
 
   const updateTestimonial = async (id: string, t: Testimonial) => {
     try {
       const dbTest = mapTestimonialToDb(t);
-      const { error } = await supabase
-        .from("testimonials")
-        .update(dbTest)
-        .eq("id", id);
 
-      if (error) throw error;
+      const res = await fetch("/api/admin/testimonials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...dbTest })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to update testimonial");
+      }
+
       setTestimonials(prev => prev.map(item => (item.id === id ? t : item)));
     } catch (error) {
-      console.error("Failed to update testimonial in Supabase:", formatErrorMsg(error));
+      console.error("Failed to update testimonial:", formatErrorMsg(error));
     }
   };
 
   const deleteTestimonial = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("testimonials")
-        .delete()
-        .eq("id", id);
+    setTestimonials(prev => prev.filter(item => item.id !== id));
 
-      if (error) throw error;
-      setTestimonials(prev => prev.filter(item => item.id !== id));
+    try {
+      const res = await fetch("/api/admin/testimonials", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to delete testimonial on server:", err);
+      }
     } catch (error) {
-      console.error("Failed to delete testimonial from Supabase:", formatErrorMsg(error));
+      console.error("Failed to delete testimonial:", formatErrorMsg(error));
     }
   };
 
   // -------------------------------------------------------------
-  // Proposals CRM CRUD
+  // Proposals CRM CRUD — via server API route
   // -------------------------------------------------------------
   const addProposal = async (p: Omit<Proposal, "id" | "timestamp" | "status"> & { fileName?: string | null }) => {
     try {
+      // Contact form submissions still use the anon key INSERT policy (public access)
       const dbProp = mapProposalToDb({
         ...p,
         status: "Pending"
@@ -520,35 +551,45 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setProposals(prev => [newProp, ...prev]);
       }
     } catch (error) {
-      console.error("Failed to add proposal to Supabase:", formatErrorMsg(error));
+      console.error("Failed to add proposal:", formatErrorMsg(error));
     }
   };
 
   const updateProposalStatus = async (id: string, status: Proposal["status"]) => {
-    try {
-      const { error } = await supabase
-        .from("proposals")
-        .update({ status })
-        .eq("id", id);
+    setProposals(prev => prev.map(item => (item.id === id ? { ...item, status } : item)));
 
-      if (error) throw error;
-      setProposals(prev => prev.map(item => (item.id === id ? { ...item, status } : item)));
+    try {
+      const res = await fetch("/api/admin/proposals", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to update proposal status on server:", err);
+      }
     } catch (error) {
-      console.error("Failed to update proposal status in Supabase:", formatErrorMsg(error));
+      console.error("Failed to update proposal status:", formatErrorMsg(error));
     }
   };
 
   const deleteProposal = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("proposals")
-        .delete()
-        .eq("id", id);
+    setProposals(prev => prev.filter(item => item.id !== id));
 
-      if (error) throw error;
-      setProposals(prev => prev.filter(item => item.id !== id));
+    try {
+      const res = await fetch("/api/admin/proposals", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Failed to delete proposal on server:", err);
+      }
     } catch (error) {
-      console.error("Failed to delete proposal from Supabase:", formatErrorMsg(error));
+      console.error("Failed to delete proposal:", formatErrorMsg(error));
     }
   };
 
@@ -563,6 +604,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         addProject,
         updateProject,
         deleteProject,
+        reorderProjects,
         updateService,
         addTestimonial,
         updateTestimonial,
