@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob: https:",
-              "frame-src 'self' https://player.vimeo.com https://www.youtube.com",
+              "frame-src 'self' https: http:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.r2.cloudflarestorage.com https://*.r2.dev",
               "object-src 'none'",
               "base-uri 'self'"

@@ -376,10 +376,11 @@ export default function SafariSandboxModal({
                           return (
                             <iframe
                               key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                              src={`/api/proxy?url=${encodeURIComponent(targetLiveUrl)}`}
+                              src={targetLiveUrl}
                               title={`${selectedProject.title} Apple Safari Sandbox`}
                               className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              referrerPolicy="no-referrer-when-downgrade"
                             />
                           );
                         })()}
