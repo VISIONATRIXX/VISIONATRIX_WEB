@@ -201,7 +201,7 @@ const mapProposalToDb = (prop: Omit<Proposal, "id" | "timestamp" | "status"> & {
 // Provider
 // -------------------------------------------------------------
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [services, setServices] = useState<ServiceItem[]>(initialServices);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
   const [proposals, setProposals] = useState<Proposal[]>([]);
