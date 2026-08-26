@@ -353,17 +353,36 @@ export default function SafariSandboxModal({
                           </div>
                         )}
 
-                        <iframe
-                          key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                          src={
-                            selectedProject.details.liveUrl
-                              ? `/api/proxy?url=${encodeURIComponent(selectedProject.details.liveUrl)}`
-                              : ""
+                        {(() => {
+                          const rawLiveUrl = selectedProject.details?.liveUrl?.trim();
+                          const targetLiveUrl = rawLiveUrl ? (rawLiveUrl.startsWith("http") ? rawLiveUrl : `https://${rawLiveUrl}`) : "";
+
+                          if (!targetLiveUrl) {
+                            return (
+                              <div className="w-full flex-1 bg-[#09090d] flex flex-col items-center justify-center p-6 text-center rounded-b-[30px] border border-white/5">
+                                <div className="w-12 h-12 rounded-full bg-[#c5a880]/10 border border-[#c5a880]/30 flex items-center justify-center mb-3">
+                                  <Globe className="w-6 h-6 text-[#c5a880]" />
+                                </div>
+                                <h4 className="font-outfit text-sm font-bold text-white uppercase tracking-wider mb-1">
+                                  NO LIVE DEPLOYMENT URL CONFIGURED
+                                </h4>
+                                <p className="font-sans text-xs text-white/50 max-w-xs mb-4">
+                                  Add a Live Website Deployment URL in the Admin Panel to enable interactive Safari Sandbox preview.
+                                </p>
+                              </div>
+                            );
                           }
-                          title={`${selectedProject.title} Apple Safari Sandbox`}
-                          className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        />
+
+                          return (
+                            <iframe
+                              key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
+                              src={`/api/proxy?url=${encodeURIComponent(targetLiveUrl)}`}
+                              title={`${selectedProject.title} Apple Safari Sandbox`}
+                              className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            />
+                          );
+                        })()}
 
                         {sandboxDevice === "mobile" && (
                           <div className="w-full bg-[#1a1a24] py-1.5 flex justify-center shrink-0 rounded-b-[34px]">

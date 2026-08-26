@@ -247,11 +247,11 @@ export default function AdminPage() {
     categories: [],
     tagline: "",
     description: "",
-    image: "/work_aura_configurator.png",
+    image: "",
     subtitle: "",
     year: "2026",
     bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
-    details: { client: "", timeline: "", role: "", engine: "", videoUrl: "" },
+    details: { client: "", timeline: "", role: "", engine: "", videoUrl: "", liveUrl: "" },
     metrics: [{ label: "", value: "" }, { label: "", value: "" }, { label: "", value: "" }]
   });
 
@@ -284,14 +284,14 @@ export default function AdminPage() {
       setProjForm({
         title: "",
         category: "",
-        categories: ["CGI"],
+        categories: ["WEB DEV"],
         tagline: "",
         description: "",
-        image: "/work_aura_configurator.png",
+        image: "",
         subtitle: "",
         year: "2026",
         bgGradient: "from-slate-900 via-sky-950 to-[#050507]",
-        details: { client: "", timeline: "", role: "", engine: "", videoUrl: "", images: [] },
+        details: { client: "", timeline: "", role: "", engine: "", videoUrl: "", images: [], liveUrl: "" },
         metrics: [
           { label: "RESOLUTION", value: "8K Projections" },
           { label: "RENDER ENGINE", value: "Octane / WebGL" },
@@ -1781,22 +1781,23 @@ export default function AdminPage() {
                       />
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[9px] font-mono text-white/50 tracking-wider uppercase font-bold">
-                        ENGINE & TECHNOLOGY STACK
+                    <div className="flex flex-col gap-1.5 sm:col-span-2">
+                      <label className="text-[9px] font-mono text-[#c5a880] tracking-wider uppercase font-bold flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-[#c5a880]" />
+                        LIVE WEBSITE DEPLOYMENT URL (SAFARI SANDBOX & LIVE PREVIEW)
                       </label>
                       <input 
-                        type="text" 
-                        value={projForm.details?.engine || ""} 
+                        type="url" 
+                        value={projForm.details?.liveUrl || ""} 
                         onChange={(e) => setProjForm({
                           ...projForm,
                           details: {
                             ...projForm.details!,
-                            engine: e.target.value
+                            liveUrl: e.target.value
                           }
                         })} 
-                        className="bg-black/50 border border-white/10 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] outline-none text-xs text-white"
-                        placeholder="e.g. Realtime WebGL / Octane"
+                        className="bg-black/50 border border-[#c5a880]/40 rounded-lg py-2.5 px-3.5 focus:border-[#c5a880] focus:ring-1 focus:ring-[#c5a880]/30 outline-none text-xs text-white font-mono"
+                        placeholder="e.g. https://estateos-os.vercel.app/ or https://www.billingos.online/"
                       />
                     </div>
                   </div>
