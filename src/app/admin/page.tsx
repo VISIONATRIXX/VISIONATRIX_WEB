@@ -1950,7 +1950,7 @@ export default function AdminPage() {
                   <div className="flex flex-wrap gap-2 mt-1 select-none">
                     {Array.from(new Set([
                       // Web & SaaS Use Cases
-                      "WEB APP", "FULLSTACK", "SAAS", "AI PORTAL", "CLOUD STORAGE", "MCP SERVER", "AUTOMATION", "CRM PORTAL", "DATABASE",
+                      "WEB APP","AGENCY WEBSITE", "FULLSTACK", "SAAS", "AI PORTAL", "CLOUD STORAGE", "MCP SERVER", "AUTOMATION", "CRM PORTAL", "DATABASE",
                       // Video & UGC Use Cases
                       "VIDEO", "UGC ADS", "CREATIVE CUT", "CINEMATIC", "VFX",
                       // 3D, Unreal & Architecture Use Cases

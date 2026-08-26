@@ -130,39 +130,12 @@ export default function CustomCursor() {
       isVisible = true;
     };
 
-    const handleIframeMouseMove = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      mouseCoords.x = customEvent.detail.clientX;
-      mouseCoords.y = customEvent.detail.clientY;
-      if (!isVisible) {
-        cursor.style.opacity = "1";
-        isVisible = true;
-      }
-    };
-
-    const handleIframeMouseDown = () => {
-      cursor.classList.add("cursor-clicked");
-    };
-
-    const handleIframeMouseUp = () => {
-      cursor.classList.remove("cursor-clicked");
-    };
-
-    const handleIframeMouseLeave = () => {
-      cursor.style.opacity = "0";
-      isVisible = false;
-    };
-
     window.addEventListener("mousemove", moveCursor, { passive: true });
     window.addEventListener("mouseover", handleMouseOver, { passive: true });
     window.addEventListener("mousedown", handleMouseDown, { passive: true });
     window.addEventListener("mouseup", handleMouseUp, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
-    window.addEventListener("iframe-mousemove", handleIframeMouseMove);
-    window.addEventListener("iframe-mousedown", handleIframeMouseDown);
-    window.addEventListener("iframe-mouseup", handleIframeMouseUp);
-    window.addEventListener("iframe-mouseleave", handleIframeMouseLeave);
 
     return () => {
       document.body.classList.remove("custom-cursor-active");
@@ -172,10 +145,6 @@ export default function CustomCursor() {
       window.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
-      window.removeEventListener("iframe-mousemove", handleIframeMouseMove);
-      window.removeEventListener("iframe-mousedown", handleIframeMouseDown);
-      window.removeEventListener("iframe-mouseup", handleIframeMouseUp);
-      window.removeEventListener("iframe-mouseleave", handleIframeMouseLeave);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
