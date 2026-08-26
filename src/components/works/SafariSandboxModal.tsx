@@ -58,12 +58,10 @@ export default function SafariSandboxModal({
   showAllDrawer
 }: SafariSandboxModalProps) {
   const [isMetadataVertical, setIsMetadataVertical] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     setIsMetadataVertical(false);
-    setIsInteracting(false);
   }, [selectedProject?.id]);
 
   useEffect(() => {
@@ -338,7 +336,6 @@ export default function SafariSandboxModal({
                     /* Interactive Apple macOS Safari Sandbox Container */
                     <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4">
                       <div 
-                        onMouseLeave={() => setIsInteracting(false)}
                         className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
                           sandboxDevice === "desktop"
                             ? "w-full rounded-none"
@@ -377,52 +374,14 @@ export default function SafariSandboxModal({
                           }
 
                           return (
-                            <div className="w-full flex-1 relative flex flex-col overflow-hidden bg-black rounded-b-[30px]">
-                              {/* Safari Sandbox Iframe */}
-                              <iframe
-                                key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                                src={targetLiveUrl}
-                                title={`${selectedProject.title} Apple Safari Sandbox`}
-                                className={`w-full h-full border-0 bg-black rounded-b-[30px] transition-opacity duration-300 ${
-                                  isInteracting ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-85"
-                                }`}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                referrerPolicy="no-referrer-when-downgrade"
-                              />
-
-                              {/* Interactive Cursor Overlay */}
-                              {!isInteracting && (
-                                <div 
-                                  onClick={() => setIsInteracting(true)}
-                                  data-cursor="CLICK TO INTERACT"
-                                  className="absolute inset-0 bg-black/15 backdrop-blur-[0.5px] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:bg-black/35 z-40 group/interact"
-                                >
-                                  <div className="bg-black/85 border border-[#c5a880]/35 px-5 py-2.5 rounded-full flex items-center gap-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group-hover/interact:border-[#c5a880]/80 group-hover/interact:scale-105 select-none pointer-events-none">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                                    <Globe className="w-3.5 h-3.5 text-[#c5a880]" />
-                                    <span className="font-outfit text-[10px] tracking-[0.15em] font-extrabold uppercase text-white">
-                                      CLICK TO INTERACT
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Interaction Exit Button */}
-                              {isInteracting && (
-                                <div className="absolute bottom-4 right-4 z-40 animate-in fade-in duration-200">
-                                  <button
-                                    onClick={() => setIsInteracting(false)}
-                                    className="bg-black/85 border border-[#c5a880]/40 hover:border-[#c5a880] hover:bg-black px-4 py-2 rounded-lg flex items-center gap-2 text-white transition-all cursor-pointer shadow-2xl active:scale-95"
-                                    title="Lock interaction and return to custom cursor"
-                                  >
-                                    <Lock className="w-3.5 h-3.5 text-[#c5a880]" />
-                                    <span className="font-mono text-[9px] font-bold tracking-wider uppercase text-[#c5a880]">
-                                      LOCK FOCUS
-                                    </span>
-                                  </button>
-                                </div>
-                              )}
-                            </div>
+                            <iframe
+                              key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
+                              src={targetLiveUrl}
+                              title={`${selectedProject.title} Apple Safari Sandbox`}
+                              className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              referrerPolicy="no-referrer-when-downgrade"
+                            />
                           );
                         })()}
 
@@ -482,6 +441,7 @@ export default function SafariSandboxModal({
                                         src={videoUrl}
                                         autoPlay
                                         loop
+                                        muted
                                         playsInline
                                         controls
                                         onLoadedMetadata={(e) => {
@@ -536,6 +496,7 @@ export default function SafariSandboxModal({
                                       src={videoUrl}
                                       autoPlay
                                       loop
+                                      muted
                                       playsInline
                                       controls
                                       onLoadedMetadata={(e) => {
