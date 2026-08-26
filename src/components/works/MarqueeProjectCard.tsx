@@ -82,7 +82,6 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
           )
         ) : (
           <>
-            <div className={`absolute inset-0 bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} flex flex-col justify-between overflow-hidden z-0`} />
             {displayImage && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img

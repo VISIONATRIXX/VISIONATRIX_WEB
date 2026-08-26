@@ -58,16 +58,17 @@ export const getProjectVideoUrl = (project?: Project | null): string | null => {
 export const getProjectThumbnailUrl = (project?: Project | null): string | null => {
   if (!project) return null;
 
-  // 1. If project has a custom uploaded/provided image URL
-  if (project.image && project.image.trim() && !isVideoUrl(project.image)) {
-    return project.image.trim();
+  // 1. If project has a custom uploaded/provided image URL (ignore invalid default placeholders starting with /work_)
+  const img = project.image ? project.image.trim() : "";
+  if (img && !img.startsWith("/work_") && !isVideoUrl(img)) {
+    return img;
   }
 
-  // 2. If project has a live website URL, generate a real-time site preview thumbnail via thum.io
+  // 2. If project has a live website URL, generate a real-time site preview thumbnail via WordPress mshots
   if (project.details?.liveUrl && project.details.liveUrl.trim()) {
     const rawUrl = project.details.liveUrl.trim();
     const target = rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`;
-    return `https://image.thum.io/get/width/800/crop/500/noanimate/${target}`;
+    return `https://s0.wp.com/mshots/v1/${encodeURIComponent(target)}?w=800`;
   }
 
   return null;

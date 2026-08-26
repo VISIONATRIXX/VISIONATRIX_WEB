@@ -109,11 +109,7 @@ export default function AllProjectsDrawer({
                       />
                     )
                   ) : (
-                    <div className="w-full h-full relative rounded-xl overflow-hidden">
-                      <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} p-6 flex flex-col justify-between overflow-hidden border border-white/5 group-hover:border-[#c5a880]/30 transition-all z-0`}>
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c5a880]/10 via-transparent to-transparent pointer-events-none" />
-                        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#c5a880]/10 rounded-full blur-3xl pointer-events-none group-hover:scale-150 transition-transform duration-700" />
-                      </div>
+                    <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#07070b]">
                       {displayImage && (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img
