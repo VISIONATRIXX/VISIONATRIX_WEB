@@ -83,17 +83,23 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out"
             />
           )
-        ) : displayImage ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={displayImage}
-            alt={project.title}
-            className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out"
-            loading="lazy"
-            decoding="async"
-          />
         ) : (
-          <div className={`w-full h-full rounded-xl bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} flex flex-col justify-between relative overflow-hidden`} />
+          <>
+            {displayImage && (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={displayImage}
+                alt={project.title}
+                className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out relative z-0"
+                loading="lazy"
+                decoding="async"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+            <div className={`absolute inset-0 bg-gradient-to-br ${project.bgGradient || "from-slate-900 via-zinc-950 to-[#050507]"} flex flex-col justify-between overflow-hidden z-0`} />
+          </>
         )}
 
         {/* Top Left Number Pill Badge */}
