@@ -1953,8 +1953,8 @@ export default function AdminPage() {
                       "WEB APP", "FULLSTACK", "SAAS", "AI PORTAL", "CLOUD STORAGE", "MCP SERVER", "AUTOMATION", "CRM PORTAL", "DATABASE",
                       // Video & UGC Use Cases
                       "VIDEO", "UGC ADS", "CREATIVE CUT", "CINEMATIC", "VFX",
-                      // 3D & Unreal Use Cases
-                      "CGI", "3D CONFIG", "UNREAL ENGINE", "VR/AR", "MOBILE APPS", "UI/UX DESIGN",
+                      // 3D, Unreal & Architecture Use Cases
+                      "CGI", "3D CONFIG", "UNREAL ENGINE", "VR/AR", "ARCHITECTURE", "3D RENDER", "INTERIOR DESIGN", "VIRTUAL TOUR", "MOBILE APPS", "UI/UX DESIGN",
                       ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
                       ...localTags
                     ])).map((tag) => {
