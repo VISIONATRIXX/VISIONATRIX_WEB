@@ -165,6 +165,21 @@ html.lenis, html.lenis body {
   cursor: none !important;
 }
 
+/* Restore normal cursor inside the sandbox iframe container and all its children */
+.sandbox-iframe-container,
+.sandbox-iframe-container *,
+.sandbox-iframe-container iframe {
+  cursor: auto !important;
+}
+
+/* Hide parent custom cursor when hovering inside the sandbox container */
+body:has(.sandbox-iframe-container:hover) .cursor-outer,
+body:has(.sandbox-iframe-container:hover) .cursor-inner,
+body:has(.sandbox-iframe-container:hover) .cursor-glow {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
 /* Blur Spotlight Glow — soft radial backdrop-blur halo */
 .cursor-glow {
   width: 120px;

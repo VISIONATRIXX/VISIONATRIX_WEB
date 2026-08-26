@@ -334,7 +334,7 @@ export default function SafariSandboxModal({
                 <div className="flex-1 h-full relative bg-[#040407] flex items-center justify-center overflow-hidden">
                   {liveMode && selectedProject.details?.liveUrl ? (
                     /* Interactive Apple macOS Safari Sandbox Container */
-                    <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4">
+                    <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4 sandbox-iframe-container">
                       <div 
                         className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
                           sandboxDevice === "desktop"
