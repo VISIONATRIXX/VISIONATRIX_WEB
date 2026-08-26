@@ -59,10 +59,86 @@ export default function SafariSandboxModal({
 }: SafariSandboxModalProps) {
   const [isMetadataVertical, setIsMetadataVertical] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const [isIframeCustomCursor, setIsIframeCustomCursor] = useState(false);
 
   useEffect(() => {
     setIsMetadataVertical(false);
   }, [selectedProject?.id]);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const handleIframeLoad = () => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (iframeDoc) {
+          setIsIframeCustomCursor(true);
+
+          // Hide native cursor inside same-origin iframe document
+          const style = iframeDoc.createElement("style");
+          style.innerHTML = `
+            * {
+              cursor: none !important;
+            }
+          `;
+          iframeDoc.head.appendChild(style);
+
+          // Proxy mouse events to parent custom cursor
+          const onMouseMove = (e: MouseEvent) => {
+            const rect = iframe.getBoundingClientRect();
+            const clientX = rect.left + e.clientX;
+            const clientY = rect.top + e.clientY;
+            window.dispatchEvent(new CustomEvent("iframe-mousemove", {
+              detail: { clientX, clientY }
+            }));
+          };
+
+          const onMouseDown = () => {
+            window.dispatchEvent(new CustomEvent("iframe-mousedown"));
+          };
+
+          const onMouseUp = () => {
+            window.dispatchEvent(new CustomEvent("iframe-mouseup"));
+          };
+
+          const onMouseLeave = () => {
+            window.dispatchEvent(new CustomEvent("iframe-mouseleave"));
+          };
+
+          iframeDoc.addEventListener("mousemove", onMouseMove, { passive: true });
+          iframeDoc.addEventListener("mousedown", onMouseDown, { passive: true });
+          iframeDoc.addEventListener("mouseup", onMouseUp, { passive: true });
+          iframeDoc.addEventListener("mouseleave", onMouseLeave, { passive: true });
+
+          // Cleanup event listeners
+          (iframe as any)._cleanupIframeEvents = () => {
+            try {
+              iframeDoc.removeEventListener("mousemove", onMouseMove);
+              iframeDoc.removeEventListener("mousedown", onMouseDown);
+              iframeDoc.removeEventListener("mouseup", onMouseUp);
+              iframeDoc.removeEventListener("mouseleave", onMouseLeave);
+            } catch {}
+          };
+        } else {
+          setIsIframeCustomCursor(false);
+        }
+      } catch (err) {
+        setIsIframeCustomCursor(false);
+      }
+    };
+
+    iframe.addEventListener("load", handleIframeLoad);
+    return () => {
+      iframe.removeEventListener("load", handleIframeLoad);
+      try {
+        if ((iframe as any)._cleanupIframeEvents) {
+          (iframe as any)._cleanupIframeEvents();
+        }
+      } catch {}
+    };
+  }, [iframeKey, selectedProject?.id]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -334,7 +410,9 @@ export default function SafariSandboxModal({
                 <div className="flex-1 h-full relative bg-[#040407] flex items-center justify-center overflow-hidden">
                   {liveMode && selectedProject.details?.liveUrl ? (
                     /* Interactive Apple macOS Safari Sandbox Container */
-                    <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4 sandbox-iframe-container">
+                    <div className={`w-full h-full relative flex items-center justify-center p-2 sm:p-4 sandbox-iframe-container ${
+                      isIframeCustomCursor ? "iframe-custom-cursor" : ""
+                    }`}>
                       <div 
                         className={`h-full transition-all duration-500 ease-out relative flex flex-col items-center justify-center ${
                           sandboxDevice === "desktop"
@@ -375,8 +453,9 @@ export default function SafariSandboxModal({
 
                           return (
                             <iframe
+                              ref={iframeRef}
                               key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                              src={targetLiveUrl}
+                              src={`/api/proxy?url=${encodeURIComponent(targetLiveUrl)}`}
                               title={`${selectedProject.title} Apple Safari Sandbox`}
                               className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

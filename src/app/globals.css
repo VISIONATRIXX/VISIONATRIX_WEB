@@ -165,17 +165,22 @@ html.lenis, html.lenis body {
   cursor: none !important;
 }
 
-/* Restore normal cursor inside the sandbox iframe container and all its children */
-.sandbox-iframe-container,
-.sandbox-iframe-container *,
-.sandbox-iframe-container iframe {
+/* If iframe has custom cursor tracking, hide the native cursor inside the container */
+.sandbox-iframe-container.iframe-custom-cursor,
+.sandbox-iframe-container.iframe-custom-cursor * {
+  cursor: none !important;
+}
+
+/* If it doesn't have custom cursor tracking (cross-origin fallback), restore normal browser cursor */
+.sandbox-iframe-container:not(.iframe-custom-cursor),
+.sandbox-iframe-container:not(.iframe-custom-cursor) * {
   cursor: auto !important;
 }
 
-/* Hide parent custom cursor when hovering inside the sandbox container */
-body:has(.sandbox-iframe-container:hover) .cursor-outer,
-body:has(.sandbox-iframe-container:hover) .cursor-inner,
-body:has(.sandbox-iframe-container:hover) .cursor-glow {
+/* Hide parent custom cursor when hovering inside the sandbox container (only if NOT tracking custom cursor) */
+body:has(.sandbox-iframe-container:not(.iframe-custom-cursor):hover) .cursor-outer,
+body:has(.sandbox-iframe-container:not(.iframe-custom-cursor):hover) .cursor-inner,
+body:has(.sandbox-iframe-container:not(.iframe-custom-cursor):hover) .cursor-glow {
   opacity: 0 !important;
   pointer-events: none;
 }
