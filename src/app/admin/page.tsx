@@ -1949,7 +1949,12 @@ export default function AdminPage() {
                   </label>
                   <div className="flex flex-wrap gap-2 mt-1 select-none">
                     {Array.from(new Set([
-                      "VIDEO", "VFX", "CGI", "WEB DEV", "APPS", "AI SHOOTS", "VR",
+                      // Web & SaaS Use Cases
+                      "WEB APP", "FULLSTACK", "SAAS", "AI PORTAL", "CLOUD STORAGE", "MCP SERVER", "AUTOMATION", "CRM PORTAL", "DATABASE",
+                      // Video & UGC Use Cases
+                      "VIDEO", "UGC ADS", "CREATIVE CUT", "CINEMATIC", "VFX",
+                      // 3D & Unreal Use Cases
+                      "CGI", "3D CONFIG", "UNREAL ENGINE", "VR/AR", "MOBILE APPS", "UI/UX DESIGN",
                       ...projects.flatMap(p => p.categories || []).map(t => t.toUpperCase()),
                       ...localTags
                     ])).map((tag) => {
