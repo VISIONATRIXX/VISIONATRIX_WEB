@@ -467,7 +467,7 @@ export default function SafariSandboxModal({
                                   )}
 
                                   {/* Center Luxury Frame holding the vertical video */}
-                                  <div className="relative aspect-[9/16] h-[82vh] max-h-[690px] max-w-[90%] md:max-w-[390px] border border-[#c5a880]/30 rounded-2xl overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)] bg-black z-10">
+                                  <div className="relative aspect-[9/16] h-[92%] max-h-full max-w-[90%] md:h-[82vh] md:max-h-[690px] md:max-w-[390px] border border-[#c5a880]/30 rounded-2xl overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)] bg-black z-10">
                                     {isEmbed ? (
                                       <iframe
                                         src={getVideoEmbedUrl(videoUrl)}

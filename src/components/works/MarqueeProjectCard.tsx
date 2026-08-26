@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, memo } from "react";
+import { useRef, useCallback, memo, useState } from "react";
 import { Eye, Globe, Play } from "lucide-react";
 import { Project } from "@/context/AdminContext";
 import { getProjectVideoUrl, getVideoEmbedUrl, getProjectThumbnailUrl } from "@/utils/media";
@@ -16,9 +16,10 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
   onOpenDetails
 }: MarqueeProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const videoUrl = getProjectVideoUrl(project);
-  const displayImage = !videoUrl ? getProjectThumbnailUrl(project) : null;
+  const displayImage = getProjectThumbnailUrl(project);
 
   const categoryTags = project.categories && project.categories.length > 0 
     ? project.categories.slice(0, 3)
@@ -26,6 +27,7 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
 
   // Direct DOM manipulation — zero re-renders on mouse move
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    setIsHovered(true);
     const card = cardRef.current;
     if (!card) return;
     const rect = card.getBoundingClientRect();
@@ -39,6 +41,7 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
   }, []);
 
   const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
     const card = cardRef.current;
     if (card) {
       card.style.transform = "";
@@ -65,7 +68,7 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
         {videoUrl ? (
           isEmbedVideo ? (
             <iframe
-              src={getVideoEmbedUrl(videoUrl)}
+              src={isHovered ? getVideoEmbedUrl(videoUrl) : ""}
               className="w-full h-full border-0 object-cover pointer-events-none scale-[1.05]"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               title={project.title}
@@ -73,10 +76,11 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
           ) : (
             <video
               src={videoUrl}
-              autoPlay
-              loop
+              autoPlay={isHovered}
+              loop={isHovered}
               muted
               playsInline
+              preload={isHovered ? "auto" : "metadata"}
               className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-[1.03] transition-[opacity,transform] duration-500 ease-out"
             />
           )
