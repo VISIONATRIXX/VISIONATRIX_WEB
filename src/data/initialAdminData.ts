@@ -149,7 +149,7 @@ export const initialProjects: Project[] = [
       client: "Jaimin Films Studio",
       engine: "Next.js / React / Framer Motion / Video CDN",
       timeline: "2026",
-      videoUrl: "https://player.vimeo.com/video/76979871"
+      videoUrl: null
     },
     metrics: [
       { label: "VIDEO STREAMING", value: "4K Master Playback" },
@@ -173,7 +173,7 @@ export const initialProjects: Project[] = [
       client: "D2C E-Commerce Brands",
       engine: "Premiere Pro / After Effects / CapCut Pro / DaVinci",
       timeline: "2026",
-      videoUrl: "https://player.vimeo.com/video/76979871"
+      videoUrl: null
     },
     metrics: [
       { label: "HOOK RETENTION", value: "85% 3-Second Retention" },
@@ -197,7 +197,7 @@ export const initialProjects: Project[] = [
       client: "Bhavdip Films",
       engine: "Next.js / Tailwind / Motion",
       timeline: "2026",
-      videoUrl: "https://player.vimeo.com/video/76979871"
+      videoUrl: null
     },
     metrics: [
       { label: "MEDIA PLAYER", value: "Seamless Video Stream" },
