@@ -359,11 +359,15 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        console.error("Failed to add project on server:", err);
+        await supabase.from("projects").insert([dbProj]);
       }
     } catch (error) {
-      console.error("Failed to add project:", formatErrorMsg(error));
+      console.error("Failed to add project via API, falling back to client SDK:", formatErrorMsg(error));
+      const dbProj = {
+        ...mapProjectToDb(pWithSeqSubtitle as Project),
+        id: nextId
+      };
+      await supabase.from("projects").insert([dbProj]);
     }
   };
 
@@ -380,11 +384,12 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        console.error("Failed to update project on server:", err);
+        await supabase.from("projects").update(dbProj).eq("id", id);
       }
     } catch (error) {
-      console.error("Failed to update project:", formatErrorMsg(error));
+      console.error("Failed to update project via API, falling back to client SDK:", formatErrorMsg(error));
+      const dbProj = mapProjectToDb(p);
+      await supabase.from("projects").update(dbProj).eq("id", id);
     }
   };
 
@@ -400,11 +405,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        console.error("Failed to delete project on server:", err);
+        await supabase.from("projects").delete().eq("id", id);
       }
     } catch (error) {
-      console.error("Failed to delete project:", formatErrorMsg(error));
+      console.error("Failed to delete project via API, falling back to client SDK:", formatErrorMsg(error));
+      await supabase.from("projects").delete().eq("id", id);
     }
   };
 
