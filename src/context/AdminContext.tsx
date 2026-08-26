@@ -94,12 +94,7 @@ const mapProjectToDb = (proj: Project) => ({
   metrics: proj.metrics
 });
 
-const mergeWithInitialProjects = (dbProjects: Project[]): Project[] => {
-  if (dbProjects && dbProjects.length > 0) {
-    return dbProjects;
-  }
-  return initialProjects;
-};
+
 
 interface DbServiceRow {
   id: string;
@@ -206,7 +201,7 @@ const mapProposalToDb = (prop: Omit<Proposal, "id" | "timestamp" | "status"> & {
 // Provider
 // -------------------------------------------------------------
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [services, setServices] = useState<ServiceItem[]>(initialServices);
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
   const [proposals, setProposals] = useState<Proposal[]>([]);
@@ -222,11 +217,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           supabase.from("testimonials").select("*").order("id", { ascending: true })
         ]);
 
-        if (projRes.data && projRes.data.length > 0) {
-          const mappedProjs = projRes.data.map(mapProjectFromDb);
-          setProjects(mergeWithInitialProjects(mappedProjs));
-        } else {
-          setProjects(mergeWithInitialProjects([]));
+        if (projRes.data) {
+          setProjects(projRes.data.map(mapProjectFromDb));
         }
         if (servRes.data && servRes.data.length > 0) {
           setServices(servRes.data.map(mapServiceFromDb));
@@ -276,7 +268,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
               .order("id", { ascending: true });
             if (error) throw error;
             const mapped = (data || []).map(mapProjectFromDb);
-            setProjects(mergeWithInitialProjects(mapped));
+            setProjects(mapped);
           } catch (err) {
             console.error("Realtime projects refresh failed:", formatErrorMsg(err));
           }
