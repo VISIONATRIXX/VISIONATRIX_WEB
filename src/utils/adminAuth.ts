@@ -1,40 +1,48 @@
 import { cookies } from "next/headers";
+import crypto from "crypto";
 
-const SESSION_COOKIE_NAME = "vx_admin_session";
+export const SESSION_COOKIE_NAME = "vx_admin_session";
+export const SESSION_MAX_AGE_SECONDS = 4 * 60 * 60; // 4 hours
 
-// In-memory session store — shared reference with verify route
-// We import lazily to avoid circular dependency issues
-let _activeSessions: Map<string, { expiresAt: number }> | null = null;
-
-async function getActiveSessions(): Promise<Map<string, { expiresAt: number }>> {
-  if (!_activeSessions) {
-    // Dynamic import to get the shared session store
-    const mod = await import("@/app/api/admin/verify/route");
-    _activeSessions = mod.activeSessions;
-  }
-  return _activeSessions;
+/**
+ * Creates an HMAC signed session token containing expiration timestamp.
+ */
+export function createSignedToken(expiresAt: number): string {
+  const payload = `${expiresAt}`;
+  const secret = (process.env.ADMIN_PASSCODE || "141104").trim();
+  const hmac = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+  return `${payload}.${hmac}`;
 }
 
 /**
- * Validates the admin session cookie from the incoming request.
- * Returns true if the session is valid and not expired.
+ * Verifies if a session token is valid and not expired.
+ */
+export function verifySignedToken(token?: string): boolean {
+  if (!token || typeof token !== "string") return false;
+  const dotIdx = token.lastIndexOf(".");
+  if (dotIdx === -1) return false;
+
+  const payload = token.substring(0, dotIdx);
+  const signature = token.substring(dotIdx + 1);
+
+  const expiresAt = Number(payload);
+  if (isNaN(expiresAt) || Date.now() > expiresAt) return false;
+
+  const secret = (process.env.ADMIN_PASSCODE || "141104").trim();
+  const expectedHmac = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+
+  if (signature.length !== expectedHmac.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedHmac));
+}
+
+/**
+ * Validates the admin session cookie from the incoming request headers.
  */
 export async function validateAdminSession(): Promise<boolean> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-    if (!token) return false;
-
-    const sessions = await getActiveSessions();
-    const session = sessions.get(token);
-
-    if (!session || Date.now() > session.expiresAt) {
-      if (session) sessions.delete(token);
-      return false;
-    }
-
-    return true;
+    return verifySignedToken(token);
   } catch {
     return false;
   }

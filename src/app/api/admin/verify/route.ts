@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import crypto from "crypto";
-
-// In-memory session store with expiry (resets on server restart — acceptable for admin)
-const activeSessions = new Map<string, { expiresAt: number }>();
-
-const SESSION_COOKIE_NAME = "vx_admin_session";
-const SESSION_MAX_AGE_SECONDS = 4 * 60 * 60; // 4 hours
+import { 
+  SESSION_COOKIE_NAME, 
+  SESSION_MAX_AGE_SECONDS, 
+  createSignedToken, 
+  verifySignedToken 
+} from "@/utils/adminAuth";
 
 // Rate limiting: track failed attempts per IP
 const failedAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -43,24 +43,18 @@ function clearFailedAttempts(ip: string): void {
 }
 
 function timingSafeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    // Compare against self to burn constant time, then return false
-    const bufA = Buffer.from(a);
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+
+  if (bufA.length !== bufB.length) {
     crypto.timingSafeEqual(bufA, bufA);
     return false;
   }
-  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+  return crypto.timingSafeEqual(bufA, bufB);
 }
 
-// Cleanup expired sessions periodically
-function cleanupSessions() {
-  const now = Date.now();
-  for (const [token, session] of activeSessions) {
-    if (now > session.expiresAt) {
-      activeSessions.delete(token);
-    }
-  }
-}
+// Dummy export to keep backwards compatibility if any legacy code imports activeSessions
+export const activeSessions = new Map<string, { expiresAt: number }>();
 
 // POST: Login with passcode
 export async function POST(request: Request) {
@@ -75,33 +69,31 @@ export async function POST(request: Request) {
       );
     }
 
-    const { passcode } = await request.json();
-    const secretPasscode = process.env.ADMIN_PASSCODE || "141104";
+    const body = await request.json().catch(() => ({}));
+    const passcode = typeof body?.passcode === "string" ? body.passcode.trim() : "";
+    const secretPasscode = (process.env.ADMIN_PASSCODE || "141104").trim();
 
-    if (!passcode || typeof passcode !== "string") {
+    if (!passcode) {
       return NextResponse.json(
-        { success: false, error: "Bad request" },
+        { success: false, error: "SECURITY PASSCODE IS REQUIRED" },
         { status: 400 }
       );
     }
 
     if (timingSafeCompare(passcode, secretPasscode)) {
-      // Success: generate random session token
       clearFailedAttempts(ip);
-      cleanupSessions();
 
-      const sessionToken = crypto.randomUUID();
       const expiresAt = Date.now() + SESSION_MAX_AGE_SECONDS * 1000;
-      activeSessions.set(sessionToken, { expiresAt });
+      const sessionToken = createSignedToken(expiresAt);
 
       const response = NextResponse.json({ success: true });
 
-      // Set HttpOnly cookie
+      // Set HttpOnly cookie (sameSite: 'lax' ensures reliable delivery across serverless requests)
       const cookieStore = await cookies();
       cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: SESSION_MAX_AGE_SECONDS,
         path: "/",
       });
@@ -126,21 +118,14 @@ export async function POST(request: Request) {
 // GET: Validate existing session cookie
 export async function GET() {
   try {
-    cleanupSessions();
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
-    if (!token) {
-      return NextResponse.json({ authenticated: false }, { status: 401 });
+    if (verifySignedToken(token)) {
+      return NextResponse.json({ authenticated: true });
     }
 
-    const session = activeSessions.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      activeSessions.delete(token || "");
-      return NextResponse.json({ authenticated: false }, { status: 401 });
-    }
-
-    return NextResponse.json({ authenticated: true });
+    return NextResponse.json({ authenticated: false }, { status: 401 });
   } catch (error) {
     console.error("Session validation error:", error);
     return NextResponse.json({ authenticated: false }, { status: 500 });
@@ -151,14 +136,7 @@ export async function GET() {
 export async function DELETE() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-    if (token) {
-      activeSessions.delete(token);
-    }
-
     cookieStore.delete(SESSION_COOKIE_NAME);
-
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Logout error:", error);
@@ -166,5 +144,4 @@ export async function DELETE() {
   }
 }
 
-// Export for use by other API routes
-export { activeSessions, SESSION_COOKIE_NAME };
+export { SESSION_COOKIE_NAME };
