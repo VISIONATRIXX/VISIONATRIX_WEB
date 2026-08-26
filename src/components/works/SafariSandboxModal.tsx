@@ -389,7 +389,7 @@ export default function SafariSandboxModal({
                                     <iframe
                                       src={getVideoEmbedUrl(videoUrl)}
                                       className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
-                                      allow="autoplay; fullscreen"
+                                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                                       title={`${selectedProject.title} Blur Background`}
                                     />
                                   ) : (
@@ -409,7 +409,7 @@ export default function SafariSandboxModal({
                                       <iframe
                                         src={getVideoEmbedUrl(videoUrl)}
                                         className="w-full h-full border-0 scale-[1.01]"
-                                        allow="autoplay; fullscreen; picture-in-picture"
+                                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                                         allowFullScreen
                                         title={selectedProject.title}
                                       />
@@ -443,7 +443,7 @@ export default function SafariSandboxModal({
                                   <iframe
                                     src={getVideoEmbedUrl(videoUrl)}
                                     className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
-                                    allow="autoplay; fullscreen"
+                                    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                                     title={`${selectedProject.title} Landscape Blur`}
                                   />
                                 ) : (
@@ -463,7 +463,7 @@ export default function SafariSandboxModal({
                                     <iframe
                                       src={getVideoEmbedUrl(videoUrl)}
                                       className="w-full h-full border-0 scale-[1.01]"
-                                      allow="autoplay; fullscreen; picture-in-picture"
+                                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                                       allowFullScreen
                                       title={selectedProject.title}
                                     />

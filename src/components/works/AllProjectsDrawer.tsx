@@ -98,7 +98,7 @@ export default function AllProjectsDrawer({
                       <iframe
                         src={getVideoEmbedUrl(videoUrl)}
                         className="w-full h-full border-0 object-cover pointer-events-none rounded-xl scale-[1.05]"
-                        allow="autoplay; fullscreen"
+                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                         title={project.title}
                       />
                     ) : (

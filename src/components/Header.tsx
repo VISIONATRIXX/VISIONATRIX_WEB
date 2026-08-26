@@ -118,6 +118,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
                 src="/LOGO.png"
                 alt="Visionatrix Logo"
                 fill
+                sizes="40px"
                 priority
                 className="object-contain"
               />
