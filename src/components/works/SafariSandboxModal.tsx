@@ -98,6 +98,46 @@ export default function SafariSandboxModal({
     };
   }, [selectedProject]);
 
+  // Mobile Back Button Navigation closing the modal
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    // Push state when modal opens
+    window.history.pushState({ modalOpen: true }, "", "");
+
+    const handlePopState = () => {
+      onClose();
+      if (!showAllDrawer) {
+        (window as any).lenis?.start();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      // If modal was closed via X close button instead of device back gesture, pop the state we pushed
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
+    };
+  }, [selectedProject, onClose, showAllDrawer]);
+
+  // Mobile video kickstarter & auto-play focus
+  useEffect(() => {
+    if (selectedProject) {
+      const timer = setTimeout(() => {
+        const video = videoRef.current;
+        if (video) {
+          video.play().catch(err => {
+            console.log("Autoplay kickstart failed, waiting for user input:", err);
+          });
+        }
+      }, 400); // 400ms delay to align with spring intro transition
+      return () => clearTimeout(timer);
+    }
+  }, [selectedProject]);
+
   const isVerticalCategory = selectedProject?.category?.toUpperCase() === "AI SHOOTS" || 
     (selectedProject?.categories || []).some(c => ["AI SHOOTS", "UGC", "VERTICAL", "MOBILE"].includes(c.toUpperCase()));
   const isVertical = isVerticalCategory || isMetadataVertical;
@@ -328,10 +368,10 @@ export default function SafariSandboxModal({
               })()}
 
               {/* Main Body Split Panel (Left Canvas + Right Details Sidebar) */}
-              <div className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden relative">
+              <div className="flex-1 w-full flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden relative">
                 
                 {/* LEFT MAIN CANVAS: Entire Interactive Sandbox or Media Carousel */}
-                <div className="flex-1 h-full relative bg-[#040407] flex items-center justify-center overflow-hidden">
+                <div className="w-full h-[40vh] sm:h-[50vh] lg:h-full lg:flex-1 relative bg-[#040407] flex items-center justify-center overflow-hidden shrink-0">
                   {liveMode && selectedProject.details?.liveUrl ? (
                     /* Interactive Apple macOS Safari Sandbox Container */
                     <div className="w-full h-full relative flex items-center justify-center p-2 sm:p-4">
@@ -421,6 +461,7 @@ export default function SafariSandboxModal({
                                       loop
                                       muted
                                       playsInline
+                                      preload="auto"
                                       className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
                                     />
                                   )}
@@ -440,10 +481,10 @@ export default function SafariSandboxModal({
                                         ref={videoRef}
                                         src={videoUrl}
                                         autoPlay
-                                        loop
-                                        muted
+                                        loop                                        
                                         playsInline
                                         controls
+                                        preload="auto"
                                         onLoadedMetadata={(e) => {
                                           const video = e.currentTarget;
                                           if (video.videoWidth < video.videoHeight) {
@@ -476,6 +517,7 @@ export default function SafariSandboxModal({
                                     loop
                                     muted
                                     playsInline
+                                    preload="auto"
                                     className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
                                   />
                                 )}
@@ -499,6 +541,7 @@ export default function SafariSandboxModal({
                                       muted
                                       playsInline
                                       controls
+                                      preload="auto"
                                       onLoadedMetadata={(e) => {
                                         const video = e.currentTarget;
                                         if (video.videoWidth < video.videoHeight) {
@@ -529,7 +572,7 @@ export default function SafariSandboxModal({
                 {/* RIGHT SIDEBAR: Project Specs & Editorial Details Drawer */}
                 <div 
                   data-lenis-prevent
-                  className="w-full lg:w-[400px] xl:w-[440px] bg-[#0c0c12] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col justify-between p-6 lg:p-8 overflow-y-auto scrollbar-thin shrink-0 select-text"
+                  className="w-full lg:w-[400px] xl:w-[440px] bg-[#0c0c12] border-t lg:border-t-0 lg:border-l border-white/10 flex flex-col justify-between p-6 lg:p-8 overflow-y-visible lg:overflow-y-auto scrollbar-thin shrink-0 select-text h-auto lg:h-full"
                 >
                   <div className="flex flex-col gap-6">
                     {/* Header Badge & Title */}
