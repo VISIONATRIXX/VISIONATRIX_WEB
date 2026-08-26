@@ -355,12 +355,14 @@ export default function SafariSandboxModal({
 
                         <iframe
                           key={`split-sandbox-iframe-${iframeKey}-${sandboxDevice}`}
-                          src={selectedProject.details.liveUrl}
+                          src={
+                            selectedProject.details.liveUrl
+                              ? `/api/proxy?url=${encodeURIComponent(selectedProject.details.liveUrl)}`
+                              : ""
+                          }
                           title={`${selectedProject.title} Apple Safari Sandbox`}
                           className="w-full flex-1 border-0 bg-black rounded-b-[30px]"
-                          loading="lazy"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                         />
 
                         {sandboxDevice === "mobile" && (
