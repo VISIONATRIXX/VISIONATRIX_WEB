@@ -412,13 +412,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     try {
       setProjects(newOrder);
 
-      const dbOnlyOrdered = newOrder.filter(p => 
-        !initialProjects.some(initP => initP.title.toUpperCase() === p.title.toUpperCase())
-      );
-
-      if (dbOnlyOrdered.length === 0) return;
-
-      const orderedIds = dbOnlyOrdered.map(p => p.id);
+      const orderedIds = newOrder.map(p => p.id);
+      if (orderedIds.length === 0) return;
 
       const { error: rpcError } = await supabase.rpc("reorder_projects", {
         p_ids: orderedIds
