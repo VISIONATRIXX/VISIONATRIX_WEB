@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Project } from "@/context/AdminContext";
-import { getProjectVideoUrl, getVideoEmbedUrl } from "@/utils/media";
+import { getProjectVideoUrl, getVideoEmbedUrl, getProjectThumbnailUrl } from "@/utils/media";
 
 interface AllProjectsDrawerProps {
   isOpen: boolean;
@@ -81,10 +81,7 @@ export default function AllProjectsDrawer({
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => {
               const videoUrl = getProjectVideoUrl(project);
-              const livePreviewUrl = project.details?.liveUrl 
-                ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
-                : null;
-              const displayImage = (!videoUrl && project.image) ? project.image : livePreviewUrl;
+              const displayImage = !videoUrl ? getProjectThumbnailUrl(project) : null;
               const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
 
               return (

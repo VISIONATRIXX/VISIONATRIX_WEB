@@ -3,7 +3,7 @@
 import { useRef, useCallback, memo } from "react";
 import { Eye, Globe, Play } from "lucide-react";
 import { Project } from "@/context/AdminContext";
-import { getProjectVideoUrl, getVideoEmbedUrl } from "@/utils/media";
+import { getProjectVideoUrl, getVideoEmbedUrl, getProjectThumbnailUrl } from "@/utils/media";
 
 interface MarqueeProjectCardProps {
   project: Project;
@@ -18,10 +18,7 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
   const cardRef = useRef<HTMLDivElement>(null);
 
   const videoUrl = getProjectVideoUrl(project);
-  const livePreviewUrl = project.details?.liveUrl 
-    ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.details.liveUrl)}?w=640&h=400`
-    : null;
-  const displayImage = (!videoUrl && project.image) ? project.image : livePreviewUrl;
+  const displayImage = !videoUrl ? getProjectThumbnailUrl(project) : null;
 
   const categoryTags = project.categories && project.categories.length > 0 
     ? project.categories.slice(0, 3)

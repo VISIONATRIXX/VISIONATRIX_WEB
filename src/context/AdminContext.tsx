@@ -64,7 +64,7 @@ const mapProjectFromDb = (dbProj: DbProjectRow): Project => ({
   categories: dbProj.categories || [],
   subtitle: dbProj.subtitle || "",
   year: dbProj.year || "2026",
-  image: dbProj.image || "/work_aura_configurator.webp",
+  image: dbProj.image || "",
   tagline: dbProj.tagline || "",
   description: dbProj.description || "",
   bgGradient: dbProj.bg_gradient || "from-slate-900 via-sky-950 to-[#050507]",

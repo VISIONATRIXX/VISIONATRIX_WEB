@@ -55,6 +55,24 @@ export const getProjectVideoUrl = (project?: Project | null): string | null => {
   return null;
 };
 
+export const getProjectThumbnailUrl = (project?: Project | null): string | null => {
+  if (!project) return null;
+
+  // 1. If project has a custom uploaded/provided image URL
+  if (project.image && project.image.trim() && !isVideoUrl(project.image)) {
+    return project.image.trim();
+  }
+
+  // 2. If project has a live website URL, generate a real-time site preview thumbnail via thum.io
+  if (project.details?.liveUrl && project.details.liveUrl.trim()) {
+    const rawUrl = project.details.liveUrl.trim();
+    const target = rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`;
+    return `https://image.thum.io/get/width/800/crop/500/noanimate/${target}`;
+  }
+
+  return null;
+};
+
 export const getVideoEmbedUrl = (url: string) => {
   // Sanitize: only allow https: URLs (reject javascript:, data:, etc.)
   try {
