@@ -26,6 +26,15 @@ const r2Client = new S3Client({
 import { checkRateLimit, getClientIp } from "@/utils/rateLimiter";
 
 export async function POST(req: Request) {
+  // Validate R2 configuration first
+  if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
+    console.error("Missing Cloudflare R2 environment variables on the server.");
+    return NextResponse.json(
+      { error: "Server Configuration Error: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, or R2_SECRET_ACCESS_KEY is missing." },
+      { status: 500 }
+    );
+  }
+
   const ip = getClientIp(req);
   const rateCheck = checkRateLimit(`upload:${ip}`, 20, 60 * 1000);
   if (!rateCheck.allowed) {
