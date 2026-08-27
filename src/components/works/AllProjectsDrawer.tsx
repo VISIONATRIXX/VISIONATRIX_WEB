@@ -35,6 +35,15 @@ function LazyVideoCard({
   const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
   const isDirectVideo = videoUrl && !isEmbedVideo;
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
@@ -49,17 +58,17 @@ function LazyVideoCard({
     return () => io.disconnect();
   }, []);
 
-  // Play/pause based on hover + visible
+  // Play/pause based on hover/mobile + visible
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !isDirectVideo) return;
 
-    if (isHovered && isVisible) {
+    if ((isHovered || isMobile) && isVisible) {
       video.play().catch(() => {});
     } else {
       video.pause();
     }
-  }, [isHovered, isVisible, isDirectVideo]);
+  }, [isHovered, isVisible, isDirectVideo, isMobile]);
 
   return (
     <div

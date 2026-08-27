@@ -28,6 +28,15 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
 
   const hasLive = Boolean(project.details?.liveUrl);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   // Intersection Observer — lazy load media
   useEffect(() => {
     const card = cardRef.current;
@@ -40,16 +49,16 @@ const MarqueeProjectCard = memo(function MarqueeProjectCard({
     return () => io.disconnect();
   }, []);
 
-  // Play/pause video on hover
+  // Play/pause video — auto-play on mobile when visible, hover-play on desktop
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !isDirectVideo) return;
-    if (isHovered && isVisible) {
+    if ((isHovered || isMobile) && isVisible) {
       video.play().catch(() => {});
     } else {
       video.pause();
     }
-  }, [isHovered, isVisible, isDirectVideo]);
+  }, [isHovered, isVisible, isDirectVideo, isMobile]);
 
   // 3D tilt via direct DOM — zero re-renders
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {

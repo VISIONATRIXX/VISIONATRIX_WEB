@@ -142,6 +142,20 @@ export default function SafariSandboxModal({
     (selectedProject?.categories || []).some(c => ["AI SHOOTS", "UGC", "VERTICAL", "MOBILE"].includes(c.toUpperCase()));
   const isVertical = isVerticalCategory || isMetadataVertical;
 
+  const handleFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.requestFullscreen) {
+      video.requestFullscreen().catch(() => {});
+    } else if ((video as any).webkitRequestFullscreen) {
+      (video as any).webkitRequestFullscreen();
+    } else if ((video as any).webkitEnterFullscreen) {
+      (video as any).webkitEnterFullscreen(); // iOS Safari native video player
+    } else {
+      setIsSafariExpanded(true);
+    }
+  };
+
   return (
     <>
       {/* CASE STUDY BRIEFCASE MODAL OVERLAY */}
@@ -349,6 +363,19 @@ export default function SafariSandboxModal({
                         </a>
                       )}
 
+                      {/* Floating Fullscreen Trigger for Mobile Header */}
+                      {!liveMode && (
+                        <button
+                          type="button"
+                          onClick={handleFullscreen}
+                          className="flex md:hidden items-center gap-1 bg-[#c5a880]/15 hover:bg-[#c5a880] text-[#c5a880] hover:text-black border border-[#c5a880]/40 px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold tracking-wider uppercase transition-all cursor-pointer"
+                          title="Fullscreen Video"
+                        >
+                          <Maximize2 className="w-3 h-3" />
+                          <span>FULLSCREEN</span>
+                        </button>
+                      )}
+
                       <button
                         onClick={() => {
                           onClose();
@@ -452,6 +479,16 @@ export default function SafariSandboxModal({
                             if (isVertical) {
                               return (
                                 <div className="relative w-full h-full flex items-center justify-center p-4">
+                                  {/* Floating Fullscreen button on video container */}
+                                  <button
+                                    type="button"
+                                    onClick={handleFullscreen}
+                                    className="absolute top-4 right-4 z-30 flex items-center gap-1.5 bg-black/80 hover:bg-[#c5a880] text-white hover:text-black border border-white/20 hover:border-[#c5a880] px-3.5 py-1.5 rounded-full font-mono text-[10px] font-bold tracking-wider uppercase transition-all shadow-xl cursor-pointer"
+                                  >
+                                    <Maximize2 className="w-3.5 h-3.5 text-[#c5a880]" />
+                                    <span>FULLSCREEN</span>
+                                  </button>
+
                                   {/* Center Luxury Frame holding the vertical video */}
                                   <div className="relative aspect-[9/16] h-[92%] max-h-full max-w-[90%] md:h-[82vh] md:max-h-[690px] md:max-w-[390px] border border-[#c5a880]/30 rounded-2xl overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)] bg-black z-10">
                                     {isEmbed ? (
@@ -468,6 +505,7 @@ export default function SafariSandboxModal({
                                         src={videoUrl}
                                         autoPlay
                                         loop                                        
+                                        muted
                                         playsInline
                                         controls
                                         preload="metadata"
@@ -488,6 +526,16 @@ export default function SafariSandboxModal({
                             // Standard landscape video view — single video, no duplicate blur video
                             return (
                               <div className="relative w-full h-full flex items-center justify-center p-4">
+                                {/* Floating Fullscreen button on video container */}
+                                <button
+                                  type="button"
+                                  onClick={handleFullscreen}
+                                  className="absolute top-4 right-4 z-30 flex items-center gap-1.5 bg-black/80 hover:bg-[#c5a880] text-white hover:text-black border border-white/20 hover:border-[#c5a880] px-3.5 py-1.5 rounded-full font-mono text-[10px] font-bold tracking-wider uppercase transition-all shadow-xl cursor-pointer"
+                                >
+                                  <Maximize2 className="w-3.5 h-3.5 text-[#c5a880]" />
+                                  <span>FULLSCREEN</span>
+                                </button>
+
                                 {/* Centered perfectly fitting landscape frame */}
                                 <div className="relative aspect-video w-full max-w-[95%] md:max-w-[1000px] max-h-[80vh] border border-[#c5a880]/30 rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95)] bg-black z-10">
                                   {isEmbed ? (
