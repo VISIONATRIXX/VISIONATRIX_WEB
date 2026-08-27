@@ -167,6 +167,18 @@ export default function AllProjectsDrawer({
   onSelectCategory,
   onSelectProject
 }: AllProjectsDrawerProps) {
+  // Prevent background body scroll when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -174,7 +186,8 @@ export default function AllProjectsDrawer({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[11000] bg-black/95 backdrop-blur-sm overflow-y-auto p-6 md:p-12 lg:p-16 flex flex-col gap-10"
+          data-lenis-prevent
+          className="fixed inset-0 z-[11000] bg-black/95 backdrop-blur-md overflow-y-auto overscroll-contain p-6 md:p-12 lg:p-16 flex flex-col gap-10 touch-pan-y"
         >
           {/* Header Controls */}
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between border-b border-white/10 pb-6">
