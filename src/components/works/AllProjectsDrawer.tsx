@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Project } from "@/context/AdminContext";
@@ -13,6 +14,148 @@ interface AllProjectsDrawerProps {
   activeCategory: string;
   onSelectCategory: (cat: string) => void;
   onSelectProject: (p: Project) => void;
+}
+
+// Lazy video card that only loads video when visible in the drawer viewport
+function LazyVideoCard({
+  project,
+  onSelectProject
+}: {
+  project: Project;
+  onSelectProject: (p: Project) => void;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+
+  const videoUrl = getProjectVideoUrl(project);
+  const displayImage = !videoUrl ? getProjectThumbnailUrl(project) : getProjectThumbnailUrl(project);
+  const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
+  const isDirectVideo = videoUrl && !isEmbedVideo;
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "300px" }
+    );
+    io.observe(card);
+    return () => io.disconnect();
+  }, []);
+
+  // Play/pause based on hover + visible
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !isDirectVideo) return;
+
+    if (isHovered && isVisible) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isHovered, isVisible, isDirectVideo]);
+
+  return (
+    <div
+      ref={cardRef}
+      onClick={() => onSelectProject(project)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
+    >
+      {isDirectVideo ? (
+        <>
+          {/* Thumbnail poster */}
+          {/* Thumbnail poster image if available */}
+          {displayImage && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={displayImage}
+              alt={project.title}
+              className={`absolute inset-0 w-full h-full object-cover object-top rounded-xl z-[1] transition-opacity duration-500 ${videoReady ? "opacity-0" : "opacity-80 group-hover:opacity-100"}`}
+              loading="lazy"
+              decoding="async"
+              onError={(e) => { e.currentTarget.style.display = "none"; }}
+            />
+          )}
+          {/* Video — always visible (first frame shows as thumbnail when paused). Plays on hover. */}
+          {isVisible && (
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setVideoReady(true)}
+              className={`w-full h-full object-cover rounded-xl z-[2] relative opacity-80 group-hover:opacity-100 transition-all duration-700 ease-out ${isHovered ? "scale-105" : ""}`}
+            />
+          )}
+        </>
+      ) : isEmbedVideo ? (
+        <>
+          {displayImage && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={displayImage}
+              alt={project.title}
+              className={`absolute inset-0 w-full h-full object-cover object-top rounded-xl z-[1] transition-opacity duration-300 ${isHovered ? "opacity-0" : "opacity-80"}`}
+              loading="lazy"
+              decoding="async"
+              onError={(e) => { e.currentTarget.style.display = "none"; }}
+            />
+          )}
+          {isHovered && isVisible && (
+            <iframe
+              src={getVideoEmbedUrl(videoUrl)}
+              className="w-full h-full border-0 object-cover pointer-events-none rounded-xl scale-[1.05] z-[2] relative"
+              allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+              title={project.title}
+            />
+          )}
+        </>
+      ) : (
+        <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#07070b]">
+          {displayImage && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={displayImage}
+              alt={project.title}
+              className="absolute inset-0 w-full h-full object-cover object-top rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out z-10"
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+        </div>
+      )}
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
+
+      <div className="absolute top-5 left-5 z-20 bg-black/70 px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880]" />
+        <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
+          {project.category}
+        </span>
+      </div>
+
+      <div className="absolute bottom-5 left-5 right-5 z-20 flex flex-col gap-1 pointer-events-none">
+        <span className="font-mono text-[8.5px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
+          {project.subtitle} • {project.year}
+        </span>
+        <h4 className="font-outfit text-lg font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
+          {project.title}
+        </h4>
+      </div>
+    </div>
+  );
 }
 
 export default function AllProjectsDrawer({
@@ -77,73 +220,15 @@ export default function AllProjectsDrawer({
             })}
           </div>
 
-          {/* Grid of Filtered Projects */}
+          {/* Grid of Filtered Projects — uses lazy video cards */}
           <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => {
-              const videoUrl = getProjectVideoUrl(project);
-              const displayImage = !videoUrl ? getProjectThumbnailUrl(project) : null;
-              const isEmbedVideo = videoUrl && (videoUrl.includes("vimeo.com") || videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"));
-
-              return (
-                <div
-                  key={`all-${project.id}`}
-                  onClick={() => onSelectProject(project)}
-                  className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer bg-[#09090d] border border-white/10 shadow-2xl p-3 transition-all duration-500 hover:border-[#c5a880]/60 hover:shadow-[0_0_30px_rgba(197,168,128,0.2)]"
-                >
-                  {videoUrl ? (
-                    isEmbedVideo ? (
-                      <iframe
-                        src={getVideoEmbedUrl(videoUrl)}
-                        className="w-full h-full border-0 object-cover pointer-events-none rounded-xl scale-[1.05]"
-                        allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                        title={project.title}
-                      />
-                    ) : (
-                      <video
-                        src={videoUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
-                      />
-                    )
-                  ) : (
-                    <div className="w-full h-full relative rounded-xl overflow-hidden bg-[#07070b]">
-                      {displayImage && (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={displayImage}
-                          alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover object-top rounded-xl opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out z-10"
-                          loading="lazy"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      )}
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent rounded-2xl pointer-events-none" />
-
-                  <div className="absolute top-5 left-5 z-20 bg-black/70 px-3 py-1 rounded-full border border-white/15 flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#c5a880]" />
-                    <span className="font-mono text-[8.5px] text-white font-bold tracking-[0.2em] uppercase">
-                      {project.category}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-5 left-5 right-5 z-20 flex flex-col gap-1 pointer-events-none">
-                    <span className="font-mono text-[8.5px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
-                      {project.subtitle} • {project.year}
-                    </span>
-                    <h4 className="font-outfit text-lg font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
-                      {project.title}
-                    </h4>
-                  </div>
-                </div>
-              );
-            })}
+            {filteredProjects.map((project) => (
+              <LazyVideoCard
+                key={`all-${project.id}`}
+                project={project}
+                onSelectProject={onSelectProject}
+              />
+            ))}
           </div>
         </motion.div>
       )}

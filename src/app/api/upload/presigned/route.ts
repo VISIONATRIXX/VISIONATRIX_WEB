@@ -84,6 +84,7 @@ export async function POST(req: Request) {
       Bucket: R2_BUCKET_NAME,
       Key: key,
       ContentType: contentType,
+      CacheControl: "public, max-age=31536000, immutable",
     });
 
     // Generate S3 presigned URL valid for 15 minutes (900 seconds)

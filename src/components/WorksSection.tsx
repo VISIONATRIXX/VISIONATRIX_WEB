@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, memo } from "react";
-import { Grid, ArrowRight, Layers } from "lucide-react";
+import { ArrowRight, Layers, Sparkles } from "lucide-react";
 import ScrollAnimatedWrapper from "./ScrollAnimatedWrapper";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -9,6 +9,37 @@ import { useAdmin, Project } from "@/context/AdminContext";
 import MarqueeProjectCard from "./works/MarqueeProjectCard";
 import AllProjectsDrawer from "./works/AllProjectsDrawer";
 import SafariSandboxModal from "./works/SafariSandboxModal";
+
+// Row configuration with unique visual identity
+const ROW_CONFIG = [
+  {
+    num: "01",
+    title: "WEB & SAAS PLATFORMS",
+    subtitle: "INTERACTIVE LIVE DEPLOYMENTS",
+    accent: "#34d399", // emerald
+    accentBg: "rgba(52,211,153,0.06)",
+    accentBorder: "rgba(52,211,153,0.2)",
+    keywords: ["WEB", "SAAS", "POS", "APP", "DEV", "FULLSTACK"],
+  },
+  {
+    num: "02",
+    title: "CINEMATIC & UGC PRODUCTION",
+    subtitle: "COMMERCIAL & UGC ADS",
+    accent: "#c5a880", // gold
+    accentBg: "rgba(197,168,128,0.06)",
+    accentBorder: "rgba(197,168,128,0.2)",
+    keywords: ["VIDEO", "FILM", "UGC", "REEL", "COMMERCIAL", "MEDIA", "STUDIO", "AD"],
+  },
+  {
+    num: "03",
+    title: "UNREAL ENGINE & 3D",
+    subtitle: "REAL-TIME 3D AUTOMATION",
+    accent: "#22d3ee", // cyan
+    accentBg: "rgba(34,211,238,0.06)",
+    accentBorder: "rgba(34,211,238,0.2)",
+    keywords: ["UNREAL", "CGI", "3D", "VFX", "AUTOMATION", "SPATIAL", "VR", "CONFIGURATOR"],
+  },
+];
 
 const WorksSection = memo(function WorksSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -45,12 +76,10 @@ const WorksSection = memo(function WorksSection() {
     (window as any).lenis?.stop();
   };
 
-  // Global Keyboard Shortcuts Listener
+  // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) {
-        return;
-      }
+      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) return;
 
       if (e.key === "Escape" || e.key === "Esc") {
         if (selectedProject) {
@@ -68,13 +97,10 @@ const WorksSection = memo(function WorksSection() {
 
       if (selectedProject) {
         const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
-        
         if (e.key === "ArrowRight") {
-          const nextIndex = (currentIndex + 1) % projects.length;
-          handleOpenProject(projects[nextIndex]);
+          handleOpenProject(projects[(currentIndex + 1) % projects.length]);
         } else if (e.key === "ArrowLeft") {
-          const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
-          handleOpenProject(projects[prevIndex]);
+          handleOpenProject(projects[(currentIndex - 1 + projects.length) % projects.length]);
         } else if (e.key === "r" || e.key === "R") {
           setIframeKey(k => k + 1);
         } else if (e.key === "f" || e.key === "F") {
@@ -91,32 +117,53 @@ const WorksSection = memo(function WorksSection() {
   const row1Ref = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
   const row3Ref = useRef<HTMLDivElement>(null);
+  const rowRefs = [row1Ref, row2Ref, row3Ref];
 
-  // Divide projects into 3 distinct showcase rows:
-  const row1Projects = projects.filter(p => 
-    Boolean(p.details?.liveUrl) || 
-    p.categories.some(c => ["WEB", "SAAS", "POS", "APP", "DEV", "FULLSTACK"].some(k => c.toUpperCase().includes(k))) ||
-    p.category.toUpperCase().includes("WEB") || p.category.toUpperCase().includes("SAAS")
-  );
+  // Exclusive project-to-row assignment
+  const matchesRow = (p: Project, keywords: string[]) => {
+    const cats = (p.categories || []).map(c => c.toUpperCase());
+    const mainCat = p.category.toUpperCase();
+    return cats.some(c => keywords.some(k => c.includes(k))) || keywords.some(k => mainCat.includes(k));
+  };
 
-  const row2Projects = projects.filter(p => 
-    p.categories.some(c => ["VIDEO", "FILM", "UGC", "REEL", "COMMERCIAL", "MEDIA", "STUDIO", "AD"].some(k => c.toUpperCase().includes(k))) ||
-    p.category.toUpperCase().includes("VIDEO") || p.category.toUpperCase().includes("FILM") || p.category.toUpperCase().includes("UGC") || p.category.toUpperCase().includes("REEL")
-  );
+  const assigned = new Set<string>();
+  const rowProjects: Project[][] = [[], [], []];
 
-  const row3Projects = projects.filter(p => 
-    p.categories.some(c => ["UNREAL", "CGI", "3D", "VFX", "AUTOMATION", "SPATIAL", "VR", "CONFIGURATOR"].some(k => c.toUpperCase().includes(k))) ||
-    p.category.toUpperCase().includes("CGI") || p.category.toUpperCase().includes("VFX") || p.category.toUpperCase().includes("3D") || p.category.toUpperCase().includes("UNREAL") || p.category.toUpperCase().includes("AUTOMATION")
-  );
+  // Priority: Row1 → Row2 → Row3
+  for (const p of projects) {
+    if (Boolean(p.details?.liveUrl) || matchesRow(p, ROW_CONFIG[0].keywords)) {
+      rowProjects[0].push(p);
+      assigned.add(p.id);
+    }
+  }
+  for (const p of projects) {
+    if (!assigned.has(p.id) && matchesRow(p, ROW_CONFIG[1].keywords)) {
+      rowProjects[1].push(p);
+      assigned.add(p.id);
+    }
+  }
+  for (const p of projects) {
+    if (!assigned.has(p.id) && matchesRow(p, ROW_CONFIG[2].keywords)) {
+      rowProjects[2].push(p);
+      assigned.add(p.id);
+    }
+  }
 
-  const list1 = row1Projects.length > 0 ? row1Projects : projects;
-  const list2 = row2Projects.length > 0 ? row2Projects : projects;
-  const list3 = row3Projects.length > 0 ? row3Projects : projects;
+  // Distribute unassigned
+  const unassigned = projects.filter(p => !assigned.has(p.id));
+  unassigned.forEach((p, i) => rowProjects[i % 3].push(p));
 
-  // On mobile, use 2x duplication; on desktop use 3x
-  const dupRow1 = isMobile ? [...list1, ...list1] : [...list1, ...list1, ...list1];
-  const dupRow2 = isMobile ? [...list2, ...list2] : [...list2, ...list2, ...list2];
-  const dupRow3 = isMobile ? [...list3, ...list3] : [...list3, ...list3, ...list3];
+  // Smart duplication for seamless marquee
+  const smartDuplicate = (list: Project[]) => {
+    if (list.length === 0) return [];
+    const minCards = isMobile ? 6 : 10;
+    const repeats = Math.max(2, Math.ceil(minCards / list.length));
+    const result: Project[] = [];
+    for (let i = 0; i < repeats; i++) result.push(...list);
+    return result;
+  };
+
+  const dupRows = rowProjects.map(smartDuplicate);
 
   const categories = [
     "ALL",
@@ -132,7 +179,7 @@ const WorksSection = memo(function WorksSection() {
     ? projects 
     : projects.filter(p => p.categories.includes(activeCategory));
 
-  // Desktop-only GSAP marquee ticker loop (bypassed on mobile to guarantee 60-120 FPS native touch scrolling)
+  // Desktop GSAP marquee
   useEffect(() => {
     if (typeof window === "undefined" || isMobile) return;
     gsap.registerPlugin(ScrollTrigger);
@@ -143,10 +190,7 @@ const WorksSection = memo(function WorksSection() {
     let isVisible = false;
     let targetVelocity = 0;
     let currentVelocity = 0;
-
-    let x1 = 0;
-    let x2 = -1200;
-    let x3 = 0;
+    let x1 = 0, x2 = -1200, x3 = 0;
 
     const io = new IntersectionObserver(
       ([entry]) => { isVisible = entry.isIntersecting; },
@@ -158,8 +202,10 @@ const WorksSection = memo(function WorksSection() {
       trigger: section,
       start: "top bottom",
       end: "bottom top",
-      onUpdate: (self) => {
-        targetVelocity = self.getVelocity() * 0.025;
+      onUpdate: (self) => { 
+        // Clamp velocity to prevent extreme frame-drop spikes on fast scroll
+        const rawVel = self.getVelocity() * 0.012;
+        targetVelocity = Math.max(-8, Math.min(8, rawVel));
       }
     });
 
@@ -200,149 +246,145 @@ const WorksSection = memo(function WorksSection() {
     <section 
       ref={sectionRef}
       id="works" 
-      className="relative w-full bg-[#0b0b0f] overflow-hidden py-24 md:py-32"
+      className="relative w-full bg-[#07070a] overflow-hidden py-28 md:py-40"
     >
-      {/* Background Ambient Lighting */}
+      {/* === BACKGROUND ATMOSPHERE === */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute right-[10%] top-[15%] w-[40vw] h-[40vw] bg-[#c5a880]/[0.015] blur-[170px] rounded-full" />
-        <div className="absolute left-[5%] bottom-[15%] w-[45vw] h-[45vw] bg-[#c5a880]/[0.01] blur-[200px] rounded-full" />
+        <div className="absolute right-[-5%] top-[10%] w-[50vw] h-[50vw] bg-[#c5a880]/[0.012] blur-[200px] rounded-full" />
+        <div className="absolute left-[-10%] bottom-[5%] w-[60vw] h-[60vw] bg-[#c5a880]/[0.008] blur-[250px] rounded-full" />
       </div>
 
-      <ScrollAnimatedWrapper enableY={false} enableScale={false} className="w-full flex flex-col gap-12">
+      <ScrollAnimatedWrapper enableY={false} enableScale={false} enableOpacity={false} className="w-full flex flex-col gap-16 md:gap-20">
         
-        {/* Header Section */}
-        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex flex-col md:flex-row md:items-end justify-between gap-6 z-10">
-          <div className="flex flex-col gap-3 max-w-2xl">
-            <span className="font-mono text-[9px] md:text-[10px] tracking-[0.3em] text-[#c5a880] uppercase font-bold">
-              SELECTED WORKS // CREATIVE SHOWCASE
-            </span>
-            <h2 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold tracking-[0.06em] text-white uppercase leading-none">
-              FEATURED PROJECTS
-            </h2>
-            <p className="text-xs md:text-sm text-[#9999aa] leading-relaxed mt-1 font-sans">
-              Explore our organized portfolio featuring 3 dedicated showcases: Live Web & SaaS Apps, Video Editing & UGC Ads, and Unreal Engine 5 Automation.
-            </p>
+        {/* === SECTION HEADER === */}
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="flex flex-col gap-5 max-w-2xl">
+              {/* Eyebrow */}
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#c5a880] shadow-[0_0_8px_rgba(197,168,128,0.5)]" />
+                <div className="w-12 h-[1px] bg-gradient-to-r from-[#c5a880] to-transparent" />
+                <span className="font-mono text-[9px] md:text-[10px] tracking-[0.35em] text-[#c5a880] uppercase font-bold">
+                  SELECTED WORKS
+                </span>
+              </div>
+              
+              {/* Title */}
+              <h2 className="font-display text-3xl md:text-5xl lg:text-[3.5rem] font-bold tracking-[0.04em] text-white uppercase leading-[1.05]">
+                FEATURED
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c5a880] via-[#e2cbb0] to-[#c5a880]">
+                  PROJECTS
+                </span>
+              </h2>
+
+              {/* Description */}
+              <p className="text-[13px] md:text-sm text-white/40 leading-relaxed font-sans max-w-lg">
+                Curated portfolio across three creative disciplines — each piece crafted to push the boundaries of digital experience design.
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <button
+              onClick={() => {
+                setShowAllDrawer(true);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (window as any).lenis?.stop();
+              }}
+              className="group flex items-center gap-3 px-7 py-4 bg-gradient-to-r from-[#c5a880] to-[#b09470] hover:from-[#d4b890] hover:to-[#c5a880] text-black rounded-2xl font-outfit text-xs font-bold tracking-[0.18em] transition-all duration-500 shadow-[0_4px_20px_rgba(197,168,128,0.25)] hover:shadow-[0_8px_32px_rgba(197,168,128,0.4)] shrink-0 cursor-pointer uppercase"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>VIEW ALL {projects.length} PROJECTS</span>
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </button>
           </div>
 
+          {/* Divider line */}
+          <div className="mt-10 h-[1px] bg-gradient-to-r from-[#c5a880]/30 via-white/5 to-transparent" />
+        </div>
+
+        {/* === 3 SHOWCASE ROWS === */}
+        <div className="w-full flex flex-col gap-14 md:gap-16 overflow-hidden z-10">
+          {ROW_CONFIG.map((row, rowIdx) => (
+            <div key={row.num} className="w-full flex flex-col gap-5">
+              {/* Row Header */}
+              <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center gap-4">
+                <div className="flex items-center gap-3.5 shrink-0">
+                  {/* Number */}
+                  <span 
+                    className="font-mono text-[11px] font-bold tracking-[0.2em]"
+                    style={{ color: row.accent }}
+                  >
+                    {row.num}
+                  </span>
+                  
+                  {/* Accent dot */}
+                  <div 
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: row.accent, boxShadow: `0 0 6px ${row.accent}` }}
+                  />
+                  
+                  {/* Title */}
+                  <span className="font-outfit text-[11px] md:text-[13px] tracking-[0.18em] text-white/90 font-bold uppercase">
+                    {row.title}
+                  </span>
+
+                  {/* Badge */}
+                  <span 
+                    className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full font-mono text-[8px] font-bold uppercase tracking-[0.15em]"
+                    style={{ 
+                      backgroundColor: row.accentBg, 
+                      borderWidth: 1, 
+                      borderColor: row.accentBorder, 
+                      color: row.accent 
+                    }}
+                  >
+                    {row.subtitle}
+                  </span>
+                </div>
+
+                {/* Separator line */}
+                <div 
+                  className="flex-1 h-[1px]"
+                  style={{ background: `linear-gradient(to right, ${row.accentBorder}, rgba(255,255,255,0.03), transparent)` }}
+                />
+
+                {/* Count */}
+                <span className="font-mono text-[10px] text-white/25 tracking-wider shrink-0">
+                  {rowProjects[rowIdx].length} {rowProjects[rowIdx].length === 1 ? "PROJECT" : "PROJECTS"}
+                </span>
+              </div>
+
+              {/* Cards Row */}
+              <div className={`w-full py-3 md:py-5 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
+                <div ref={rowRefs[rowIdx]} className="flex gap-5 md:gap-7 w-max transform-gpu will-change-transform">
+                  {dupRows[rowIdx].map((project, idx) => (
+                    <div key={`r${rowIdx}-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
+                      <MarqueeProjectCard
+                        project={project}
+                        onOpenDetails={handleOpenProject}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* === BOTTOM CTA === */}
+        <div className="flex justify-center items-center z-10 pt-2">
           <button
             onClick={() => {
               setShowAllDrawer(true);
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (window as any).lenis?.stop();
             }}
-            className="group flex items-center gap-3 px-6 py-3.5 bg-[#c5a880] hover:bg-[#b0926a] text-black rounded-xl font-outfit text-xs font-bold tracking-[0.18em] transition-all duration-300 shadow-xl shrink-0 cursor-pointer"
+            className="group font-mono text-[10px] text-white/40 hover:text-[#c5a880] tracking-[0.25em] uppercase flex items-center gap-3 transition-all duration-500 cursor-pointer py-3 px-6 rounded-full border border-white/5 hover:border-[#c5a880]/30 hover:bg-[#c5a880]/5"
           >
-            <Grid className="w-4 h-4" />
-            <span>VIEW ALL PROJECTS ({projects.length})</span>
-            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
-        </div>
-
-        {/* 3 SHOWCASE ROWS */}
-        <div className="w-full flex flex-col gap-12 overflow-hidden py-6 z-10">
-          
-          {/* ROW 1: 🌐 WEB & SAAS PLATFORMS */}
-          <div className="w-full flex flex-col gap-6">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
-                  01 <span className="text-emerald-400 font-mono font-normal">/</span> WEB & SAAS PLATFORMS
-                </span>
-                <span className="hidden sm:inline-flex bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-emerald-300 font-bold uppercase tracking-wider">
-                  INTERACTIVE LIVE DEPLOYMENTS
-                </span>
-              </div>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/30 via-white/10 to-transparent" />
-            </div>
-
-            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
-              <div ref={row1Ref} className="flex gap-4 md:gap-6 w-max">
-                {dupRow1.map((project, idx) => (
-                  <div key={`r1-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
-                    <MarqueeProjectCard
-                      project={project}
-                      onOpenDetails={handleOpenProject}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ROW 2: 🎬 CINEMATIC & UGC MEDIA PRODUCTION */}
-          <div className="w-full flex flex-col gap-6">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#c5a880]" />
-                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
-                  02 <span className="text-[#c5a880] font-mono font-normal">/</span> CINEMATIC & UGC MEDIA PRODUCTION
-                </span>
-                <span className="hidden sm:inline-flex bg-[#c5a880]/15 border border-[#c5a880]/40 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-[#c5a880] font-bold uppercase tracking-wider">
-                  COMMERCIAL & UGC ADS
-                </span>
-              </div>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-[#c5a880]/30 via-white/10 to-transparent" />
-            </div>
-
-            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
-              <div ref={row2Ref} className="flex gap-4 md:gap-6 w-max">
-                {dupRow2.map((project, idx) => (
-                  <div key={`r2-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
-                    <MarqueeProjectCard
-                      project={project}
-                      onOpenDetails={handleOpenProject}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ROW 3: ⚡ UNREAL ENGINE & 3D AUTOMATION */}
-          <div className="w-full flex flex-col gap-6">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 w-full flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-                <span className="font-outfit text-xs md:text-sm tracking-[0.2em] text-white font-extrabold uppercase">
-                  03 <span className="text-cyan-400 font-mono font-normal">/</span> UNREAL ENGINE & 3D AUTOMATION
-                </span>
-                <span className="hidden sm:inline-flex bg-cyan-950/40 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-mono text-[9px] text-cyan-300 font-bold uppercase tracking-wider">
-                  REAL-TIME 3D AUTOMATION
-                </span>
-              </div>
-              <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/30 via-white/10 to-transparent" />
-            </div>
-
-            <div className={`w-full py-4 md:py-6 ${isMobile ? "overflow-x-auto snap-x no-scrollbar px-6" : "overflow-hidden flex items-center"}`}>
-              <div ref={row3Ref} className="flex gap-4 md:gap-6 w-max">
-                {dupRow3.map((project, idx) => (
-                  <div key={`r3-${project.id}-${idx}`} className={isMobile ? "snap-center" : ""}>
-                    <MarqueeProjectCard
-                      project={project}
-                      onOpenDetails={handleOpenProject}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="flex justify-center items-center z-10 pt-4">
-          <button
-            onClick={() => {
-              setShowAllDrawer(true);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (window as any).lenis?.stop();
-            }}
-            className="font-mono text-xs text-[#c5a880] hover:text-white tracking-[0.2em] uppercase flex items-center gap-2.5 transition-colors duration-300 border-b border-[#c5a880]/40 hover:border-white pb-1 cursor-pointer"
-          >
-            <Layers className="w-4 h-4" />
-            <span>EXPLORE ALL {projects.length} PROJECTS BY CATEGORY</span>
-            <span>→</span>
+            <Layers className="w-3.5 h-3.5" />
+            <span>EXPLORE FULL ARCHIVE — {projects.length} PROJECTS</span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>
 

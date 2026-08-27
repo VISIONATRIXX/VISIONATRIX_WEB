@@ -437,6 +437,12 @@ export default function SafariSandboxModal({
                     <div className="relative w-full h-full overflow-hidden bg-black flex items-center justify-center">
                       <div className={`absolute inset-0 bg-gradient-to-tr ${selectedProject.bgGradient} opacity-30 z-0`} />
                       
+                      {/* CSS ambient glow background — replaces duplicate blur video for performance */}
+                      <div className="absolute inset-0 z-0">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#c5a880]/10 via-transparent to-[#c5a880]/5 blur-3xl opacity-40" />
+                        <div className="absolute inset-0 bg-gradient-to-tl from-black/60 via-transparent to-black/60" />
+                      </div>
+
                       <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center overflow-hidden">
                         {(() => {
                           const videoUrl = getProjectVideoUrl(selectedProject);
@@ -446,26 +452,6 @@ export default function SafariSandboxModal({
                             if (isVertical) {
                               return (
                                 <div className="relative w-full h-full flex items-center justify-center p-4">
-                                  {/* Ambient blurred glow background */}
-                                  {isEmbed ? (
-                                    <iframe
-                                      src={getVideoEmbedUrl(videoUrl)}
-                                      className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
-                                      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                                      title={`${selectedProject.title} Blur Background`}
-                                    />
-                                  ) : (
-                                    <video
-                                      src={videoUrl}
-                                      autoPlay
-                                      loop
-                                      muted
-                                      playsInline
-                                      preload="auto"
-                                      className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
-                                    />
-                                  )}
-
                                   {/* Center Luxury Frame holding the vertical video */}
                                   <div className="relative aspect-[9/16] h-[92%] max-h-full max-w-[90%] md:h-[82vh] md:max-h-[690px] md:max-w-[390px] border border-[#c5a880]/30 rounded-2xl overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.95)] bg-black z-10">
                                     {isEmbed ? (
@@ -484,7 +470,7 @@ export default function SafariSandboxModal({
                                         loop                                        
                                         playsInline
                                         controls
-                                        preload="auto"
+                                        preload="metadata"
                                         onLoadedMetadata={(e) => {
                                           const video = e.currentTarget;
                                           if (video.videoWidth < video.videoHeight) {
@@ -499,29 +485,9 @@ export default function SafariSandboxModal({
                               );
                             }
 
-                            // Standard landscape video view with ambient glow background & perfect aspect fit
+                            // Standard landscape video view — single video, no duplicate blur video
                             return (
                               <div className="relative w-full h-full flex items-center justify-center p-4">
-                                {/* Ambient blurred glow background */}
-                                {isEmbed ? (
-                                  <iframe
-                                    src={getVideoEmbedUrl(videoUrl)}
-                                    className="absolute inset-0 w-full h-full border-0 object-cover scale-[1.4] blur-3xl opacity-25 select-none pointer-events-none"
-                                    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                                    title={`${selectedProject.title} Landscape Blur`}
-                                  />
-                                ) : (
-                                  <video
-                                    src={videoUrl}
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    preload="auto"
-                                    className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-25 scale-125 select-none pointer-events-none"
-                                  />
-                                )}
-
                                 {/* Centered perfectly fitting landscape frame */}
                                 <div className="relative aspect-video w-full max-w-[95%] md:max-w-[1000px] max-h-[80vh] border border-[#c5a880]/30 rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.95)] bg-black z-10">
                                   {isEmbed ? (
@@ -541,7 +507,7 @@ export default function SafariSandboxModal({
                                       muted
                                       playsInline
                                       controls
-                                      preload="auto"
+                                      preload="metadata"
                                       onLoadedMetadata={(e) => {
                                         const video = e.currentTarget;
                                         if (video.videoWidth < video.videoHeight) {
