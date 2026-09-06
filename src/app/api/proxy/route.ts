@@ -1,5 +1,34 @@
 import { NextResponse } from "next/server";
 
+function isPrivateHost(hostname: string): boolean {
+  const host = hostname.toLowerCase();
+
+  if (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host === "0.0.0.0" ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
+    return true;
+  }
+
+  // IPv4 regex pattern check
+  const ipv4Match = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (ipv4Match) {
+    const [, a, b] = ipv4Match.map(Number);
+    if (a === 127) return true; // 127.0.0.0/8 Loopback
+    if (a === 10) return true;  // 10.0.0.0/8 Private
+    if (a === 169 && b === 254) return true; // 169.254.0.0/16 Link-local / Cloud Metadata
+    if (a === 192 && b === 168) return true; // 192.168.0.0/16 Private
+    if (a === 172 && b >= 16 && b <= 31) return true; // 172.16.0.0/12 Private
+    if (a === 0) return true;
+  }
+
+  return false;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get("url");
@@ -10,6 +39,20 @@ export async function GET(request: Request) {
 
   try {
     const parsed = new URL(targetUrl);
+
+    // Enforce HTTPS protocol
+    if (parsed.protocol !== "https:") {
+      return new NextResponse("Forbidden: Only HTTPS URLs are permitted", { status: 400 });
+    }
+
+    // SSRF Check: Block private IPs, loopback, and internal metadata hosts
+    if (isPrivateHost(parsed.hostname)) {
+      return new NextResponse("Forbidden: Access to internal or private addresses is blocked", { status: 403 });
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+
     const response = await fetch(parsed.toString(), {
       headers: {
         "User-Agent":
@@ -19,7 +62,9 @@ export async function GET(request: Request) {
         "Accept-Language": "en-US,en;q=0.5",
       },
       cache: "no-store",
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     const contentType = response.headers.get("content-type") || "";
 
@@ -27,7 +72,7 @@ export async function GET(request: Request) {
       let html = await response.text();
       const baseUrl = parsed.href;
 
-      // Inject <base href="..."> right after <head> so all relative CSS/JS/images resolve cleanly
+      // Inject <base href="..."> right after <head> so relative CSS/JS/images resolve cleanly
       const baseTag = `<base href="${baseUrl}">`;
       if (html.includes("<head>")) {
         html = html.replace("<head>", `<head>${baseTag}`);
@@ -41,7 +86,6 @@ export async function GET(request: Request) {
         status: 200,
         headers: {
           "Content-Type": "text/html; charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
         },
       });
     }
@@ -51,11 +95,10 @@ export async function GET(request: Request) {
       status: response.status,
       headers: {
         "Content-Type": contentType,
-        "Access-Control-Allow-Origin": "*",
       },
     });
-  } catch (error) {
-    console.error("Proxy fetch error for URL:", targetUrl, error);
+  } catch (error: any) {
+    console.error("Proxy fetch error for URL:", targetUrl, error?.message);
     return new NextResponse(
       `<!DOCTYPE html>
 <html>

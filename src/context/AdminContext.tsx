@@ -18,7 +18,12 @@ import {
 // Re-export types so existing imports from "@/context/AdminContext" continue working seamlessly!
 export type { Project, ServiceItem, Testimonial, Proposal, AdminContextType };
 
-const AdminContext = createContext<AdminContextType | undefined>(undefined);
+export interface AdminContextTypeExtended extends AdminContextType {
+  isAdmin: boolean;
+  setIsAdmin: (value: boolean) => void;
+}
+
+const AdminContext = createContext<AdminContextTypeExtended | undefined>(undefined);
 
 // Helper to safely format error objects into strings for clean console output
 const formatErrorMsg = (err: unknown): string => {
@@ -29,7 +34,7 @@ const formatErrorMsg = (err: unknown): string => {
     return String((err as { message: unknown }).message);
   }
   return JSON.stringify(err);
-};
+}
 
 // -------------------------------------------------------------
 // Database Mappers
@@ -206,6 +211,13 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(initialTestimonials);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Admin-only logging - only logs detailed errors when user is authenticated admin
+  const log = {
+    error: (...args: unknown[]) => { if (isAdmin) console.error(...args); },
+    warn: (...args: unknown[]) => { if (isAdmin) console.warn(...args); },
+  };
 
   // Hydrate public data from Supabase (read-only via anon key — safe with locked RLS)
   useEffect(() => {
@@ -227,15 +239,18 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           setTestimonials(testRes.data.map(mapTestimonialFromDb));
         }
       } catch (error) {
-        console.warn("Error hydrating public data from Supabase (using fallback local data):", formatErrorMsg(error));
+        log.warn("Error hydrating public data from Supabase (using fallback local data):", formatErrorMsg(error));
       } finally {
         setIsLoaded(true);
       }
     }
 
-    // Fetch proposals via server API (admin-only, requires session cookie)
+    // Fetch proposals via server API (only for admin visitors to avoid 401 logs on public pages)
     async function fetchProposals() {
       try {
+        const isAdminRoute = typeof window !== "undefined" && window.location.pathname.startsWith("/admin");
+        if (!isAdminRoute) return;
+
         const res = await fetch("/api/admin/proposals");
         if (res.ok) {
           const { data } = await res.json();
@@ -243,7 +258,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             setProposals(data.map(mapProposalFromDb));
           }
         }
-        // If 401, user is not admin — proposals stays empty (expected for public visitors)
       } catch {
         // Silently fail — proposals not visible to public
       }
@@ -270,7 +284,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
             const mapped = (data || []).map(mapProjectFromDb);
             setProjects(mapped);
           } catch (err) {
-            console.error("Realtime projects refresh failed:", formatErrorMsg(err));
+            log.error("Realtime projects refresh failed:", formatErrorMsg(err));
           }
         }
       )
@@ -362,7 +376,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         await supabase.from("projects").insert([dbProj]);
       }
     } catch (error) {
-      console.error("Failed to add project via API, falling back to client SDK:", formatErrorMsg(error));
+      log.error("Failed to add project via API, falling back to client SDK:", formatErrorMsg(error));
       const dbProj = {
         ...mapProjectToDb(pWithSeqSubtitle as Project),
         id: nextId
@@ -387,7 +401,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         await supabase.from("projects").update(dbProj).eq("id", id);
       }
     } catch (error) {
-      console.error("Failed to update project via API, falling back to client SDK:", formatErrorMsg(error));
+      log.error("Failed to update project via API, falling back to client SDK:", formatErrorMsg(error));
       const dbProj = mapProjectToDb(p);
       await supabase.from("projects").update(dbProj).eq("id", id);
     }
@@ -408,7 +422,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         await supabase.from("projects").delete().eq("id", id);
       }
     } catch (error) {
-      console.error("Failed to delete project via API, falling back to client SDK:", formatErrorMsg(error));
+      log.error("Failed to delete project via API, falling back to client SDK:", formatErrorMsg(error));
       await supabase.from("projects").delete().eq("id", id);
     }
   };
@@ -420,13 +434,17 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       const orderedIds = newOrder.map(p => p.id);
       if (orderedIds.length === 0) return;
 
-      const { error: rpcError } = await supabase.rpc("reorder_projects", {
-        p_ids: orderedIds
+      const res = await fetch("/api/admin/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reorder", ids: orderedIds })
       });
 
-      if (rpcError) throw rpcError;
-    } catch (error) {
-      console.error("Failed to persist project reordering:", formatErrorMsg(error));
+      if (!res.ok) {
+        log.error("Project reorder server update failed");
+      }
+    } catch {
+      log.error("Failed to persist project reordering");
     }
   };
 
@@ -450,7 +468,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       setServices(prev => prev.map(item => (item.id === id ? s : item)));
     } catch (error) {
-      console.error("Failed to update service:", formatErrorMsg(error));
+      log.error("Failed to update service:", formatErrorMsg(error));
     }
   };
 
@@ -478,7 +496,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         setTestimonials(prev => [...prev, newTest]);
       }
     } catch (error) {
-      console.error("Failed to add testimonial:", formatErrorMsg(error));
+      log.error("Failed to add testimonial:", formatErrorMsg(error));
     }
   };
 
@@ -499,7 +517,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       setTestimonials(prev => prev.map(item => (item.id === id ? t : item)));
     } catch (error) {
-      console.error("Failed to update testimonial:", formatErrorMsg(error));
+      log.error("Failed to update testimonial:", formatErrorMsg(error));
     }
   };
 
@@ -515,10 +533,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (!res.ok) {
         const err = await res.json();
-        console.error("Failed to delete testimonial on server:", err);
+        log.error("Failed to delete testimonial on server:", err);
       }
     } catch (error) {
-      console.error("Failed to delete testimonial:", formatErrorMsg(error));
+      log.error("Failed to delete testimonial:", formatErrorMsg(error));
     }
   };
 
@@ -527,23 +545,32 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   // -------------------------------------------------------------
   const addProposal = async (p: Omit<Proposal, "id" | "timestamp" | "status"> & { fileName?: string | null }) => {
     try {
-      // Contact form submissions still use the anon key INSERT policy (public access)
-      const dbProp = mapProposalToDb({
-        ...p,
-        status: "Pending"
+      const res = await fetch("/api/proposals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: p.fullName,
+          email: p.email,
+          organization: p.organization,
+          service: p.service,
+          details: p.details,
+          budget: p.budget,
+          fileName: p.fileName
+        })
       });
-      const { data, error } = await supabase
-        .from("proposals")
-        .insert([dbProp])
-        .select();
 
-      if (error) throw error;
-      if (data && data[0]) {
-        const newProp = mapProposalFromDb(data[0]);
-        setProposals(prev => [newProp, ...prev]);
+      if (res.ok) {
+        const result = await res.json();
+        if (result.data) {
+          const newProp = mapProposalFromDb(result.data);
+          setProposals(prev => [newProp, ...prev]);
+        }
+      } else {
+        const err = await res.json();
+        log.error("Proposal submission error:", err.error || "Failed to submit proposal");
       }
-    } catch (error) {
-      console.error("Failed to add proposal:", formatErrorMsg(error));
+    } catch {
+      log.error("Failed to submit proposal");
     }
   };
 
@@ -559,10 +586,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (!res.ok) {
         const err = await res.json();
-        console.error("Failed to update proposal status on server:", err);
+        log.error("Failed to update proposal status on server:", err);
       }
     } catch (error) {
-      console.error("Failed to update proposal status:", formatErrorMsg(error));
+      log.error("Failed to update proposal status:", formatErrorMsg(error));
     }
   };
 
@@ -578,10 +605,10 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (!res.ok) {
         const err = await res.json();
-        console.error("Failed to delete proposal on server:", err);
+        log.error("Failed to delete proposal on server:", err);
       }
     } catch (error) {
-      console.error("Failed to delete proposal:", formatErrorMsg(error));
+      log.error("Failed to delete proposal:", formatErrorMsg(error));
     }
   };
 
@@ -593,6 +620,8 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         testimonials,
         proposals,
         isLoaded,
+        isAdmin,
+        setIsAdmin,
         addProject,
         updateProject,
         deleteProject,

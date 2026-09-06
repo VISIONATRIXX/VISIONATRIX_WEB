@@ -132,38 +132,34 @@ const FeedbackSection = memo(function FeedbackSection() {
           <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#050507] to-transparent z-20 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#050507] to-transparent z-20 pointer-events-none" />
 
-          <div className="flex w-max animate-marquee whitespace-nowrap gap-16 select-none">
+          <motion.div 
+            className="flex w-max whitespace-nowrap gap-16 select-none"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              x: {
+                repeat: Infinity,
+                repeatType: "loop",
+                duration: 30,
+                ease: "linear",
+              },
+            }}
+          >
             {/* Logo set duplicated to loop seamlessly */}
-            <div className="flex items-center gap-16 text-center font-display text-xs md:text-sm tracking-[0.3em] font-semibold text-[#3b3b4d]">
+            <div className="flex items-center gap-16 text-center font-display text-xs md:text-sm tracking-[0.3em] font-semibold text-[#8a8a9e]">
               {clientLogos.map((logo, idx) => (
                 <span key={idx} className="hover:text-white transition-colors duration-300">
                   {logo}
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-16 text-center font-display text-xs md:text-sm tracking-[0.3em] font-semibold text-[#3b3b4d]">
+            <div className="flex items-center gap-16 text-center font-display text-xs md:text-sm tracking-[0.3em] font-semibold text-[#8a8a9e]">
               {clientLogos.map((logo, idx) => (
                 <span key={`dup-${idx}`} className="hover:text-white transition-colors duration-300">
                   {logo}
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* CSS for custom infinite scrolling marquee */}
-          <style jsx global>{`
-            @keyframes marquee {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            .animate-marquee {
-              display: flex;
-              animation: marquee 25s linear infinite;
-            }
-            .animate-marquee:hover {
-              animation-play-state: paused;
-            }
-          `}</style>
+          </motion.div>
         </div>
       </ScrollAnimatedWrapper>
     </section>

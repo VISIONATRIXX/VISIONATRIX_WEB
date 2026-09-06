@@ -11,20 +11,32 @@ interface FooterProps {
 export default function Footer({ onLinkClick }: FooterProps) {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
-  const [timeStr, setTimeStr] = useState<string>("");
+  const [worldTimes, setWorldTimes] = useState({
+    london: "00:00:00",
+    ny: "00:00:00",
+    tokyo: "00:00:00",
+    blr: "00:00:00"
+  });
 
-  // Live ticking clocks for India Standard Time (IST)
+  // Live ticking clocks for global timezones across the world
   useEffect(() => {
     const tick = () => {
       const date = new Date();
-      const formatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
+      const format = (tz: string) =>
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).format(date);
+
+      setWorldTimes({
+        london: format("Europe/London"),
+        ny: format("America/New_York"),
+        tokyo: format("Asia/Tokyo"),
+        blr: format("Asia/Kolkata")
       });
-      setTimeStr(formatter.format(date));
     };
     tick();
     const interval = setInterval(tick, 1000);
@@ -151,10 +163,10 @@ export default function Footer({ onLinkClick }: FooterProps) {
           © 2026 VISIONATRIX STUDIO CO. ALL DESIGN INTEGRITY COMPLIED.
         </span>
 
-        {/* Live IST clock inside brackets */}
-        <div className="font-mono text-[9px] text-[#555566] tracking-[0.15em] uppercase flex items-center gap-1">
+        {/* Live world clocks across time zones */}
+        <div className="font-mono text-[9px] text-[#555566] tracking-[0.15em] uppercase flex items-center flex-wrap gap-1">
           <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
-          <span>[ CLOCKS: BENGALURU: {timeStr || "00:00:00"}{" // "}MUMBAI: {timeStr || "00:00:00"}{" // "}DELHI: {timeStr || "00:00:00"} ]</span>
+          <span>[ WORLD CLOCKS: LONDON: {worldTimes.london}{" // "}NEW YORK: {worldTimes.ny}{" // "}TOKYO: {worldTimes.tokyo}{" // "}BENGALURU: {worldTimes.blr} ]</span>
         </div>
       </div>
 

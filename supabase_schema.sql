@@ -94,40 +94,21 @@ CREATE POLICY "Allow public read-only access to projects"
     ON projects FOR SELECT 
     USING (true);
 
-CREATE POLICY "Allow authorized admin CRUD on projects" 
-    ON projects FOR ALL 
-    USING (true)
-    WITH CHECK (true); -- Note: In strict production auth, bind to auth.role() = 'authenticated'
-
 -- B. Services Policies
 CREATE POLICY "Allow public read-only access to services" 
     ON services FOR SELECT 
     USING (true);
-
-CREATE POLICY "Allow authorized admin CRUD on services" 
-    ON services FOR ALL 
-    USING (true)
-    WITH CHECK (true);
 
 -- C. Testimonials Policies
 CREATE POLICY "Allow public read-only access to testimonials" 
     ON testimonials FOR SELECT 
     USING (true);
 
-CREATE POLICY "Allow authorized admin CRUD on testimonials" 
-    ON testimonials FOR ALL 
-    USING (true)
-    WITH CHECK (true);
-
 -- D. Proposals CRM Policies
 CREATE POLICY "Allow anonymous submission of inquiries (Insert only)" 
     ON proposals FOR INSERT 
     WITH CHECK (true);
-
-CREATE POLICY "Allow authorized admin full access to proposals" 
-    ON proposals FOR ALL 
-    USING (true)
-    WITH CHECK (true);
+-- Note: Admin access is executed exclusively server-side via Supabase Service-Role Key (which bypasses RLS).
 
 -- =====================================================================
 -- SEED DEFAULT DATASETS
@@ -374,7 +355,7 @@ INSERT INTO proposals (id, full_name, email, organization, service, details, bud
 (
     'prop-01', 
     'Arthur Pendelton', 
-    'a.pendelton@apex-systems.io', 
+    'a.pendelton@example.com', 
     'Apex Racing Group', 
     'CGI ADVERTISING', 
     'Staging a high-fidelity visual simulator for our formula concept team. Need volumetric tracks and real-time reflection overlays on composite frames.', 
@@ -384,7 +365,7 @@ INSERT INTO proposals (id, full_name, email, organization, service, details, bud
 (
     'prop-02', 
     'Sarah Jenkins', 
-    's.jenkins@leica-photo.de', 
+    's.jenkins@example.com', 
     'Sarah Jenkins Photography', 
     'VR & SPATIAL XR', 
     'Creating a Gaussian Splatting gallery app in spatial environments. Looking to represent raw vintage focal lens structures accurately.', 

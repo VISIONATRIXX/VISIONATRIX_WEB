@@ -25,8 +25,13 @@ const ContactSection = memo(function ContactSection() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [timeStr, setTimeStr] = useState<string>("");
   const [fileError, setFileError] = useState<string | null>(null);
+  const [worldTimes, setWorldTimes] = useState({
+    london: "00:00:00",
+    ny: "00:00:00",
+    tokyo: "00:00:00",
+    blr: "00:00:00"
+  });
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -91,18 +96,25 @@ const ContactSection = memo(function ContactSection() {
     }
   }, []);
 
-  // Live ticking clocks for India Standard Time (IST)
+  // Live ticking clocks for global timezones across the world
   useEffect(() => {
     const tick = () => {
       const date = new Date();
-      const formatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
+      const format = (tz: string) =>
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).format(date);
+
+      setWorldTimes({
+        london: format("Europe/London"),
+        ny: format("America/New_York"),
+        tokyo: format("Asia/Tokyo"),
+        blr: format("Asia/Kolkata")
       });
-      setTimeStr(formatter.format(date));
     };
     tick();
     const interval = setInterval(tick, 1000);
@@ -420,14 +432,18 @@ A new Project Proposal has been submitted:
 
         {/* Clocks Registry Footer */}
         <div className="w-full border-t border-white/5 pt-6 mt-12 flex justify-center text-center">
-          <div className="font-mono text-[10px] text-[#555566] tracking-[0.18em] uppercase flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
-            <span>CLOCKS: </span>
-            <span className="text-white/80 font-medium">BENGALURU: {timeStr || "00:00:00"}</span>
+          <div className="font-mono text-[10px] text-[#555566] tracking-[0.18em] uppercase flex items-center justify-center flex-wrap gap-x-3 gap-y-1">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[#c5a880]" />
+              <span>WORLD CLOCKS:</span>
+            </div>
+            <span className="text-white/80 font-medium">LONDON: {worldTimes.london}</span>
             <span> {"//"} </span>
-            <span className="text-white/80 font-medium">MUMBAI: {timeStr || "00:00:00"}</span>
+            <span className="text-white/80 font-medium">NEW YORK: {worldTimes.ny}</span>
             <span> {"//"} </span>
-            <span className="text-white/80 font-medium">DELHI: {timeStr || "00:00:00"}</span>
+            <span className="text-white/80 font-medium">TOKYO: {worldTimes.tokyo}</span>
+            <span> {"//"} </span>
+            <span className="text-white/80 font-medium">BENGALURU: {worldTimes.blr}</span>
           </div>
         </div>
       </ScrollAnimatedWrapper>

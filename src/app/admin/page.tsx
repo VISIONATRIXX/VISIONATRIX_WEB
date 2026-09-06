@@ -62,7 +62,9 @@ export default function AdminPage() {
     updateTestimonial,
     deleteTestimonial,
     updateProposalStatus,
-    deleteProposal
+    deleteProposal,
+    isAdmin,
+    setIsAdmin
   } = useAdmin();
 
   // Authentication State
@@ -216,6 +218,7 @@ export default function AdminPage() {
 
       if (res.ok && data.success) {
         setIsAuthenticated(true);
+        setIsAdmin(true);
         addHudLog("Administrator authenticated successfully.", "success");
       } else {
         setAuthError(data.error || "INCORRECT SECURITY PASSCODE");
@@ -236,6 +239,7 @@ export default function AdminPage() {
       // Silently proceed with local logout
     }
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setPasscode("");
     addHudLog("Administrator session terminated safely.", "info");
   };

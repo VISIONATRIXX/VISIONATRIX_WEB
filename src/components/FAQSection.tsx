@@ -297,7 +297,7 @@ I have requested a Sync Call reservation:
                     {/* Month header */}
                     <div className="flex justify-between items-center mb-5">
                       <span className="font-mono text-sm font-extrabold tracking-[0.2em] text-[#c5a880] uppercase">
-                        JUNE MMXXVI
+                        JUNE 2026
                       </span>
                       <span className="font-mono text-[9px] text-[#555566] tracking-wider uppercase flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-[#c5a880]" />

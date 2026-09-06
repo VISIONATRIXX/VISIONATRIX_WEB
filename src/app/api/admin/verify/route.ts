@@ -5,13 +5,14 @@ import {
   SESSION_COOKIE_NAME, 
   SESSION_MAX_AGE_SECONDS, 
   createSignedToken, 
-  verifySignedToken 
+  verifySignedToken,
+  RATE_LIMIT_COOKIE_NAME,
+  RATE_LIMIT_MAX_ATTEMPTS,
+  RATE_LIMIT_WINDOW_MS,
+  createRateLimitToken,
+  verifyRateLimitToken,
+  consumeRateLimitToken
 } from "@/utils/adminAuth";
-
-// Rate limiting: track failed attempts per IP
-const failedAttempts = new Map<string, { count: number; resetAt: number }>();
-const MAX_ATTEMPTS = 5;
-const RATE_WINDOW_MS = 60 * 1000; // 1 minute
 
 function getClientIp(request: Request): string {
   return (
@@ -21,51 +22,30 @@ function getClientIp(request: Request): string {
   );
 }
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = failedAttempts.get(ip);
-  if (!entry || now > entry.resetAt) return false;
-  return entry.count >= MAX_ATTEMPTS;
-}
-
-function recordFailedAttempt(ip: string): void {
-  const now = Date.now();
-  const entry = failedAttempts.get(ip);
-  if (!entry || now > entry.resetAt) {
-    failedAttempts.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-  } else {
-    entry.count += 1;
-  }
-}
-
-function clearFailedAttempts(ip: string): void {
-  failedAttempts.delete(ip);
-}
-
 function timingSafeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-
-  if (bufA.length !== bufB.length) {
-    crypto.timingSafeEqual(bufA, bufA);
-    return false;
-  }
-  return crypto.timingSafeEqual(bufA, bufB);
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const hashA = crypto.createHash("sha256").update(a).digest();
+  const hashB = crypto.createHash("sha256").update(b).digest();
+  const lengthsMatch = a.length === b.length;
+  const hashesMatch = crypto.timingSafeEqual(hashA, hashB);
+  return lengthsMatch && hashesMatch;
 }
-
-// Dummy export to keep backwards compatibility if any legacy code imports activeSessions
-export const activeSessions = new Map<string, { expiresAt: number }>();
 
 // POST: Login with passcode
 export async function POST(request: Request) {
   try {
     const ip = getClientIp(request);
+    const cookieStore = await cookies();
 
-    // Rate limit check
-    if (isRateLimited(ip)) {
+    // Rate limit check using stateless token
+    const rateLimitCookie = cookieStore.get(RATE_LIMIT_COOKIE_NAME)?.value;
+    const rateLimitResult = consumeRateLimitToken(rateLimitCookie, ip, RATE_LIMIT_MAX_ATTEMPTS, RATE_LIMIT_WINDOW_MS);
+    
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil(rateLimitResult.retryAfterMs / 1000);
       return NextResponse.json(
-        { success: false, error: "TOO MANY ATTEMPTS — TRY AGAIN LATER" },
-        { status: 429 }
+        { success: false, error: `TOO MANY ATTEMPTS — TRY AGAIN IN ${retryAfter}s` },
+        { status: 429, headers: { "Retry-After": String(retryAfter) } }
       );
     }
 
@@ -81,16 +61,14 @@ export async function POST(request: Request) {
     }
 
     if (timingSafeCompare(passcode, secretPasscode)) {
-      clearFailedAttempts(ip);
+      // Clear rate limit on successful login
+      const response = NextResponse.json({ success: true });
 
       const expiresAt = Date.now() + SESSION_MAX_AGE_SECONDS * 1000;
       const sessionToken = createSignedToken(expiresAt);
 
-      const response = NextResponse.json({ success: true });
-
-      // Set HttpOnly cookie (sameSite: 'lax' ensures reliable delivery across serverless requests)
-      const cookieStore = await cookies();
-      cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
+      // Set HttpOnly session cookie
+      response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -98,13 +76,28 @@ export async function POST(request: Request) {
         path: "/",
       });
 
+      // Clear rate limit cookie
+      response.cookies.delete(RATE_LIMIT_COOKIE_NAME);
+
       return response;
     } else {
-      recordFailedAttempt(ip);
-      return NextResponse.json(
+      // Increment rate limit on failed attempt
+      const newRateLimitToken = createRateLimitToken(ip, rateLimitResult.count + 1, rateLimitResult.resetAt);
+      
+      const response = NextResponse.json(
         { success: false, error: "INCORRECT SECURITY PASSCODE" },
         { status: 401 }
       );
+      
+      response.cookies.set(RATE_LIMIT_COOKIE_NAME, newRateLimitToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: Math.ceil(RATE_LIMIT_WINDOW_MS / 1000),
+        path: "/",
+      });
+
+      return response;
     }
   } catch (error) {
     console.error("Admin verification API error:", error);

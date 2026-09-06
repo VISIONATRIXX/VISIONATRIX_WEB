@@ -83,8 +83,8 @@ const StudioSection = memo(function StudioSection() {
               <span className="font-mono text-[9px] tracking-[0.2em] text-[#6b7280] uppercase">
                 ESTABLISHED:
               </span>
-              <span className="font-mono text-base tracking-[0.1em] text-white font-semibold uppercase">
-                MMXXVI
+              <span className="font-mono text-sm tracking-[0.1em] text-white font-semibold uppercase">
+                2026
               </span>
             </div>
 
@@ -94,7 +94,7 @@ const StudioSection = memo(function StudioSection() {
                 LOCATIONS:
               </span>
               <span className="font-mono text-xs tracking-[0.05em] text-white/90">
-                Bengaluru × Mumbai × Delhi
+                Across the World
               </span>
             </div>
 
@@ -104,7 +104,7 @@ const StudioSection = memo(function StudioSection() {
                 FOCUS:
               </span>
               <span className="font-mono text-xs tracking-[0.05em] text-white/90">
-                Premium Sensory Architectures
+                Interactive Web & Visual FX
               </span>
             </div>
 
@@ -114,7 +114,7 @@ const StudioSection = memo(function StudioSection() {
                 DELIVERY:
               </span>
               <span className="font-mono text-xs tracking-[0.05em] text-white/90">
-                CGI, VFX & Volumetric Systems
+                Next.js, WebGL & 3D Systems
               </span>
             </div>
           </div>
