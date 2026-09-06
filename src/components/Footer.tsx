@@ -147,7 +147,7 @@ export default function Footer({ onLinkClick }: FooterProps) {
             REGISTRIES
           </span>
           <div className="grid grid-cols-1 gap-2.5 font-outfit font-medium text-white/60 pl-3">
-            <a href="#contact" className="footer-link">Direct Scoping Inbox</a>
+            <button onClick={() => onLinkClick("contact")} className="footer-link text-left">Direct Scoping Inbox</button>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-link">Studio LinkedIn</a>
             <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="footer-link">Studio X / Twitter</a>
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="footer-link">Shared Github</a>
