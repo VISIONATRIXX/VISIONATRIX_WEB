@@ -5,6 +5,8 @@ import { Clock, Send } from "lucide-react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 
+import PixelatedLogoBackground from "./PixelatedLogoBackground";
+
 interface FooterProps {
   onLinkClick: (sectionId: string) => void;
 }
@@ -18,141 +20,6 @@ export default function Footer({ onLinkClick }: FooterProps) {
     tokyo: "00:00:00",
     blr: "00:00:00"
   });
-
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  // Live twinkling cyber pixel canvas animation
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-    let width = (canvas.width = canvas.parentElement?.clientWidth || window.innerWidth);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || 500);
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = canvas.parentElement?.clientWidth || window.innerWidth;
-      height = canvas.height = canvas.parentElement?.clientHeight || 500;
-    };
-    window.addEventListener("resize", handleResize);
-
-    const pixelSize = 6; // Crisp pixel cell size matching reference
-    const cols = Math.floor(width / pixelSize);
-    const rows = Math.floor(height / pixelSize);
-
-    // Create clusters of digital pixel noise and scattered matrix points
-    interface Pixel {
-      x: number;
-      y: number;
-      size: number;
-      opacity: number;
-      targetOpacity: number;
-      speed: number;
-      color: string;
-    }
-
-    const pixels: Pixel[] = [];
-    const colors = [
-      "rgba(197, 168, 128, ", // Dark gold (#c5a880)
-      "rgba(255, 255, 255, ", // Bright silver white
-      "rgba(140, 140, 160, ", // Cyber gray
-      "rgba(218, 180, 130, ", // Soft glowing amber gold
-    ];
-
-    // Seed 250 individual flickering pixel nodes
-    for (let i = 0; i < 280; i++) {
-      const col = Math.floor(Math.random() * cols);
-      const row = Math.floor(Math.random() * rows);
-      const isLarge = Math.random() > 0.85;
-
-      pixels.push({
-        x: col * pixelSize,
-        y: row * pixelSize,
-        size: isLarge ? pixelSize * 2 : pixelSize,
-        opacity: Math.random() * 0.4,
-        targetOpacity: Math.random() * 0.5 + 0.05,
-        speed: 0.003 + Math.random() * 0.01,
-        color: colors[Math.floor(Math.random() * colors.length)]
-      });
-    }
-
-    // Seed 15 pixel cluster groups (clouds of digital blocks)
-    for (let c = 0; c < 15; c++) {
-      const centerCol = Math.floor(Math.random() * cols);
-      const centerRow = Math.floor(Math.random() * rows);
-      const clusterSize = Math.floor(Math.random() * 8) + 4;
-
-      for (let i = 0; i < clusterSize; i++) {
-        const offsetCol = centerCol + (Math.floor(Math.random() * 7) - 3);
-        const offsetRow = centerRow + (Math.floor(Math.random() * 7) - 3);
-        if (offsetCol >= 0 && offsetCol < cols && offsetRow >= 0 && offsetRow < rows) {
-          pixels.push({
-            x: offsetCol * pixelSize,
-            y: offsetRow * pixelSize,
-            size: pixelSize,
-            opacity: Math.random() * 0.35,
-            targetOpacity: Math.random() * 0.45 + 0.05,
-            speed: 0.005 + Math.random() * 0.012,
-            color: colors[Math.floor(Math.random() * colors.length)]
-          });
-        }
-      }
-    }
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      // 1. Draw subtle background cyber grid lines
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
-      ctx.lineWidth = 0.5;
-      const gridSpacing = pixelSize * 3;
-
-      for (let x = 0; x < width; x += gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < height; y += gridSpacing) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-      }
-
-      // 2. Render & animate each pixel block
-      pixels.forEach((p) => {
-        // Smooth pulse transition toward target opacity
-        if (p.opacity < p.targetOpacity) {
-          p.opacity += p.speed;
-          if (p.opacity >= p.targetOpacity) {
-            p.targetOpacity = Math.random() * 0.4 + 0.02;
-          }
-        } else {
-          p.opacity -= p.speed;
-          if (p.opacity <= p.targetOpacity) {
-            p.targetOpacity = Math.random() * 0.4 + 0.05;
-          }
-        }
-
-        const currentAlpha = Math.max(0, Math.min(0.5, p.opacity));
-        ctx.fillStyle = `${p.color}${currentAlpha})`;
-        ctx.fillRect(p.x, p.y, p.size - 1, p.size - 1);
-      });
-
-      animationFrameId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
 
   // Live ticking clocks for global timezones across the world
   useEffect(() => {
@@ -200,18 +67,8 @@ export default function Footer({ onLinkClick }: FooterProps) {
   return (
     <footer className="relative w-full bg-[#030304] border-t border-white/5 pt-16 pb-8 px-6 md:px-12 lg:px-24 text-xs font-sans text-[#77778c] overflow-hidden">
       
-      {/* 1. Cyber Pixel Matrix Grid Canvas Backdrop */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-60 z-0" />
-
-      {/* 2. Giant Watermark Logo Emblem Background */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] md:w-[480px] h-[340px] md:h-[480px] pointer-events-none opacity-[0.05] mix-blend-screen z-0">
-        <Image
-          src="/LOGO.webp"
-          alt="Visionatrix Emblem Watermark"
-          fill
-          className="object-contain filter grayscale contrast-200"
-        />
-      </div>
+      {/* Dynamic Futuristic Pixelated Logo Matrix Background */}
+      <PixelatedLogoBackground logoSrc="/LOGO.png" pixelSize={5} />
 
       <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-16 mb-16 items-start z-10">
         
