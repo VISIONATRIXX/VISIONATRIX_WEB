@@ -113,12 +113,9 @@ export default function PixelatedLogoBackground({
       const centerY = offCanvas.height / 2;
       const maxRadius = Math.sqrt(centerX * centerX + centerY * centerY);
 
-      // 1. Sample logo shape pixels with architectural density variation & gaps
+      // 1. Sample logo shape pixels
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          // Skip ~36% of logo grid cells to create organic circuit gaps instead of a solid fill
-          if (Math.random() < 0.36) continue;
-
           const imgX = c * step;
           const imgY = r * step;
 
@@ -131,37 +128,29 @@ export default function PixelatedLogoBackground({
 
           const brightness = (red + green + blue) / 3;
 
-          // Detect silhouette mask
+          // Detect silhouette mask (non-transparent or bright parts of logo)
           if (alpha > 25 || brightness > 25) {
             const worldX = logoOffsetX + imgX;
             const worldY = logoOffsetY + imgY;
 
-            // Soft radial boundary fade
+            // Distance from logo centroid for radial edge fade
             const dx = imgX - centerX;
             const dy = imgY - centerY;
             const distFromCenter = Math.sqrt(dx * dx + dy * dy);
-            const edgeFactor = Math.pow(Math.max(0, 1 - distFromCenter / (maxRadius * 0.95)), 1.5);
+            const edgeFactor = Math.max(0.15, 1 - Math.pow(distFromCenter / maxRadius, 1.8));
 
-            if (edgeFactor <= 0.02) continue;
-
-            // Density clustering: 80% very dim (10-15% brightness display effect), 15% dim ghost, 5% soft cluster
-            const clusterVal = Math.random();
-            let baseOp = 0.02;
-            let colorPrefix = "rgba(110, 115, 135, "; // Cool slate dark gray
-
-            if (clusterVal > 0.95) {
-              // 5% slightly brighter accent cluster (capped at 0.22 alpha max)
-              baseOp = (0.12 + Math.random() * 0.08) * edgeFactor;
-              colorPrefix = Math.random() > 0.5 ? "rgba(197, 168, 128, " : "rgba(180, 185, 205, ";
-            } else if (clusterVal > 0.78) {
-              // 17% low ghost pixels
-              baseOp = (0.05 + Math.random() * 0.05) * edgeFactor;
-              colorPrefix = "rgba(130, 135, 155, ";
-            } else {
-              // 78% extremely subtle dark background matrix pixels (3-8% brightness)
-              baseOp = (0.015 + Math.random() * 0.03) * edgeFactor;
-              colorPrefix = "rgba(70, 75, 95, ";
+            // Subtle color & brightness variations
+            const randVal = Math.random();
+            let colorPrefix = "rgba(150, 155, 175, "; // Cool slate dark gray
+            if (randVal > 0.85) {
+              colorPrefix = "rgba(197, 168, 128, "; // Muted gold accent
+            } else if (randVal > 0.60) {
+              colorPrefix = "rgba(190, 195, 215, "; // Soft silver highlight
+            } else if (randVal < 0.25) {
+              colorPrefix = "rgba(75, 80, 100, "; // Deep dim gray
             }
+
+            const baseOp = (0.06 + Math.random() * 0.22) * edgeFactor;
 
             pixels.push({
               origX: worldX,
@@ -170,9 +159,9 @@ export default function PixelatedLogoBackground({
               y: worldY,
               size: step - 1,
               baseOpacity: baseOp,
-              currentOpacity: baseOp * (0.4 + Math.random() * 0.6),
+              currentOpacity: baseOp * Math.random(),
               targetOpacity: baseOp,
-              speed: 0.001 + Math.random() * 0.004, // Very slow, sophisticated pulse
+              speed: 0.003 + Math.random() * 0.008,
               colorPrefix,
               isLogo: true
             });
@@ -180,17 +169,17 @@ export default function PixelatedLogoBackground({
         }
       }
 
-      // 2. Ultra-sparse ambient matrix field in background space
-      const ambientCols = Math.floor(width / (step * 4));
-      const ambientRows = Math.floor(height / (step * 4));
-      const totalAmbient = Math.floor((ambientCols * ambientRows) * 0.08);
+      // 2. Ambient matrix pixel field across background
+      const ambientCols = Math.floor(width / (step * 3));
+      const ambientRows = Math.floor(height / (step * 3));
+      const totalAmbient = Math.floor((ambientCols * ambientRows) * 0.14);
 
       for (let i = 0; i < totalAmbient; i++) {
-        const ax = Math.floor(Math.random() * ambientCols) * (step * 4);
-        const ay = Math.floor(Math.random() * ambientRows) * (step * 4);
+        const ax = Math.floor(Math.random() * ambientCols) * (step * 3);
+        const ay = Math.floor(Math.random() * ambientRows) * (step * 3);
 
-        const baseOp = 0.01 + Math.random() * 0.03;
-        const colorPrefix = Math.random() > 0.2 ? "rgba(60, 65, 80, " : "rgba(197, 168, 128, ";
+        const baseOp = 0.015 + Math.random() * 0.06;
+        const colorPrefix = Math.random() > 0.3 ? "rgba(90, 95, 115, " : "rgba(197, 168, 128, ";
 
         pixels.push({
           origX: ax,
@@ -201,7 +190,7 @@ export default function PixelatedLogoBackground({
           baseOpacity: baseOp,
           currentOpacity: baseOp * Math.random(),
           targetOpacity: baseOp,
-          speed: 0.001 + Math.random() * 0.003,
+          speed: 0.002 + Math.random() * 0.005,
           colorPrefix,
           isLogo: false
         });
@@ -221,13 +210,13 @@ export default function PixelatedLogoBackground({
 
     window.addEventListener("resize", handleResize);
 
-    // Slow cinematic rendering loop
+    // Animation & rendering loop
     const render = () => {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
 
-      // Very fine grid structure
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.008)";
+      // Subtle background grid structure
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.012)";
       ctx.lineWidth = 0.5;
       const gridSpacing = pixelSize * 4;
       for (let gx = 0; gx < width; gx += gridSpacing) {
@@ -243,14 +232,14 @@ export default function PixelatedLogoBackground({
         ctx.stroke();
       }
 
-      const mouseRadius = 110;
+      const mouseRadius = 120;
       const mouseRadiusSq = mouseRadius * mouseRadius;
 
       pixels.forEach((p) => {
-        // Slow organic flicker / opacity drift
-        if (Math.abs(p.currentOpacity - p.targetOpacity) < 0.002) {
-          if (Math.random() < 0.02) {
-            p.targetOpacity = p.baseOpacity * (0.4 + Math.random() * 1.2);
+        // Organic flicker / opacity drift
+        if (Math.abs(p.currentOpacity - p.targetOpacity) < 0.004) {
+          if (Math.random() < 0.04) {
+            p.targetOpacity = p.baseOpacity * (0.3 + Math.random() * 1.5);
           }
         } else if (p.currentOpacity < p.targetOpacity) {
           p.currentOpacity += p.speed;
@@ -258,7 +247,7 @@ export default function PixelatedLogoBackground({
           p.currentOpacity -= p.speed;
         }
 
-        // Extremely subtle cursor proximity influence (restrained highlight)
+        // Cursor proximity influence
         let targetX = p.origX;
         let targetY = p.origY;
         let hoverBoost = 0;
@@ -270,21 +259,21 @@ export default function PixelatedLogoBackground({
 
           if (distSq < mouseRadiusSq) {
             const factor = 1 - distSq / mouseRadiusSq;
-            hoverBoost = factor * 0.12; // Very gentle brightening near cursor
+            hoverBoost = factor * 0.32; // Subtle highlight near cursor
             
+            // Soft magnetic push
             const angle = Math.atan2(dy, dx);
-            const pushDist = factor * 4;
+            const pushDist = factor * 7;
             targetX = p.origX + Math.cos(angle) * pushDist;
             targetY = p.origY + Math.sin(angle) * pushDist;
           }
         }
 
         // Smooth position spring
-        p.x += (targetX - p.x) * 0.1;
-        p.y += (targetY - p.y) * 0.1;
+        p.x += (targetX - p.x) * 0.12;
+        p.y += (targetY - p.y) * 0.12;
 
-        // Cap maximum brightness at ~0.24 opacity so logo stays hidden in darkness
-        const finalAlpha = Math.max(0, Math.min(0.24, p.currentOpacity + hoverBoost));
+        const finalAlpha = Math.max(0, Math.min(0.55, p.currentOpacity + hoverBoost));
 
         ctx.fillStyle = `${p.colorPrefix}${finalAlpha})`;
         ctx.fillRect(p.x, p.y, p.size, p.size);
