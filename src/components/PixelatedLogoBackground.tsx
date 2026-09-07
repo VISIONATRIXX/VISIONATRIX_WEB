@@ -213,11 +213,11 @@ export default function PixelatedLogoBackground({
       initPixels();
     };
 
-    window.addEventListener("resize", handleResize);
+    let isVisible = false;
 
     // Animation & rendering loop
     const render = () => {
-      if (!ctx) return;
+      if (!ctx || !isVisible) return;
       ctx.clearRect(0, 0, width, height);
 
       // Subtle background grid structure
@@ -287,9 +287,28 @@ export default function PixelatedLogoBackground({
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    // IntersectionObserver to start/stop loop when footer is in/out of viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          if (!isVisible) {
+            isVisible = true;
+            cancelAnimationFrame(animationFrameId);
+            render();
+          }
+        } else {
+          isVisible = false;
+          cancelAnimationFrame(animationFrameId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(container);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);

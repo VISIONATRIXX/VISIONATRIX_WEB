@@ -23,17 +23,17 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
       onStartDismiss();
     }
     
-    // Complete after curtain exit completes (800ms ultra-smooth transition)
+    // Complete after curtain exit completes (600ms smooth transition)
     setTimeout(() => {
       onComplete();
-    }, 850);
+    }, 600);
   }, [onComplete, onStartDismiss]);
 
   useEffect(() => {
-    // 1. Cinematic auto-dismiss after 2.2s
+    // 1. Cinematic auto-dismiss after 1.2s
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 2200);
+    }, 1200);
 
     // 2. Keyboard listener for Escape key to bypass loader
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -66,7 +66,7 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
             }}
             exit={{
               y: "-100%",
-              transition: { duration: 0.85, ease: [0.76, 0, 0.24, 1] }
+              transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] }
             }}
           >
             {/* Thick Luxury Gold Accent Beam at Bottom Edge of Curtain */}

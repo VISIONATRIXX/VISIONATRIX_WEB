@@ -81,11 +81,11 @@ const HeroSection = memo(function HeroSection({ onCtaClick, triggerEntrance = fa
             {"VISIONATRIX".split("").map((char, index) => (
               <span key={index} className="inline-block overflow-hidden py-1 px-[0.03em]">
                 <motion.span
-                  initial={{ y: "105%", opacity: 0 }}
-                  animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "105%", opacity: 0 }}
+                  initial={{ y: "0%", opacity: 1 }}
+                  animate={triggerEntrance ? { y: 0, opacity: 1 } : { y: "0%", opacity: 1 }}
                   transition={{
-                    delay: 0.2 + index * 0.06,
-                    duration: 1.25,
+                    delay: 0.1 + index * 0.04,
+                    duration: 0.9,
                     ease: [0.16, 1, 0.3, 1] as const
                   }}
                   className="inline-block origin-bottom"
