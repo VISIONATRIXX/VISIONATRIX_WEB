@@ -137,6 +137,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
                   key={idx}
                   onClick={() => onNavClick(item.id)}
                   data-cursor={`goto ${item.label.toLowerCase()}`}
+                  aria-label={`Navigate to ${item.label}`}
                   className={`font-outfit text-[12.5px] tracking-[0.18em] transition-colors duration-300 cursor-pointer ${active
                     ? "text-white font-semibold"
                     : "text-[#94a3b8] hover:text-white"
@@ -155,6 +156,7 @@ export default function Header({ activeSection, onNavClick }: HeaderProps) {
               <button
                 onClick={() => onNavClick("contact")}
                 data-cursor="get started"
+                aria-label="Get Started with project proposal"
                 className="border border-[#c5a880] hover:border-[#e2cbb0] bg-transparent hover:bg-[#c5a880]/10 text-[#c5a880] hover:text-[#e2cbb0] font-outfit text-[11.5px] tracking-[0.2em] px-6 py-3 rounded-sm transition-all duration-300 flex items-center gap-2.5 group cursor-pointer"
               >
                 <span>GET STARTED</span>

@@ -30,10 +30,10 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
   }, [onComplete, onStartDismiss]);
 
   useEffect(() => {
-    // 1. Cinematic auto-dismiss after 3.8s
+    // 1. Cinematic auto-dismiss after 2.2s
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 3800);
+    }, 2200);
 
     // 2. Keyboard listener for Escape key to bypass loader
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -92,9 +92,10 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                 <Image
                   src="/LOGO.webp"
                   alt="VISIONATRIX Logo"
-                  fill
+                  width={170}
+                  height={170}
                   priority
-                  className="object-contain"
+                  className="w-full h-full object-contain"
                   style={{
                     filter: "drop-shadow(0 0 25px rgba(255, 255, 255, 0.08))",
                   }}
@@ -102,7 +103,9 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
               </motion.div>
 
               {/* 2. Typographic Letter-by-Letter Staggered Reveal */}
-              <motion.h1
+              <motion.div
+                role="heading"
+                aria-level={1}
                 className="text-white font-display text-base md:text-lg tracking-[0.4em] z-10 uppercase flex justify-center items-center select-none"
                 style={{
                   textShadow: "0 0 12px rgba(255, 255, 255, 0.06)",
@@ -116,14 +119,14 @@ export default function IntroLoader({ onComplete, onStartDismiss }: IntroLoaderP
                     transition={{
                       duration: 0.7,
                       ease: [0.16, 1, 0.3, 1],
-                      delay: 0.9 + (index * 0.04),
+                      delay: 0.5 + (index * 0.03),
                     }}
                     className={index === textLetters.length - 1 ? "" : "mr-[0.4em]"}
                   >
                     {char}
                   </motion.span>
                 ))}
-              </motion.h1>
+              </motion.div>
 
             </div>
 

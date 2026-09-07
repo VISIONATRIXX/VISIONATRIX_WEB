@@ -430,9 +430,9 @@ export default function SafariSandboxModal({
                                 <div className="w-12 h-12 rounded-full bg-[#c5a880]/10 border border-[#c5a880]/30 flex items-center justify-center mb-3">
                                   <Globe className="w-6 h-6 text-[#c5a880]" />
                                 </div>
-                                <h4 className="font-outfit text-sm font-bold text-white uppercase tracking-wider mb-1">
+                                <h3 className="font-outfit text-sm font-bold text-white uppercase tracking-wider mb-1">
                                   NO LIVE DEPLOYMENT URL CONFIGURED
-                                </h4>
+                                </h3>
                                 <p className="font-sans text-xs text-white/50 max-w-xs mb-4">
                                   Add a Live Website Deployment URL in the Admin Panel to enable interactive Safari Sandbox preview.
                                 </p>

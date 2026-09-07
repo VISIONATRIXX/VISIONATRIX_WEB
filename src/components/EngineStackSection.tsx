@@ -672,7 +672,7 @@ const EngineStackSection = memo(function EngineStackSection() {
                     <h3 className="font-outfit text-sm md:text-base font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
                       {tool.name}
                     </h3>
-                    <p className="font-mono text-[9.5px] md:text-[10px] text-white/60 tracking-wider leading-relaxed">
+                    <p className="font-mono text-[9.5px] md:text-[10px] text-white/85 tracking-wider leading-relaxed">
                       {tool.description}
                     </p>
                   </div>

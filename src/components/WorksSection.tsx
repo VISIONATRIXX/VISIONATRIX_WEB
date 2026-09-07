@@ -279,7 +279,7 @@ const WorksSection = memo(function WorksSection() {
               </h2>
 
               {/* Description */}
-              <p className="text-[13px] md:text-sm text-white/40 leading-relaxed font-sans max-w-lg">
+              <p className="text-[13px] md:text-sm text-white/80 leading-relaxed font-sans max-w-lg">
                 Curated portfolio across three creative disciplines — each piece crafted to push the boundaries of digital experience design.
               </p>
             </div>
@@ -325,9 +325,9 @@ const WorksSection = memo(function WorksSection() {
                   />
                   
                   {/* Title */}
-                  <span className="font-outfit text-[11px] md:text-[13px] tracking-[0.18em] text-white/90 font-bold uppercase">
+                  <h3 className="font-outfit text-[11px] md:text-[13px] tracking-[0.18em] text-white/90 font-bold uppercase">
                     {row.title}
-                  </span>
+                  </h3>
 
                   {/* Badge */}
                   <span 
@@ -350,7 +350,7 @@ const WorksSection = memo(function WorksSection() {
                 />
 
                 {/* Count */}
-                <span className="font-mono text-[10px] text-white/25 tracking-wider shrink-0">
+                <span className="font-mono text-[10px] text-white/75 tracking-wider shrink-0">
                   {rowProjects[rowIdx].length} {rowProjects[rowIdx].length === 1 ? "PROJECT" : "PROJECTS"}
                 </span>
               </div>

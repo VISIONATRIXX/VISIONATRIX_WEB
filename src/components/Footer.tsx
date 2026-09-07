@@ -85,12 +85,13 @@ export default function Footer({ onLinkClick }: FooterProps) {
 
           {/* Research notes form */}
           <form onSubmit={handleSubscribe} className="flex flex-col gap-2 mt-2 max-w-sm">
-            <label className="font-mono text-[9px] tracking-wider text-[#555566] uppercase">
+            <label htmlFor="footer-email" className="font-mono text-[9px] tracking-wider text-[#94a3b8] uppercase">
               SECURE RESEARCH NOTES
             </label>
             
             <div className="relative flex items-center">
               <input
+                id="footer-email"
                 type="email"
                 placeholder={subscribed ? "SUBSCRIPTION LOCKED" : "Secure Email..."}
                 disabled={subscribed}
@@ -98,12 +99,12 @@ export default function Footer({ onLinkClick }: FooterProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 className={`font-sans bg-white/[0.03] border ${
                   subscribed ? "border-[#c5a880] text-[#c5a880]" : "border-white/10 focus:border-[#c5a880]"
-                } rounded-lg px-4 py-3 pr-12 text-white placeholder-white/25 focus:outline-none transition-all duration-300 w-full`}
+                } rounded-lg px-4 py-3 pr-12 text-white placeholder-white/40 focus:outline-none transition-all duration-300 w-full`}
               />
               <button
                 type="submit"
                 disabled={subscribed}
-                className="absolute right-3 text-white/40 hover:text-[#c5a880] disabled:text-[#c5a880] transition-colors duration-300 w-7 h-7 flex items-center justify-center cursor-pointer"
+                className="absolute right-3 text-white/50 hover:text-[#c5a880] disabled:text-[#c5a880] transition-colors duration-300 w-7 h-7 flex items-center justify-center cursor-pointer"
                 aria-label="Submit email"
               >
                 <Send className="w-3.5 h-3.5" />

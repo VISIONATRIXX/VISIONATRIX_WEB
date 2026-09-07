@@ -28,7 +28,7 @@ export default function ScrollNavigation({ activeSection, onDotClick }: ScrollNa
           <button
             key={sec.id}
             onClick={() => onDotClick(sec.id)}
-            className="group relative flex items-center justify-center w-6 h-6 focus:outline-none"
+            className="group relative flex items-center justify-center w-8 h-8 min-w-[32px] min-h-[32px] cursor-pointer focus:outline-none"
             aria-label={`Scroll to ${sec.label}`}
           >
             {/* Hover Tooltip Label */}

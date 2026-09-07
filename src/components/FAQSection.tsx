@@ -327,6 +327,7 @@ I have requested a Sync Call reservation:
                             key={`day-${cell.day}`}
                             disabled={isDisabled}
                             onClick={() => setSelectedDate(cell.day)}
+                            aria-label={`Select June ${cell.day.toString().padStart(2, "0")}, 2026`}
                             data-cursor={isDisabled ? undefined : `select june ${cell.day.toString().padStart(2, "0")}`}
                             className={`aspect-square relative font-mono text-[10px] sm:text-[11px] rounded-sm flex items-center justify-center focus:outline-none transition-all duration-300 cursor-pointer ${
                               isSelected 
@@ -354,10 +355,11 @@ I have requested a Sync Call reservation:
 
                     {/* Client Name Callsign Validation Input */}
                     <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-1.5 text-left">
-                      <label className="font-mono text-[8px] tracking-[0.2em] text-[#6b7280] uppercase block">
+                      <label htmlFor="faq-client-callsign" className="font-mono text-[8px] tracking-[0.2em] text-[#9ca3af] uppercase block">
                         [ CLIENT CALLSIGN / ID NAME ] *
                       </label>
                       <input
+                        id="faq-client-callsign"
                         type="text"
                         required
                         maxLength={40}
@@ -365,14 +367,14 @@ I have requested a Sync Call reservation:
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
                         data-cursor="type callsign"
-                        className="w-full bg-[#0b0b0f]/60 border border-white/10 focus:border-[#c5a880]/40 text-white font-mono text-[10px] tracking-[0.15em] px-3 py-2.5 rounded-sm outline-none transition-all duration-300 placeholder-white/20 uppercase"
+                        className="w-full bg-[#0b0b0f]/60 border border-white/10 focus:border-[#c5a880]/40 text-white font-mono text-[10px] tracking-[0.15em] px-3 py-2.5 rounded-sm outline-none transition-all duration-300 placeholder-white/40 uppercase"
                       />
                     </div>
 
                     {/* Calendar CTA */}
                     <div className="border-t border-white/5 pt-4 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                       <div className="text-left w-full sm:w-auto">
-                        <span className="font-mono text-[9px] tracking-wider text-[#6b7280] uppercase block">
+                        <span className="font-mono text-[9px] tracking-wider text-[#9ca3af] uppercase block">
                           SELECTED DATE:
                         </span>
                         <span className="font-mono text-xs text-white font-bold tracking-widest">

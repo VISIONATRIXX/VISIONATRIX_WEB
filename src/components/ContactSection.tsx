@@ -286,51 +286,56 @@ A new Project Proposal has been submitted:
                   <div className="flex flex-col gap-4">
                     {/* Full Name */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">FULL NAME *</label>
+                      <label htmlFor="contact-fullName" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">FULL NAME *</label>
                       <input 
+                        id="contact-fullName"
                         type="text" 
                         placeholder="Your Full Name..."
                         {...register("fullName", { required: true })}
-                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                       {errors.fullName && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Full name required"}</span>}
                     </div>
 
                     {/* Email */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">CORPORATE EMAIL *</label>
+                      <label htmlFor="contact-email" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">CORPORATE EMAIL *</label>
                       <input 
+                        id="contact-email"
                         type="email" 
                         placeholder="Corporate Email..."
                         {...register("email", { 
                           required: true,
                           pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
                         })}
-                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                       {errors.email && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Valid email required"}</span>}
                     </div>
 
                     {/* Organization */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">ORGANIZATION</label>
+                      <label htmlFor="contact-organization" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">ORGANIZATION</label>
                       <input 
+                        id="contact-organization"
                         type="text" 
                         placeholder="Organization / Agency..."
                         {...register("organization")}
-                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full"
                       />
                     </div>
 
                     {/* Service Select */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">SERVICE INTERESTED *</label>
+                      <label htmlFor="contact-service" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">SERVICE INTERESTED *</label>
                       <select 
+                        id="contact-service"
+                        aria-label="Select Service Interested"
                         {...register("service", { required: true })}
                         defaultValue=""
                         className="font-sans bg-[#0b0b0f]/95 border border-white/10 rounded px-4 py-3 text-white focus:outline-none focus:border-[#c5a880] transition-colors duration-300 w-full appearance-none cursor-pointer"
                       >
-                        <option value="" disabled className="text-white/20">Select Service...</option>
+                        <option value="" disabled className="text-white/60">Select Service...</option>
                         <option value="video">Video Editing</option>
                         <option value="vfx">VFX Simulations</option>
                         <option value="cgi">CGI Advertising</option>
@@ -348,17 +353,18 @@ A new Project Proposal has been submitted:
                   <div className="flex flex-col gap-4">
                     {/* Budget Tiers */}
                     <div className="flex flex-col gap-2">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">ESTIMATED BUDGET</label>
+                      <span className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">ESTIMATED BUDGET</span>
                       <div className="grid grid-cols-2 gap-2">
                         {budgetTiers.map((tier) => (
                           <button
                             key={tier}
                             type="button"
                             onClick={() => setBudgetTier(tier)}
+                            aria-label={`Select budget tier ${tier}`}
                             className={`py-2.5 rounded border transition-all duration-300 font-mono text-[10px] tracking-wider cursor-pointer ${
                               budgetTier === tier
-                                ? "bg-[#c5a880] text-black border-[#c5a880] font-semibold"
-                                : "bg-white/2 border-white/5 text-white/70 hover:border-white/15"
+                                ? "bg-[#c5a880] text-black border-[#c5a880] font-bold"
+                                : "bg-white/2 border-white/5 text-white/90 hover:border-white/20"
                             }`}
                           >
                             [ {tier} ]
@@ -369,9 +375,10 @@ A new Project Proposal has been submitted:
 
                     {/* File Attachment */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">CONCEPT BRIEF / BRIEFING</label>
+                      <label htmlFor="contact-brief-file" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">CONCEPT BRIEF / BRIEFING</label>
                       <div className="border border-dashed border-white/10 hover:border-[#c5a880]/40 bg-white/2 rounded p-3 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 relative">
                         <input 
+                          id="contact-brief-file"
                           type="file" 
                           onChange={handleFileChange}
                           accept=".pdf,.zip,.doc,.docx,.txt,.png,.jpg,.jpeg"
@@ -379,7 +386,7 @@ A new Project Proposal has been submitted:
                           aria-label="Upload concept brief"
                         />
                         <Upload className="w-5 h-5 text-[#c5a880]/70" />
-                        <span className="font-mono text-[9px] tracking-wider text-[#9999aa] uppercase">
+                        <span className="font-mono text-[9px] tracking-wider text-[#cbd5e1] uppercase">
                           {fileName ? "FILE STAGED" : "ATTACH BRIEF (OPTIONAL)"}
                         </span>
                         {fileName && (
@@ -399,12 +406,13 @@ A new Project Proposal has been submitted:
 
                     {/* Technical details textarea */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="font-mono text-[10px] tracking-wider text-[#555566] uppercase">DOSSIER SPECIFICATIONS *</label>
+                      <label htmlFor="contact-details" className="font-mono text-[10px] tracking-wider text-[#e2e8f0] uppercase">DOSSIER SPECIFICATIONS *</label>
                       <textarea 
+                        id="contact-details"
                         rows={3}
                         placeholder="Dossier Details & Technical Scope Specifications..."
                         {...register("details", { required: true })}
-                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 resize-none w-full"
+                        className="font-sans bg-white/2 border border-white/10 rounded px-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-[#c5a880] transition-colors duration-300 resize-none w-full"
                       />
                       {errors.details && <span className="text-red-400 font-mono text-[9px] tracking-wider mt-0.5">{"// Ingestion specifications required"}</span>}
                     </div>
@@ -416,6 +424,7 @@ A new Project Proposal has been submitted:
                       disabled={isSubmitting}
                       onMouseMove={handleMagneticMove}
                       onMouseLeave={handleMagneticLeave}
+                      aria-label="Initialize Ticket Proposal"
                       className="w-full py-3.5 bg-[#c5a880] disabled:bg-[#c5a880]/30 disabled:text-black/40 disabled:cursor-not-allowed text-black font-semibold font-outfit text-xs tracking-[0.2em] rounded-sm hover:bg-[#d8be99] hover:shadow-[0_0_15px_rgba(197,168,128,0.2)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span>{isSubmitting ? "INGESTING DOSSIER..." : "INITIALIZE TICKET PROPOSAL"}</span>

@@ -31,12 +31,16 @@ export default function PixelatedLogoBackground({
     // Mouse tracking state
     let mouseX = -1000;
     let mouseY = -1000;
+    let cachedRect = canvas.getBoundingClientRect();
+
+    const updateRect = () => {
+      if (canvas) cachedRect = canvas.getBoundingClientRect();
+    };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
+      mouseX = e.clientX - cachedRect.left;
+      mouseY = e.clientY - cachedRect.top;
     };
 
     const handleMouseLeave = () => {
@@ -44,8 +48,9 @@ export default function PixelatedLogoBackground({
       mouseY = -1000;
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
+    window.addEventListener("scroll", updateRect, { passive: true });
 
     interface Pixel {
       origX: number;
@@ -288,6 +293,7 @@ export default function PixelatedLogoBackground({
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("scroll", updateRect);
       cancelAnimationFrame(animationFrameId);
     };
   }, [logoSrc, pixelSize]);

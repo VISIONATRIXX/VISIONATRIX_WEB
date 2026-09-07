@@ -159,9 +159,9 @@ function LazyVideoCard({
         <span className="font-mono text-[8.5px] tracking-[0.25em] text-[#c5a880] uppercase font-bold">
           {project.subtitle} • {project.year}
         </span>
-        <h4 className="font-outfit text-lg font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
+        <h3 className="font-outfit text-lg font-bold tracking-[0.05em] text-white uppercase group-hover:text-[#c5a880] transition-colors duration-300">
           {project.title}
-        </h4>
+        </h3>
       </div>
     </div>
   );

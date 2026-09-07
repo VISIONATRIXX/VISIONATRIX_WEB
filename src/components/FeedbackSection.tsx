@@ -109,18 +109,22 @@ const FeedbackSection = memo(function FeedbackSection() {
             </div>
 
             {/* Dots Indicator */}
-            <div className="flex items-center gap-2 mt-8">
+            <div className="flex items-center gap-1 mt-6">
               {testimonials.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveIndex(idx)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === activeIndex 
-                      ? "bg-[#c5a880]" 
-                      : "bg-white/10 hover:bg-[#c5a880]/50"
-                  }`}
+                  className="p-3 focus:outline-none flex items-center justify-center cursor-pointer"
                   aria-label={`Go to review ${idx + 1}`}
-                />
+                >
+                  <div
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      idx === activeIndex 
+                        ? "bg-[#c5a880] scale-125 shadow-[0_0_8px_rgba(197,168,128,0.5)]" 
+                        : "bg-white/20 hover:bg-[#c5a880]/60"
+                    }`}
+                  />
+                </button>
               ))}
             </div>
           </div>

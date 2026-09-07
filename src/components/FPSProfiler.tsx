@@ -228,6 +228,7 @@ export default function FPSProfiler({ activeSection, enabled = true }: FPSProfil
                 <button
                   onClick={() => setIsMinimized(true)}
                   data-cursor="minimize"
+                  aria-label="Minimize FPS profiler HUD"
                   className="w-5 h-5 rounded hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer text-xs"
                   title="Minimize HUD"
                 >
@@ -274,6 +275,7 @@ export default function FPSProfiler({ activeSection, enabled = true }: FPSProfil
                 <button
                   onClick={handleStopAndReport}
                   data-cursor="stop report"
+                  aria-label="Stop telemetry and view performance report"
                   className="flex-1 flex items-center justify-center gap-1.5 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 py-1.5 px-2 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer shadow-md"
                 >
                   <Square className="w-3 h-3 fill-current" />
@@ -283,6 +285,7 @@ export default function FPSProfiler({ activeSection, enabled = true }: FPSProfil
                 <button
                   onClick={() => setIsRecording(true)}
                   data-cursor="resume rec"
+                  aria-label="Resume performance telemetry recording"
                   className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 py-1.5 px-2 rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all cursor-pointer shadow-md"
                 >
                   <Play className="w-3 h-3 fill-current" />
@@ -293,6 +296,7 @@ export default function FPSProfiler({ activeSection, enabled = true }: FPSProfil
               <button
                 onClick={handleReset}
                 data-cursor="reset stats"
+                aria-label="Reset telemetry counters"
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all cursor-pointer shrink-0"
                 title="Reset Counters"
               >
@@ -311,6 +315,7 @@ export default function FPSProfiler({ activeSection, enabled = true }: FPSProfil
             <button
               onClick={() => setShowReportModal(false)}
               data-cursor="close report"
+              aria-label="Close performance report modal"
               className="absolute top-5 right-5 w-8 h-8 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all cursor-pointer"
             >
               <X className="w-4 h-4" />
