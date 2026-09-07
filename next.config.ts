@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  trailingSlash: true,
   devIndicators: false,
   // Security headers are now handled by middleware.ts for nonce-based CSP
   // This allows us to remove 'unsafe-inline' and 'unsafe-eval'
