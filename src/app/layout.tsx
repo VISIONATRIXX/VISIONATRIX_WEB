@@ -28,20 +28,19 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.visionatrix.site"),
   title: {
-    default: "VISIONATRIX | Creative Technology & Interactive Digital Studio",
+    default: "VISIONATRIX TECHNOLOGIES | AI, Web & Creative Technology",
     template: "%s | VISIONATRIX TECHNOLOGIES",
   },
   description:
-    "VISIONATRIX TECHNOLOGIES is a premier creative technology studio engineering sensory architecture, high-fidelity WebGL interactive ecosystems, CGI advertising, and 3D visual FX.",
+    "VISIONATRIX TECHNOLOGIES builds AI-powered solutions, modern websites, and creative digital experiences for businesses and brands.",
   keywords: [
     "VISIONATRIX TECHNOLOGIES",
     "VISIONATRIX",
-    "Creative Technology Studio",
-    "Sensory Architecture",
-    "Interactive 3D WebGL",
-    "CGI Advertising",
-    "VFX Simulations",
-    "Next.js Web Development",
+    "AI Solutions",
+    "Modern Websites",
+    "Creative Digital Experiences",
+    "Creative Technology",
+    "Web Development",
     "Yuvraj Rathod",
   ],
   authors: [{ name: "Yuvraj Rathod", url: "https://www.visionatrix.site/" }],
@@ -62,9 +61,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "VISIONATRIX | Creative Technology & Interactive Digital Studio",
+    title: "VISIONATRIX TECHNOLOGIES | AI, Web & Creative Technology",
     description:
-      "VISIONATRIX TECHNOLOGIES is a premier creative technology studio engineering sensory architecture, high-fidelity WebGL interactive ecosystems, CGI advertising, and 3D visual FX.",
+      "VISIONATRIX TECHNOLOGIES builds AI-powered solutions, modern websites, and creative digital experiences for businesses and brands.",
     url: "https://www.visionatrix.site/",
     siteName: "VISIONATRIX TECHNOLOGIES",
     images: [
@@ -72,7 +71,7 @@ export const metadata: Metadata = {
         url: "https://www.visionatrix.site/LOGO.png",
         width: 800,
         height: 800,
-        alt: "VISIONATRIX Logo",
+        alt: "VISIONATRIX TECHNOLOGIES Logo",
       },
     ],
     locale: "en_US",
@@ -80,9 +79,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VISIONATRIX | Creative Technology & Interactive Digital Studio",
+    title: "VISIONATRIX TECHNOLOGIES | AI, Web & Creative Technology",
     description:
-      "VISIONATRIX TECHNOLOGIES is a premier creative technology studio engineering sensory architecture, high-fidelity WebGL interactive ecosystems, CGI advertising, and 3D visual FX.",
+      "VISIONATRIX TECHNOLOGIES builds AI-powered solutions, modern websites, and creative digital experiences for businesses and brands.",
     images: ["https://www.visionatrix.site/LOGO.png"],
   },
 };
@@ -98,7 +97,7 @@ const jsonLd = {
     "name": "Yuvraj Rathod",
   },
   "description":
-    "Creative technology studio engineering sensory architecture, interactive WebGL experiences, CGI advertising, and 3D digital environments.",
+    "VISIONATRIX TECHNOLOGIES builds AI-powered solutions, modern websites, and creative digital experiences for businesses and brands.",
 };
 
 export default function RootLayout({
